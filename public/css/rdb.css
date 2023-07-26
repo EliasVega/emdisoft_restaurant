@@ -1,0 +1,16 @@
+.wrap-r {
+    margin: 0 20px;
+    /*margin: auto;*/
+}
+
+.formulario h2 {
+    font-size: 16px;
+    color: #001F3F;
+    margin-bottom: 20px;
+    margin-left: 20px;
+}
+
+.formulario > div {
+    padding: 20px 0;
+    border-bottom: 1px solid #ccc;
+}

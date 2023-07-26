@@ -1,0 +1,262 @@
+body {
+    text-align: center;
+    margin: 0px;
+    padding: opx;
+    font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+#header {
+    height: 170px;
+    width: 100%;
+    background: #fff;
+    border-top: 5px solid #c0c0c0
+
+}
+
+#logo {
+    float: left;
+    width: 20%;
+}
+
+#logo img {
+    display: block;
+    height: 100px;
+    margin-top: 10px;
+}
+
+.center {
+    width: 100%;
+    margin: 0px auto;
+}
+
+.empresa {
+    float: left;
+    width: 55%;
+    margin: 0px auto;
+}
+
+.empresa p {
+    display: block;
+    width: 100%;
+    margin: 0px auto;
+}
+
+#nombre {
+    font-weight: 600;
+    font-size: 2em;
+    margin: 0px auto;
+    text-align: center;
+
+}
+
+#datos {
+    display: block;
+    font-size: 0.75em;
+    margin: 0px auto;
+    text-align: center;
+    float: left;
+}
+
+#factura {
+    width: 25%;
+    margin-top: 10px;
+    float: right;
+    border: double 5px;
+    border-color: #c0c0c0;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 0.6em;
+}
+
+#detosfact {
+    width: 100%;
+    margin: 0px auto;
+    font-size: 1.5em;
+    color: #000000;
+}
+
+#numfact {
+    width: 100%;
+    margin: 0px auto;
+    font-size: 1.8em;
+    color: #000000;
+}
+
+.content {
+    height: 170px;
+    width: 100%;
+    background: #fff;
+}
+
+#tcliente {
+    width: 100%;
+    background: #fcfcfc;
+    padding: 5px;
+}
+
+#titulo {
+    color: #000000;
+    margin: 5px;
+    padding: 5px;
+    font-size: 1.2em;
+}
+
+#cliente {
+    float: left;
+    width: 45%;
+    text-align: left;
+    font-size: 0.8em;
+    margin-top: 10px;
+    margin-right: 0px;
+}
+
+#titc {
+    float: left;
+    width: 25%;
+}
+#titd {
+    float: right;
+    width: 60%;
+}
+
+#tc {
+    width: 100%;
+    border-bottom: 1px solid #f0f0f0;
+    border-left: 3px solid #f0f0f0;
+}
+
+#td {
+    width: 100%;
+    border-bottom: 1px solid #f0f0f0;
+    border-left: 3px solid #f0f0f0;
+}
+
+#fpago {
+    float: left;
+    width: 35%;
+    text-align: left;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+#tfpago {
+    float: left;
+    width: 31%;
+}
+#dfpago {
+    float: right;
+    width: 69%;
+}
+
+#qr {
+
+    float: right;
+    width: 20%;
+}
+
+#qr img {
+    width: 100%;
+    height: 120px;
+    margin-top: 10px;
+}
+
+.contenido {
+    width: 100%;
+    background: #fff;
+}
+
+#ttabla {
+    width: 100%;
+    /*background: #1208AF;*/
+    padding: 5px;
+}
+
+#encabezadot {
+    /*color: #fff;*/
+    margin: 5px;
+    padding: 5px;
+    font-size: 1em;
+}
+
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 15px;
+}
+.tabla thead{
+    padding: 20px;
+    background: #f0f0f0;
+    /*border-bottom: 1px solid #c0c0c0;*/
+}
+.tabla thead tr th {
+    text-align: left;
+    border: 1px solid #c0c0c0;
+    font-size: 0.8em;
+    text-align: center;
+}
+
+.detalle {
+    border-bottom: 2px solid #c0c0c0;
+    border-left: 1px solid #c0c0c0;
+    border-right: 1px solid #c0c0c0;
+}
+
+.tabla tbody tr td {
+    text-align: left;
+    font-size: 0.9em;
+    border-bottom: 1px solid #eff1f1;
+    border-right: 1px solid #eff1f1;;
+}
+.tabla tbody tr .tdder {
+    text-align: right;
+    padding-right: 3px;
+}
+
+.footder {
+    text-align: right;
+    padding: 3px;
+}
+
+#total {
+    font-size: 1.1em;
+}
+
+.tabla tfoot tr th {
+    background: #feffff;
+    border: 1px solid #eff1f1;
+
+}
+.tabla tfoot tr td {
+    background: #f9f9f9;
+    border: 1px solid #c0c0c0;
+}
+table tfoot tr th p{
+    margin: 0px;
+}
+
+#ccent {
+    text-align: center;
+}
+#uno {
+    width: 7%;
+}
+
+#dos {
+    width: 50%;
+}
+
+footer {
+    position: fixed;
+    bottom: -60px;
+    left: 0px;
+    right: 0px;
+    height: 50px;
+
+    /** Extra personal styles **/
+    background-color: #feffff;
+    border: 2px solid #eff1f1;
+    text-align: center;
+    line-height: 35px;
+}
+
+

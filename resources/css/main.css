@@ -1,0 +1,340 @@
+
+.row {
+    margin: 0px;
+}
+.bch2 {
+    margin-top: 50px;
+    margin-bottom: 5px;
+}
+
+.bch3 {
+    margin-top: 50px;
+    margin-bottom: 60px;
+}
+
+.titulo-show {
+    font-size: 20px;
+}
+
+.titulo-mostrar {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.titulo-mostrar-cont {
+    font-size: 36px;
+    font-weight: 500;
+}
+
+.vista {
+    font-size: 18px;
+}
+
+.vistat {
+    font-size: 36px;
+}
+
+.titulo strong h2 {
+    margin: 0px auto;
+    position: relative;
+}
+
+.clearfix{
+    clear:both;
+    float:none;
+}
+
+.center{
+    text-align: center;
+}
+.col{
+    padding-bottom: 10px;
+}
+
+.tablet {
+    width: 100% !important;
+    height: 90px !important;
+}
+
+.tables {
+    width: 30% !important;
+}
+
+.tablen {
+    width: 30% !important;
+}
+
+.lupa {
+    margin-top: 40px;
+}
+
+.derecha {
+    float: right;
+}
+
+.firmas {
+    margin-top: 70px;
+    margin-left: 50px;
+}
+
+.dsb-img {
+    width: 100%;
+    height: 100vh;
+    background: url(../img/vision.jpg) top center;
+    background-size: cover;
+    position: relative;
+}
+
+.menu-salir{
+    height: 40px;
+    padding: 10px;
+    padding-top: 7;
+    padding-bottom: 7;
+    background: #e23116;
+    border-radius: 10px;
+    float: right;
+}
+
+.menu-salir:hover{
+    height: 40px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: #1646e2;
+    border-radius: 10px;
+
+}
+.menu-salir a{
+    color: #fff;
+    font-size: medium;
+    text-align: center;
+}
+
+.menu-salir a:hover{
+    color: #fff;
+    font-size: medium;
+    text-align: center;
+}
+
+.cl-icon{
+    background-color: #fff !important;
+}
+
+.inputs {
+    background: #77b859;
+}
+.colimg {
+    border: none;
+}
+
+.colimg img {
+    width: 120px;
+    height: 120px;
+
+}
+
+.about-title {
+    padding-top: 25px;
+    text-align: center;
+    color: #0081A2;
+  }
+.about-contenido .subheader {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+.about-contenido .about-content-right {
+  display: block;
+  width: 60%;
+  float: right;
+  text-align: justify;
+}
+.about-containers {
+    display: block;
+    margin: 0px auto;
+    width: 100%;
+    background: #fff;
+    margin: 0px;
+    padding: 0px;
+    border-bottom: 1px solid #0081A2;
+    margin-bottom: 15px;
+  }
+.about-contenido .about-content-right p {
+  font-size: 24px;
+  padding: 0px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+}
+
+.about-contenido .about-image-comunicado {
+  float: left;
+  width: 40%;
+  min-height: 400px;
+  background: url(../img/imagen/comunicado.jpg) center top no-repeat;
+  background-size: cover;
+  margin-bottom: 10px;
+}
+
+.columna {
+    width: 50%;
+    height: 100%;
+    overflow: auto;
+    border: none;
+}
+
+.comunicado {
+    font-size: 24px;
+    color: #0a2b09;
+    margin-top: 25px;
+}
+
+.com-title{
+    font-size: 36px;
+    text-align: justify;
+}
+
+.subcomun {
+    width: 100%;
+    font-size: 28px;
+    text-align: center;
+}
+
+.subp{
+    width: 100%;
+    font-size: 18px;
+    text-align: center;
+    color: #77815d;
+}
+
+body {
+    /*position: relative;*/
+    /*width: 16cm;  */
+    /*height: 29.7cm; */
+    /*margin: 0 auto; */
+    /*color: #555555;*/
+    /*background: #FFFFFF; */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    /*font-family: SourceSansPro;*/
+    }
+
+
+    #datos{
+    float: left;
+    margin-top: 0%;
+    margin-left: 2%;
+    margin-right: 2%;
+    /*text-align: justify;*/
+    }
+
+    #datote{
+        font-size: 24px;
+        }
+
+    #encabezado{
+    text-align: center;
+    margin-left: 35%;
+    margin-right: 35%;
+    font-size: 15px;
+    }
+
+    #fact{
+    /*position: relative;*/
+    float: right;
+    margin-top: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+    padding-left: 10;
+    padding-right: 10;
+    font-size: 20px;
+    background:#cde298;
+    }
+
+    section{
+    clear: left;
+    }
+
+    #cliente{
+    text-align: left;
+    font-size: 18px;
+    }
+
+    #facliente{
+    width: 40%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 15px;
+    }
+
+    #fac, #fv, #fa{
+    color: #000;
+    font-size: 12px;
+    }
+
+    #facliente thead{
+    padding: 20px;
+    background: #cde298;
+    text-align: left;
+    border-bottom: 1px solid #FFFFFF;
+    }
+
+    #facvendedor{
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 15px;
+    }
+
+    #facvendedor thead{
+    padding: 20px;
+    background: #cde298;
+    text-align: center;
+    border-bottom: 1px solid #FFFFFF;
+    }
+
+    #facproducto{
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 15px;
+    }
+
+    #facproducto thead{
+    padding: 20px;
+    background: #cde298;
+    text-align: center;
+    border-bottom: 1px solid #007ff5;
+    }
+
+ .requerido:after{
+     content:"*"; color: red;
+ }
+/*
+ .celeste{
+     background-color: #150080 !important;
+     color: #FFFFFF !important;
+     font-size: 24px !important;
+ }
+
+.rojo{
+    background-color: #ff0404 !important;
+    color: #FFFFFF !important;
+    font-size: 24px !important;
+}
+
+.gris{
+    background-color: #fafafa !important;
+    font-size: 24px !important;
+}
+
+.blanco{
+    font-size: 24px !important;
+}
+
+.tpdf{
+    font-size: 1.5rem;
+}
+
+.th-gris{
+    background: #ffffff !important;
+}*/

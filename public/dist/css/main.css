@@ -1,0 +1,136 @@
+table th {
+    background-color: #f3f3f3 !important;
+    color: black !important;
+}
+/*
+table>tbody>tr>td {
+    vertical-align: middle !important;
+    color: blue !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(30, 71, 2, 0.142) !important;
+}
+*/
+.btn-group, .btn-group-vertical {
+    position: absolute !important;
+}
+
+.dataTable-paginate {
+    margin-top: 200px !important;
+}
+
+.dataTables_wrapper .dataTables_length {
+    margin-top: 70px!important;
+}
+
+div.dataTables_wrapper div.dataTables_info {
+    margin-top: 60px!important;
+}
+
+
+.contenido {
+    width: 100%;
+    background: #fff;
+}
+
+#ttabla {
+    width: 100%;
+    /*background: #1208AF;*/
+    padding: 5px;
+}
+
+#encabezadot {
+    /*color: #fff;*/
+    margin: 5px;
+    padding: 5px;
+    font-size: 1em;
+}
+
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 15px;
+}
+.table thead{
+    padding: 20px;
+    background: #fafafa;
+    border-bottom: 1px solid #262e50;
+}
+.table thead tr th {
+    text-align: left;
+    border: 1px solid #b3b3b3;
+    font-size: 0.8em;
+    text-align: center;
+}
+
+.detalle {
+    border-bottom: 2px solid #1208AF;
+    border-left: 1px solid #1208AF;
+    border-right: 1px solid #1208AF;;
+}
+
+.table tbody tr td {
+    text-align: left;
+    font-size: 0.9em;
+    border-bottom: 1px solid #eff1f1;
+    border-right: 1px solid #eff1f1;;
+}
+.table tbody tr .tdder {
+    text-align: right;
+    padding-right: 3px;
+}
+
+.footder {
+    text-align: right;
+    padding: 3px;
+}
+
+#total {
+    font-size: 1.1em;
+}
+
+.table tfoot tr th {
+    background: #feffff;
+    border: 1px solid #eff1f1;
+
+}
+.table tfoot tr td {
+    background: #fafafa;
+    border: 2px solid #f5f5f5;
+}
+table tfoot tr th p{
+    margin: 0px;
+}
+
+#ccent {
+    text-align: center;
+}
+#uno {
+    width: 7%;
+}
+
+#dos {
+    width: 50%;
+}
+
+footer {
+    position: fixed;
+    bottom: -60px;
+    left: 0px;
+    right: 0px;
+    height: 50px;
+
+    /** Extra personal styles **/
+    background-color: #feffff;
+    border: 2px solid #eff1f1;
+    text-align: center;
+    line-height: 35px;
+}
+
+table tbody tr td {
+    vertical-align: middle !important;
+    color: blue !important;
+}
+

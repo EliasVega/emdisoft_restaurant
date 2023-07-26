@@ -1,0 +1,187 @@
+@page {
+    margin-left: 0.3cm;
+    margin-right: 0.3cm;
+}
+body {
+    text-align: center;
+    margin: 0px;
+    padding: opx;
+    font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.content {
+    width: 100%;
+    background: #fff;
+}
+#header {
+    /*height: 170px;*/
+    width: 100%;
+    background: #ffffff;
+    border-top: 2px solid #c0c0c0
+}
+
+#logo {
+    margin: auto;
+}
+
+#logo img {
+    display: block;
+    width: 180px;
+    height: 80px;
+    margin-top: 5px;
+}
+
+.center {
+    display:block;
+    width: 100%;
+    margin: auto;
+}
+
+.empresa {
+    float: left;
+    width: 100%;
+    margin: 0px auto;
+}
+
+.empresa p {
+    display: block;
+    width: 100%;
+    margin:auto;
+}
+
+#nombre {
+    display: block;
+    font-weight: 600;
+    font-size: 1.2em;
+    margin: auto;
+}
+
+#datos {
+    display: block;
+    font-weight: 400;
+    font-size: 0.7em;
+}
+
+#factura {
+    width: 100%;
+    text-align: left;
+    font-size: 0.6em;
+}
+#tcliente {
+    width: 100%;
+    background: #fcfcfc;
+}
+
+#titulo {
+    color: #000000;
+    margin: auto;
+    font-size: 0.75em;
+}
+
+#cliente {
+    float: left;
+    width: 100%;
+    text-align: left;
+    font-size: 0.6em;
+}
+
+#titc {
+    float: left;
+    width: 40%;
+}
+#titd {
+    float: right;
+    width: 60%;
+}
+
+#tc {
+    width: 100%;
+    border-bottom: 1px solid #f0f0f0;
+    border-left: 3px solid #f0f0f0;
+}
+
+#td {
+    width: 100%;
+    border-bottom: 0.5px solid #f0f0f0;
+}
+
+.tabla {
+    width: 100%;
+}
+.tabla thead{
+    background: #fefbfb;
+    border-top: 1px solid #c0c0c0;
+    border-bottom: 1px solid #c0c0c0;
+}
+.tabla thead tr {
+    text-align: left;
+    font-size: 0.7em;
+    text-align: center;
+}
+
+.tabla tbody{
+    border-bottom: 2px solid #c0c0c0;
+}
+
+
+.tabla tbody tr td {
+    text-align: left;
+    font-size: 0.6em;
+}
+.tabla tbody tr .tdder {
+    text-align: right;
+    padding-right: 3px;
+}
+
+.tabla tfoot tr {
+    font-size: 0.6em;
+}
+
+.footder {
+    text-align: right;
+    padding: 3px;
+}
+/*
+.footder {
+    text-align: right;
+    padding: 3px;
+}
+
+#total {
+    font-size: 0.75em;
+}
+
+.tabla tfoot tr th {
+    background: #feffff;
+    border: 0.7px solid #eff1f1;
+
+}
+.tabla tfoot tr td {
+    background: #f9f9f9;
+    border: 0.7px solid #c0c0c0;
+}
+table tfoot tr th p{
+    margin: 0px;
+}
+*/
+
+footer {
+    position: fixed;
+    bottom: -60px;
+    left: 0px;
+    right: 0px;
+    height: 50px;
+
+    /** Extra personal styles **/
+    background-color: #feffff;
+    border: 1px solid #faf7f7;
+    text-align: center;
+    line-height: 35px;
+}
+
+.clearfix{
+    clear:both;
+    float:none;
+}
+
+

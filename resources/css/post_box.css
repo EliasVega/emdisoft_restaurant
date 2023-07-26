@@ -1,0 +1,111 @@
+@page {
+    margin-left: 0.5cm;
+    margin-right: 0.5cm;
+}
+
+body {
+        text-align: center;
+        display: flex;
+        margin: 0px auto;
+        font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-weight: normal;
+        line-height: 1.5;
+        color: #151b1e;
+        min-width: 100%;
+        padding: 0%;
+        }
+
+        .clearfix {
+            clear: both;
+            float: none;
+        }
+
+        .unicos {
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .unicos p {
+            font-size: 10px;
+        }
+
+        .cliente {
+            margin-top: 0px;
+            width: 100%;
+            font-size: 0.6em;
+            text-align: left;
+        }
+
+        thead {
+            width: 100%;
+            margin: 0%;
+            padding: 0%;
+        }
+
+        table thead tr th {
+            text-align: left;
+        }
+
+        .id {
+            width: 20px;
+        }
+
+        .name {
+            width: 90px;
+        }
+
+        .quantity {
+            width: 35px;
+        }
+
+        .price {
+            width: 50px;
+        }
+        .subtotal {
+            width: 40px;
+        }
+
+        .document {
+            width: 40px;
+        }
+
+        .third {
+            width: 150px;
+        }
+
+        .totals {
+            width: 70px;
+        }
+
+        .totalreportname {
+            width: 180px;
+        }
+
+        .fact {
+            width: 100%;
+            border-bottom: 1px solid #7a7d7e;
+        }
+
+        .facturador {
+            font-size: 0.6em;
+            margin: 0px auto;
+            text-align: center;
+        }
+        header {
+            border-top: 2px solid #c6cccf;
+            border-bottom: 2px solid #c6cccf;
+        }
+
+        tbody {
+            width: 100%;
+            margin: 0%;
+            padding: 0%;
+        }
+
+        th{
+            font-size: 0.7rem;
+        }
+        td {
+            font-size: 0.6rem;
+        }
