@@ -29,6 +29,10 @@ class Unit_measure extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function menus(){
+        return $this->hasMany(Menu::class);
+    }
+
     public function rawMaterials(){
         return $this->hasMany(RawMaterial::class);
     }

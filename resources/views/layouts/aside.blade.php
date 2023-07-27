@@ -496,13 +496,13 @@
                                 <li class="nav-item">
                                     <a href="{{ url('product') }}" class="nav-link">
                                         <i class="far fa-dot-circle nav-icon"></i>
-                                        <p>Productos</p>
+                                        <p>Materias Primas</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ url('rawMaterial') }}" class="nav-link">
+                                    <a href="{{ url('menu') }}" class="nav-link">
                                         <i class="far fa-dot-circle nav-icon"></i>
-                                        <p>Materias Primas</p>
+                                        <p>Menu</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">

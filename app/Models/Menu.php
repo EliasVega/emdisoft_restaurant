@@ -2,17 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Menu extends Model
 {
+    use HasFactory;
 
     protected $fillable = [
         'code',
         'name',
         'price',
+        'sale_price',
         'stock',
         'status',
+        'image',
         'category_id',
         'unit_measure_id'
     ];
@@ -37,8 +41,8 @@ class Product extends Model
         return $this->belongsToMany(Ndpurchase::class);
     }
 
-    public function unit_measure(){
-        return $this->hasOne(Unit_measure::class);
+    public function unitMeasure(){
+        return $this->belongsTo(Unit_measure::class);
     }
     /*
     public function Productoventas(){

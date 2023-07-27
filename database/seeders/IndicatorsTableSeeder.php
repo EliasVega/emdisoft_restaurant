@@ -23,7 +23,7 @@ class IndicatorsTableSeeder extends Seeder
             0 =>
             array (
                 'id' => 1,
-                'restaurant' => 'off',
+                'restaurant' => 'on',
                 'created_at' => '2023-01-12 21:07:40',
                 'updated_at' => '2023-01-12 21:07:40',
             ),

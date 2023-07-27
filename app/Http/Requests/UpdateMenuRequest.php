@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRawMaterialRequest extends FormRequest
+class UpdateMenuRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +24,15 @@ class StoreRawMaterialRequest extends FormRequest
     public function rules()
     {
         return [
-            'code' => 'required|string|max:20',
-            'name' => 'required|string|max:100',
-            'price' => 'required',
-            'stock' => '',
-            'status' => 'in:active,inactive',
-            'category_id' => 'required|integer',
-            'unit_measure_id' => 'required|integer'
+            'code'            => 'required|max:20',
+            'name'            => 'required|max:100',
+            'price'           => '',
+            'sale_price'      => '',
+            'stock'           => '',
+            'status'          => '',
+            'image'           => '',
+            'category_id'     => 'required',
+            'unit_measure_id' => 'required'
         ];
     }
 }

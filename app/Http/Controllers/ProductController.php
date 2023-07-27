@@ -8,8 +8,6 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Branch_product;
 use App\Models\Category;
 use App\Models\Indicator;
-use App\Models\ProductRawMaterial;
-use App\Models\RawMaterial;
 use App\Models\Unit_measure;
 
 class ProductController extends Controller
@@ -42,10 +40,9 @@ class ProductController extends Controller
     {
         $categories = Category::select('id', 'name')->get();
         $measures = Unit_measure::where('status', 'activo')->get();
-        $rawMaterials = RawMaterial::get();
         $indicator = Indicator::findOrFail(1);
 
-        return view("admin.product.create", compact('categories', 'measures', 'rawMaterials', 'indicator'));
+        return view("admin.product.create", compact('categories', 'measures', 'indicator'));
     }
 
     /**
@@ -62,31 +59,10 @@ class ProductController extends Controller
         $product->unit_measure_id = $request->unit_measure_id;
         $product->code = $request->code;
         $product->name = $request->name;
-        if ($indicator->restaurant == 'on') {
-            $product->price = $request->total;
-        } else {
-            $product->price = $request->price;
-        }
-        $product->sale_price = $request->sale_price;
+        $product->price = $request->price;
         $product->stock = 0;
-
-        //Handle File Upload
-        if($request->hasFile('image')){
-            //Get filename with the extension
-            $filenamewithExt = $request->file('image')->getClientOriginalName();
-            //Get just filename
-            $filename = pathinfo($filenamewithExt,PATHINFO_FILENAME);
-            //Get just ext
-            $extension = $request->file('image')->guessClientExtension();
-            //FileName to store
-            $fileNameToStore = time().'.'.$extension;
-            //Upload Image
-            $path = $request->file('image')->move('images/products',$fileNameToStore);
-            } else{
-                $fileNameToStore="noimagen.jpg";
-            }
-            $product->image=$fileNameToStore;
         $product->save();
+
             //metodo para agregar producto a la sede
         $branch_product = new Branch_product();
         $branch_product->branch_id = 1;
@@ -94,23 +70,6 @@ class ProductController extends Controller
         $branch_product->stock = 0;
         $branch_product->order_product = 0;
         $branch_product->save();
-
-
-        if ($indicator->restaurant == 'on') {
-            $quantity = $request->quantity;
-            $consumer = $request->consumer_price;
-            $material = $request->raw_material_id;
-            for ($i=0; $i < count($quantity); $i++) {
-                $product_rawMaterial = new ProductRawMaterial();
-                $product_rawMaterial->quantity = $quantity[$i];
-                $product_rawMaterial->consumer_price = $consumer[$i];
-                $product_rawMaterial->subtotal = $quantity[$i] * $consumer[$i];
-                $product_rawMaterial->raw_material_id = $material[$i];
-                $product_rawMaterial->product_id = $product->id;
-                $product_rawMaterial->save();
-            }
-
-        }
 
         return redirect('product');
     }
@@ -157,26 +116,8 @@ class ProductController extends Controller
         $product->code = $request->code;
         $product->name = $request->name;
         $product->price = $request->price;
-        $product->sale_price = $request->sale_price;
         $product->stock = $request->stock;
         $product->status = $request->status;
-
-        //Handle File Upload
-        if($request->hasFile('image')){
-            //Get filename with the extension
-            $filenamewithExt = $request->file('image')->getClientOriginalName();
-            //Get just filename
-            $filename = pathinfo($filenamewithExt,PATHINFO_FILENAME);
-            //Get just ext
-            $extension = $request->file('image')->guessClientExtension();
-            //FileName to store
-            $fileNameToStore = time().'.'.$extension;
-            //Upload Image
-            $path = $request->file('image')->move('images/products',$fileNameToStore);
-            } else{
-                $fileNameToStore="noimagen.jpg";
-            }
-            $product->image=$fileNameToStore;
         $product->update();
 
         $branchProduct = Branch_product::where('product_id', $product->id)->first();
@@ -195,5 +136,19 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         //
+    }
+
+    public function status($id)
+    {
+
+        $product = Product::findOrFail($id);
+        if ($product->status == 'active') {
+            $product->status = 'inactive';
+        } else {
+            $product->status = 'active';
+        }
+        $product->update();
+
+        return redirect('product');
     }
 }

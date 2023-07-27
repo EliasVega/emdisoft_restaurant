@@ -23,6 +23,7 @@ use App\Http\Controllers\IndicatorController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\KardexController;
 use App\Http\Controllers\LiabilityController;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\MunicipalityController;
 use App\Http\Controllers\NcinvoiceController;
 use App\Http\Controllers\NcpurchaseController;
@@ -44,7 +45,6 @@ use App\Http\Controllers\PrePurchaseProductController;
 use App\Http\Controllers\ProductBranchController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\RawMaterialController;
 use App\Http\Controllers\RegimeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ResolutionController;
@@ -148,7 +148,7 @@ Route::resource('service', ServiceController::class);
 Route::resource('cash_in', CashInController::class);
 Route::resource('prePurchase', PrePurchaseController::class);
 Route::resource('prePurchaseProduct', PrePurchaseProductController::class);
-Route::resource('rawMaterial', RawMaterialController::class);
+Route::resource('menu', MenuController::class);
 Route::resource('cash_receipt', CashReceiptController::class);
 
 Route::get('advance/advancePdf/{id}', [AdvanceController::class, 'advancePdf'])->name('advancePdf');
@@ -169,8 +169,6 @@ Route::get('show_product/{id}', [BranchController::class, 'show_product'])->name
 Route::get('show_transfer/{id}', [BranchController::class, 'show_transfer'])->name('show_transfer');
 Route::get('show_sale_box/{id}', [BranchController::class, 'show_sale_box'])->name('show_sale_box');
 Route::post('branch/logout', [BranchController::class, 'logout'])->name('logout_branch');
-
-Route::get('rawMaterial/status/{id}', [RawMaterialController::class, 'status'])->name('rawMaterialStatus');
 
 Route::get('company/create/{id}', [CompanyController::class, 'getMunicipalities']);
 Route::post('company/logout', [CompanyController::class, 'logout'])->name('logout_company');
@@ -198,6 +196,7 @@ Route::get('invoicePdf', [InvoiceController::class, 'invoicePdf'])->name('invoic
 Route::get('invoicePost', [InvoiceController::class, 'invoicePost'])->name('invoicePost');
 
 Route::get('show_pay_ncinvoice/{id}', [NcinvoiceController::class, 'show_pay_ncinvoice'])->name('show_pay_ncinvoice');
+Route::get('menu/status/{id}', [MenuController::class, 'status'])->name('menuStatus');
 
 Route::get('order/show_invoicy/{id}', [orderController::class, 'show_invoicy'])->name('show_invoicy');
 Route::get('order/show_pay_order/{id}', [orderController::class, 'show_pay_order'])->name('show_pay_order');
@@ -217,6 +216,8 @@ Route::get('prePurchase/create/{id}', [PrePurchaseController::class, 'getMunicip
 Route::get('prePurchase/invoice/{id}', [PrePurchaseController::class, 'invoice'])->name('prePurchaseInvoice');
 Route::get('prePurchase/pdf/{id}', [PrePurchaseController::class, 'prePurchasepdf'])->name('prePurchasePdf');
 Route::get('prePurchase/post/{id}', [PrePurchaseController::class, 'prePurchasepost'])->name('prePurchasePost');
+
+Route::get('product/status/{id}', [ProductController::class, 'status'])->name('productStatus');
 
 Route::get('prosuc/crate/{id}', [ProductBranchController::class, 'getProducts']);
 

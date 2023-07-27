@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductRawMaterial extends Model
+class MenuProduct extends Model
 {
     use HasFactory;
 
-    public $table = 'product_raw_materials';
+    public $table = 'menu_products';
 
     protected $primaryKey = 'id';
 
@@ -26,6 +26,5 @@ class ProductRawMaterial extends Model
     protected $guarded = [
         'id'
     ];
-
 
 }

@@ -10,7 +10,7 @@
             </div>
 
             <div class="modal-body">
-                <form action="{{route('product.destroy','test')}}" method="post" class="form-horizontal">
+                <form action="{{route('menu.destroy','test')}}" method="post" class="form-horizontal">
                     {{method_field('delete')}}
                     {!!Form::token()!!}
                     <input type="hidden" id="id" name="id" value="">

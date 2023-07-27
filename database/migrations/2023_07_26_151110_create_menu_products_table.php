@@ -13,14 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('product_raw_materials', function (Blueprint $table) {
+        Schema::create('menu_products', function (Blueprint $table) {
             $table->id();
 
             $table->decimal('quantity', 10, 2);
             $table->decimal('consumer_price', 11, 2);
             $table->decimal('subtotal', 11, 2);
 
-            $table->foreignId('raw_material_id')->constrained()->onUpdate('restrict');
+            $table->foreignId('menu_id')->constrained()->onUpdate('restrict');
             $table->foreignId('product_id')->constrained()->onUpdate('restrict');
 
             $table->timestamps();
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_raw_materials');
+        Schema::dropIfExists('menu_products');
     }
 };

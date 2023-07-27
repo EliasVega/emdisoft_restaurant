@@ -6,7 +6,7 @@
 <main class="main">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <h3>Listado de Materia Prima <a href="rawMaterial/create"><button class="btn btn-celeste"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Materia Prima</button></a>
+            <h3>Menu <a href="product/create"><button class="btn btn-celeste"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Producto</button></a>
                 <a href="{{ route('branch.index') }}" class="btn btn-gris"><i class="fas fa-undo-alt mr-2"></i>Regresar</a>
                 </h3>
         </div>
@@ -14,14 +14,13 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="table-responsive">
-                <table class="table table-striped table-bordered table-condensed table-hover" id="rawMaterials">
+                <table class="table table-striped table-bordered table-condensed table-hover" id="products">
                     <thead>
                         <tr class="bg-info">
                             <th>Id</th>
                             <th>Codigo</th>
                             <th>Nombre</th>
-                            <th>Medida</th>
-                            <th>Precio</th>
+                            <th>Precio_compra</th>
                             <th>stock</th>
                             <th>Estado</th>
                             <th>Editar</th>
@@ -35,7 +34,7 @@
 <script type="text/javascript">
     $(document).ready(function ()
     {
-        $('#rawMaterials').DataTable(
+        $('#products').DataTable(
         {
             responsive: true,
             autoWidth: false,
@@ -43,13 +42,12 @@
             serverSide: true,
             info: true,
             stateSave: true,
-            ajax: '{{ route('rawMaterial.index') }}',
+            ajax: '{{ route('product.index') }}',
             columns:
             [
                 {data: 'id'},
                 {data: 'code'},
                 {data: 'name'},
-                {data: 'unitMeasure'},
                 {data: 'price', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
                 {data: 'stock'},
                 {data: 'status'},

@@ -43,6 +43,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TypeGenerationsTableSeeder::class);
         //$this->call(TypeDocumentSeeder::class);
         $this->call(ServiceTableSeeder::class);
-        $this->call(RawMaterialSeeder::class);
+        $this->call(MenuSeeder::class);
     }
 }
