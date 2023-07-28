@@ -11,19 +11,8 @@ class Customer extends Model
 
         'name',
         'number',
-        'dv',
-        'address',
-        'phone',
         'email',
-        'credit_lmit',
-        'used',
-        'available',
-        'department_id',
-        'municipality_id',
         'document_id',
-        'liability_id',
-        'organization_id',
-        'regime_id',
     ];
 
 

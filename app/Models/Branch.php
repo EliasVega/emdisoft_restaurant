@@ -92,4 +92,8 @@ class Branch extends Model
     public function kardexes(){
         return $this->hasMany(Kardex::class);
     }
+
+    public function restaurantTable(){
+        return $this->hasMany(RestaurantTable::class);
+    }
 }

@@ -4,14 +4,6 @@
         });*/
     jQuery(document).ready(function($){
         $(document).ready(function() {
-            $('#percentage_id').select2({
-                theme: "classic",
-                width: "100%",
-            });
-        });
-    });
-    jQuery(document).ready(function($){
-        $(document).ready(function() {
             $('#product_id').select2({
                 theme: "classic",
                 width: "100%",
@@ -24,53 +16,8 @@
     var subtotal = [];
     var total_iva = 0;
     var total_pay = 0;
-    var total_desc = 0;
-    var ret = 0;
-    var vrte = 0;
     //form purchase
-    $("#idPro").hide();
-    $("#addPercentage").hide();
-    $("#addVpercentage").hide();
     $("#save").hide();
-
-    $("#rtferase").hide();
-    $("#rtftotal").hide();
-    $("#advance").hide();
-    //$("#addDocument").hide();
-
-    $(document).ready(function(){
-        $("#rtfon").click(function(){
-            $("#addPercentage").show();
-            $("#rtferase").show();
-            $("#rtftotal").show();
-            $("#addVpercentage").show();
-        });
-    });
-
-    $(document).ready(function(){
-        $("#rtfoff").click(function(){
-            $("#addPercentage").hide();
-            $("#rtferase").hide();
-            $("#rtftotal").hide();
-            $("#addVpercentage").hide();
-        });
-    });
-
-    $("#percentage_id").change(percentageVer);
-
-    function percentageVer(){
-        datapercentage = document.getElementById('percentage_id').value.split('_');
-        $("#percentage_id").val(datapercentage[0]);
-        $("#percentage").val(datapercentage[1]);
-        percentages();
-        totals();
-    }
-    function percentages(){
-        $("#percentagey").hide();
-        //$("#addPercentage").hide();
-        $("#rtfon").attr('disabled','disabled');
-        $("#rtfoff").attr('disabled','disabled');
-    }
 
     $("#product_id").change(productValue);
 
@@ -97,16 +44,13 @@
         stock= $("#stock").val();
         iva= $("#iva").val();
 
-        datapercentage = document.getElementById('percentage_id').value.split('_');
-        percentage_id= datapercentage[0];
-        percentage = $("#percentage").val();
         if(product_id !="" && quantity!="" && quantity>0  && price!=""){
             subtotal[cont]= parseFloat(quantity) * parseFloat(price);
             total= total+subtotal[cont];
             ivita= subtotal[cont]*iva/100;
             total_iva=total_iva+ivita;
 
-            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+product_id+'">'+product_id+'</td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
+            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
 
             cont++;
 
@@ -133,8 +77,6 @@
         $("#sale_price").val("");
     }
     function totals(){
-        var rte = parseFloat($("#percentage").val());
-        var vrte = total * rte / 100;
         var total_pay = total + total_iva;
         var total_desc = total_pay - vrte;
 
@@ -143,12 +85,6 @@
 
         $("#total_iva_html").html("$ " + total_iva.toFixed(2));
         $("#total_iva").val(total_iva.toFixed(2));
-
-        $("#retention_html").html("$ " + vrte.toFixed(2));
-        $("#retention").val(vrte.toFixed(2));
-
-        $("#total_desc_html").html("$ " + total_desc.toFixed(2));
-        $("#total_desc").val(total_desc.toFixed(2));
 
         $("#total_pay_html").html("$ " + total_pay.toFixed(2));
         $("#total_pay").val(total_pay.toFixed(2));
@@ -239,7 +175,7 @@
             ivita= subtotal[cont]*iva/100;
             total_iva=total_iva+ivita;
 
-            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+product_id+'">'+product_id+'</td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
+            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
 
             cont++;
             deleterow(contedit);
@@ -276,7 +212,7 @@
                     ivita= subtotal[cont]*iva/100;
                     total_iva=total_iva+ivita;
 
-                    var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+product_id+'">'+product_id+'</td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
+                    var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
                     cont++;
 
                     totals();

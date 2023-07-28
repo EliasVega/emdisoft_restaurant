@@ -11,18 +11,8 @@ class Supplier extends Model
 
         'name',
         'number',
-        'dv',
-        'address',
-        'phone',
         'email',
-        'contact',
-        'phone_contact',
-        'department_id',
-        'municipality_id',
         'document_id',
-        'liability_id',
-        'organization_id',
-        'regime_id'
     ];
 
     public function document(){

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Municipality;
 use App\Http\Requests\StoreMunicipalityRequest;
 use App\Http\Requests\UpdateMunicipalityRequest;
-use App\Models\Country;
 use App\Models\Department;
 use Illuminate\Http\Request;
 
@@ -52,7 +51,7 @@ class MunicipalityController extends Controller
      */
     public function store(StoreMunicipalityRequest $request)
     {
-        $municipality = new municipality();
+        $municipality = new Municipality();
         $municipality->department_id = $request->department_id;
         $municipality->code = $request->code;
         $municipality->name = $request->name;
@@ -79,7 +78,7 @@ class MunicipalityController extends Controller
      */
     public function edit(Municipality $municipality)
     {
-        $departments = department::get();
+        $departments = Department::get();
 
         return view("admin.municipality.edit", compact('municipality', 'departments'));
     }

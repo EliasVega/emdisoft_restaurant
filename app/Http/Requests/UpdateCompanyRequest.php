@@ -29,14 +29,10 @@ class UpdateCompanyRequest extends FormRequest
             'nit'             => 'required|max:20',
             'dv'              => 'required|max:1',
             'email'           => 'required',
-            'emailfe'         => 'required',
             'estado'          => '',
             'logo'            => '',
             'department_id'   => 'required',
             'municipality_id' => 'required',
-            'liability_id'    => 'required',
-            'organization_id' => 'required',
-            'regime_id'       => 'required',
         ];
     }
 }

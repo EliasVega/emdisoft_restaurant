@@ -8,25 +8,16 @@ class Purchase extends Model
 {
 
     protected $fillable = [
-
-        'document',
-        'due_date',
-        'items',
         'total',
         'total_iva',
         'total_pay',
         'pay',
         'balance',
-        'retention',
-        'status',
         'user_id',
         'branch_id',
         'supplier_id',
         'payment_form_id',
         'payment_method_id',
-        'percentage_id',
-        'type_generation_id',
-        'voucher_type_id'
     ];
 
     public function user(){

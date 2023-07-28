@@ -10,10 +10,6 @@
                 <a href="purchase/create" class="btn btn-celeste btn-sm"><i class="fa fa-plus mr-2"></i> Agregar Compra</a>
                 <a href="{{ route('branch.index') }}" class="btn btn-redeco btn-sm ml-3"><i class="fas fa-undo-alt mr-2"></i>Inicio</a>
                 <a href="{{ route('supplier.index') }}" class="btn btn-gris btn-sm"><i class="fas fa-undo-alt mr-2"></i>Proveedores</a>
-                <a href="{{ route('pay_purchase.index') }}" class="btn btn-gris btn-sm"><i class="fas fa-undo-alt mr-2"></i>Abonos</a>
-                <a href="{{ route('payment.index') }}" class="btn btn-gris btn-sm"><i class="fas fa-undo-alt mr-2"></i>Ant a Proveedores</a>
-                <a href="{{ route('prePurchase.index') }}" class="btn btn-gris btn-sm"><i class="fas fa-undo-alt mr-2"></i>Pre Compra</a>
-                <a href="{{ route('ndpurchase.index') }}" class="btn btn-gris btn-sm"><i class="fas fa-undo-alt mr-2"></i>N:D</a>
         </div>
     </div>
     <div class="row">
@@ -24,9 +20,7 @@
                         <tr class="bg-info">
                             <th>Id</th>
                             <th>Proveedor</th>
-                            <th>#Fac_Compra</th>
                             <th>Valor</th>
-                            <th>Abonos</th>
                             <th>Saldo</th>
                             <th>Fecha</th>
                             <th>Estado</th>
@@ -53,10 +47,7 @@
             [
                 {data: 'id'},
                 {data: 'supplier'},
-                {data: 'document'},
                 {data: 'total_pay', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
-                {data: 'pay', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
-                {data: 'balance', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
                 {data: 'created_at'},
                 {data: 'status'},
                 {data: 'btn'},

@@ -13,13 +13,9 @@ class Company extends Model
         'nit',
         'dv',
         'email',
-        'emailfe',
         'logo',
         'department_id',
         'municipaliy_id',
-        'liability_id',
-        'organization_id',
-        'regime_id'
     ];
 
     public function department()

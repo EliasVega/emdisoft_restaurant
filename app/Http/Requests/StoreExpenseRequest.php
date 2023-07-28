@@ -22,9 +22,6 @@ class StoreExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'document'          => 'required|max:20',
-            'due_date'          => 'required',
-            'items'             => 'numeric',
             'total'             => 'required|numeric',
             'total_iva'         => 'required|numeric',
             'total_pay'         => 'required|numeric',

@@ -20,14 +20,10 @@ return new class extends Migration
             $table->string('nit', 20)->unique();
             $table->string('dv', 1);
             $table->string('email', 50)->unique();
-            $table->string('emailfe', 50)->unique();
             $table->string('logo', 255)->nullable();
 
             $table->foreignId('department_id')->constrained()->onUpdate('cascade')->ondelete('cascade');
             $table->foreignId('municipality_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('liability_id')->constrained()->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('organization_id')->constrained()->onUpdate('cascade');
-            $table->foreignId('regime_id')->constrained()->onUpdate('cascade');
 
             $table->timestamps();
         });

@@ -20,11 +20,7 @@
                             <th>Id</th>
                             <th>Nombre</th>
                             <th>Nit o CC</th>
-                            <th>Direccion</th>
-                            <th>Telefono</th>
                             <th>Email</th>
-                            <th>Contacto</th>
-                            <th>Tel. Contacto</th>
                             <th>editar</th>
                         </tr>
                     </thead>
@@ -50,11 +46,7 @@
                 {data: 'id'},
                 {data: 'name'},
                 {data: 'number'},
-                {data: 'address'},
-                {data: 'phone'},
                 {data: 'email'},
-                {data: 'contact'},
-                {data: 'phone_contact'},
                 {data: 'edit'},
             ],
             dom: '<"pull-left"B><"pull-right"f>rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',

@@ -8,26 +8,18 @@ class Invoice extends Model
 {
 
     protected $fillable = [
-
-        'document',
-        'type_document',
-        'type_operation',
-        'due_date',
         'total',
         'total_iva',
         'total_pay',
         'pay',
         'balance',
-        'retention',
-        'status',
         'note',
         'user_id',
         'branch_id',
         'customer_id',
         'payment_form_id',
         'payment_method_id',
-        'percentage_id',
-        'voucher_type_id'
+        'restaurant_table_id'
     ];
 
     public function user(){
@@ -77,5 +69,10 @@ class Invoice extends Model
     public function voucherTipe()
     {
         return $this->belongsTo(Voucher_type::class);
+    }
+
+    public function table()
+    {
+        return $this->belongsTo(RestaurantTable::class);
     }
 }

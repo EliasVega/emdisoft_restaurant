@@ -34,32 +34,14 @@
         </div>
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
             <div class="form-group">
-                <label class="form-control-label" for="balance">SALDO A PAGAR</label>
-                <h6>{{ number_format($purchase->balance, 2) }}</h6>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-            <div class="form-group">
                 <label class="form-control-label" for="nombre">PROVEEDOR</label>
                 <h6>{{ $purchase->supplier->name }}</h6>
             </div>
         </div>
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
             <div class="form-group">
-                <label class="form-control-label" for="document">DOCUMENTO No.</label>
-                <h6>{{ $purchase->document }}</h6>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-            <div class="form-group">
                 <label class="form-control-label" for="Fecha">FECHA EMISION</label>
                 <h6>{{ date('d-m-Y', strtotime($purchase->created_at)) }}</h6>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-            <div class="form-group">
-                <label class="form-control-label" for="due_date">VENCE</label>
-                <h6>{{ $purchase->due_date }}</h6>
             </div>
         </div>
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
@@ -97,17 +79,6 @@
                                 <th colspan="3"><p align="right">TOTAL IVA:</p></th>
                                 <th><p align="right">${{ number_format($purchase->total_iva, 2) }}</p></th>
                             </tr>
-                            @if ($purchase->retention > 0)
-                                <tr>
-                                    <th colspan="3"><p align="right">RETENCION:</p></th>
-                                    <th><p align="right">${{ number_format($purchase->retention, 2) }}</p></th>
-                                </tr>
-                                <tr>
-                                    <th colspan="3"><p align="right">TOTAL - DESC:</p></th>
-                                    <th><p align="right">${{ number_format($purchase->total_pay - $purchase->retention, 2) }}</p></th>
-                                </tr>
-
-                            @endif
                             <tr>
                                 <th  colspan="3"><p align="right">TOTAL PAGAR:</p></th>
                                 <th><p align="right">${{ number_format($purchase->total_pay, 2) }}</p></th>

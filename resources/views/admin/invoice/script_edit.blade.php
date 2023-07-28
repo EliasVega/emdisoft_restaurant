@@ -4,14 +4,6 @@
         });*/
     jQuery(document).ready(function($){
         $(document).ready(function() {
-            $('#percentage_id').select2({
-                theme: "classic",
-                width: "100%",
-            });
-        });
-    });
-    jQuery(document).ready(function($){
-        $(document).ready(function() {
             $('#product_id').select2({
                 theme: "classic",
                 width: "100%",
@@ -32,53 +24,15 @@
     $("#editPercentageId").hide();
     $("#editPercentage").hide();
     $("#save").hide();
-
-    $("#rtferase").hide();
-    $("#rtftotal").hide();
     //$("#addDocument").hide();
-
-    $(document).ready(function(){
-        $("#rtfon").click(function(){
-            $("#editPercentageId").show();
-            $("#rtferase").show();
-            $("#rtftotal").show();
-            $("#editPercentage").show();
-        });
-    });
-
-    $(document).ready(function(){
-        $("#rtfoff").click(function(){
-            $("#addPercentageId").hide();
-            $("#rtferase").hide();
-            $("#rtftotal").hide();
-            $("#editPercentage").hide();
-        });
-    });
-
-    $("#percentage_id").change(percentageVer);
-
-    function percentageVer(){
-        datapercentage = document.getElementById('percentage_id').value.split('_');
-        $("#percentage_id").val(datapercentage[0]);
-        $("#percentage").val(datapercentage[1]);
-        percentages();
-        totals();
-    }
-    function percentages(){
-        $("#editPercentageId").hide();
-        $("#rtfon").attr('disabled','disabled');
-        $("#rtfoff").attr('disabled','disabled');
-    }
 
     $("#product_id").change(productValue);
 
     function productValue(){
         dataProduct = document.getElementById('product_id').value.split('_');
-        $("#stock").val(dataProduct[1]);
-        $("#suggested_price").val(dataProduct[2]);
-        $("#iva").val(dataProduct[3]);
-        $("#idP").val(dataProduct[4]);
-        $("#sale_price").val(dataProduct[2]);
+        $("#suggested_price").val(dataProduct[1]);
+        $("#iva").val(dataProduct[2]);
+        $("#sale_price").val(dataProduct[1]);
     }
     $(document).ready(function(){
         $("#add").click(function(){
@@ -86,17 +40,13 @@
         });
     });
     function add(){
-
-        product_id= $("#idP").val();
+        dataProduct = document.getElementById('product_id').value.split('_');
+        product_id= dataProduct[0]
         product= $("#product_id option:selected").text();
         quantity= $("#quantity").val();
         price= $("#sale_price").val();
-        stock= $("#stock").val();
         iva= $("#iva").val();
 
-        datapercentage = document.getElementById('percentage_id').value.split('_');
-        percentage_id= datapercentage[0];
-        percentage = $("#percentage").val();
         if(product_id !="" && quantity!="" && quantity>0  && price!=""){
             subtotal[cont]= parseFloat(quantity) * parseFloat(price);
             total= total+subtotal[cont];
@@ -129,26 +79,16 @@
         $("#quantity").val("");
         $("#sale_price").val("");
         $("#suggested_price").val("");
-        $("#stock").val("");
         $("#iva").val("");
     }
     function totals(){
-        var rte = parseFloat($("#percentage").val());
-        var vrte = total * rte / 100;
         var total_pay = total + total_iva;
-        var total_desc = total_pay - vrte;
 
         $("#total_html").html("$ " + total.toFixed(2));
         $("#total").val(total.toFixed(2));
 
         $("#total_iva_html").html("$ " + total_iva.toFixed(2));
         $("#total_iva").val(total_iva.toFixed(2));
-
-        $("#retention_html").html("$ " + vrte.toFixed(2));
-        $("#retention").val(vrte.toFixed(2));
-
-        $("#total_desc_html").html("$ " + total_desc.toFixed(2));
-        $("#total_desc").val(total_desc.toFixed(2));
 
         $("#total_pay_html").html("$ " + total_pay.toFixed(2));
         $("#total_pay").val(total_pay.toFixed(2));
@@ -267,7 +207,6 @@
                 product= value['name'];
                 quantity= value['quantity'];
                 price= value['price'];
-                stock= value['stock'];
                 iva= value['iva'];
                 balance = value['balance'];
 

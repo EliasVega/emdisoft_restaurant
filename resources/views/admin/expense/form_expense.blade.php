@@ -11,19 +11,6 @@
             </select>
         </div>
     </div>
-
-    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-        <div class="form-group">
-            <label class="form-control-label" for="document">Comprobante</label>
-            <input type="text" id="document" name="document" value="N/A" class="form-control" placeholder="Numero Recibo">
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-        <div class="form-group">
-            <label class="form-control-label" for="due_date">Vencimiento</label>
-            <input type="date" name="due_date" class="form-control" placeholder="Fecha Vencimiento">
-        </div>
-    </div>
     <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
         <div class="form-group">
             <label class="form-control-label" for="note">Nota</label>

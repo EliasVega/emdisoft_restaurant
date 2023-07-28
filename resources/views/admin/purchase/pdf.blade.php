@@ -23,7 +23,7 @@
             </div>
             <!--DATOS FACTURA -->
             <div id="factura">
-                <p> <h4>COMPRA <br> <strong id="numfact">N°.{{ $purchase->id }}</strong>  </h4>
+                <p> <h4>DOCUMENTO <br> <strong id="numfact">N°.{{ $purchase->id }}</strong>  </h4>
 
                 </p>
                 <p> <h4>FECHA DE EMISION <br> <strong id="detosfact">{{ date('d-m-Y', strtotime($purchase->created_at)) }}</strong>  </h4>
@@ -49,20 +49,12 @@
                     <div id="titc">
                         <span id="tc">CC o NIT: </span><br>
                         <span id="tc">NOMBRE:   </span><br>
-                        <span id="tc">REGIMEN:  </span><br>
-                        <span id="tc">CIUDAD:   </span><br>
-                        <span id="tc">TELEFONO: </span><br>
                         <span id="tc">EMAIL:    </span><br>
-                        <span id="tc">DIRECCION:</span><br>
                     </div>
                     <div id="titd">
                         <span id="td">{{ $purchase->supplier->number }}</span><br>
                         <span id="td">{{ $purchase->supplier->name }}</span><br>
-                        <span id="td">{{ $purchase->supplier->regime->name }}</span><br>
-                        <span id="td">{{ $purchase->supplier->municipality->name }}</span><br>
-                        <span id="td">{{ $purchase->supplier->phone }}</span><br>
                         <span id="td">{{ $purchase->supplier->email }}</span><br>
-                        <span id="td">{{ $purchase->supplier->address }}</span><br>
                     </div>
                 </div>
                 <div id="fpago">
@@ -80,11 +72,6 @@
                 </div>
             </div>
         </div>
-        @if ($purchase->note != null)
-            <div>
-                <p>Nota: {{ $purchase->note }}</p>
-            </div>
-        @endif
         <div class="contenido">
             <div class="center">
                 <div id="ttabla">
@@ -119,16 +106,6 @@
                                 <th colspan="3" class="footder">TOTAL IVA:</th>
                                 <td class="footder"><strong>${{number_format($purchase->total_iva,2)}}</strong> </td>
                             </tr>
-                            @if ($purchase->retention > 0)
-                                <tr>
-                                    <th colspan="3" class="footder">RETERENTA:</th>
-                                    <td class="footder"><strong>${{number_format($purchase->retention,2)}}</strong> </td>
-                                </tr>
-                                <tr>
-                                    <th colspan="3" class="footder">TOTAL - DESC:</th>
-                                    <td class="footder"><strong>${{number_format($purchase->total_pay - $purchase->retention,2)}}</strong> </td>
-                                </tr>
-                            @endif
                             <tr>
                                 <th  colspan="3" class="footder">TOTAL PAGAR:</th>
                                 <td class="footder"><strong id="total">${{number_format($purchase->total_pay,2)}}</strong></td>

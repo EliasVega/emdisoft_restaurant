@@ -25,20 +25,9 @@ class StoreCustomerRequest extends FormRequest
     {
         return [
             'name'            => 'required|max:45',
-            'dv'              => 'required',
             'number'          => 'required|max:20',
-            'address'         => 'max:45',
-            'phone'           => 'max:20',
             'email'           => 'max:45',
-            'credit_limit'    => 'required',
-            'used'            => '',
-            'available'       => '',
-            'department_id'   => '',
-            'municipality_id' => '',
             'document_id'     => 'required',
-            'liability_id'    => 'required',
-            'organization_id' => 'required',
-            'regime_id'       => 'required',
         ];
     }
 }

@@ -10,7 +10,6 @@
                 <a href="order/create" class="btn btn-celeste btn-sm"><i class="fa fa-plus mr-2"></i> Agregar Pedido</a>
                 <a href="{{ route('branch.index') }}" class="btn btn-bluR btn-sm"><i class="fas fa-undo-alt mr-2"></i>Regresar</a>
                 <a href="{{ route('customer.index') }}" class="btn btn-gris btn-sm"><i class="fas fa-undo-alt mr-2"></i>Clientes</a>
-                <a href="{{ route('pay_order.index') }}" class="btn btn-gris btn-sm"><i class="fas fa-undo-alt mr-2"></i>Abonos</a>
             </h5>
         </div>
     </div>
@@ -21,10 +20,9 @@
                     <thead>
                         <tr class="bg-info">
                             <th>Id</th>
-                            <th>Sede</th>
-                            <th>Cliente</th>
+                            <th>Usuario</th>
+                            <th>Mesa</th>
                             <th>Valor</th>
-                            <th>Saldo</th>
                             <th>Fecha</th>
                             <th>Estado</th>
                             <th>Acciones</th>
@@ -49,10 +47,9 @@
             columns:
             [
                 {data: 'id'},
-                {data: 'branch'},
-                {data: 'customer'},
-                {data: 'total_pay'},
-                {data: 'balance'},
+                {data: 'user'},
+                {data: 'table'},
+                {data: 'total_pay', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
                 {data: 'created_at'},
                 {data: 'status'},
                 {data: 'btn'},

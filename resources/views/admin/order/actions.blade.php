@@ -12,11 +12,10 @@
 <a href="{{ route('show_pdf_order', $id) }}" class="btn btn-red" target="blanck" data-toggle="tooltip" data-placement="top" title="pdf Pedido" >
     <i class="fas fa-file-pdf"></i>
 </a>
+<a href="{{ route('postOrder', $id) }}" class="btn btn-blank" target="blanck" data-toggle="tooltip" data-placement="top" title="post Pedido" >
+    <i class="fas fa-receipt"></i>
+</a>
 @if ($status == 'pendiente')
-    <a href="{{ route('show_pay_order', $id) }}" class="btn btn-lila" data-toggle="tooltip" data-placement="top" title="Agregar Abono" >
-        <i class="fas fa-file-invoice-dollar"></i>
-    </a>
-
     <a href="{{ route('eliminar', $id) }}" class="btn btn-danger" data-toggle="tooltip" data-placement="top" title="Eliminar Pedido" >
         <i class="fas fa-trash"></i>
     </a>

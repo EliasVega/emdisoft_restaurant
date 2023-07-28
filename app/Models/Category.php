@@ -19,6 +19,10 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function menuss(){
+        return $this->hasMany(Menu::class);
+    }
+
     public function services(){
         return $this->hasMany(Service::class);
     }

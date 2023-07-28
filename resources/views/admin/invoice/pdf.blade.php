@@ -22,7 +22,7 @@
             </div>
             <!--DATOS FACTURA -->
             <div id="factura">
-                <p> <h4>FACTURA ELECTRONICA <br> DE VENTA <br> <strong id="numfact">N°.{{ $indicators->prefix }} - {{ $invoice->document }}</strong>  </h4>
+                <p> <h4>DOCUMENTO <br> DE VENTA <br> <strong id="numfact">N°.{{ $indicators->prefix }} - {{ $invoice->id }}</strong>  </h4>
 
                 </p>
                 <p> <h4>FECHA DE EMISION <br> <strong id="detosfact">{{ date('d-m-Y', strtotime($invoice->created_at)) }}</strong>  </h4>
@@ -48,20 +48,12 @@
                     <div id="titc">
                         <span id="tc">CC o NIT: </span><br>
                         <span id="tc">NOMBRE:   </span><br>
-                        <span id="tc">REGIMEN:  </span><br>
-                        <span id="tc">CIUDAD:   </span><br>
-                        <span id="tc">TELEFONO: </span><br>
                         <span id="tc">EMAIL:    </span><br>
-                        <span id="tc">DIRECCION:</span><br>
                     </div>
                     <div id="titd">
                         <span id="td">{{ $invoice->customer->number }}</span><br>
                         <span id="td">{{ $invoice->customer->name }}</span><br>
-                        <span id="td">{{ $invoice->customer->regime->name }}</span><br>
-                        <span id="td">{{ $invoice->customer->municipality->name }}</span><br>
-                        <span id="td">{{ $invoice->customer->phone }}</span><br>
                         <span id="td">{{ $invoice->customer->email }}</span><br>
-                        <span id="td">{{ $invoice->customer->address }}</span><br>
                     </div>
                 </div>
                 <div id="fpago">
@@ -69,12 +61,10 @@
                     <div id="tfpago">
                         <span id="tc">F. pago: </span><br>
                         <span id="tc">M. pago:   </span><br>
-                        <span id="tc">Vence:</span><br>
                     </div>
                     <div id="dfpago">
                         <span id="td">{{ $invoice->paymentForm->name }}</span><br>
                         <span id="td">{{ $invoice->paymentMethod->name }}</span><br>
-                        <span id="td">{{ $invoice->due_date }}</span><br>
                     </div>
                 </div>
 

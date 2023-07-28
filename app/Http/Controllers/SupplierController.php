@@ -28,23 +28,13 @@ class SupplierController extends Controller
             $suppliers = Supplier::get();
 
             return DataTables::of($suppliers)
-                ->addIndexColumn()
-                ->addColumn('document', function (Supplier $supplier) {
-                    return $supplier->document->initial;
-                })
-                ->addColumn('liability', function (Supplier $supplier) {
-                    return $supplier->liability->name;
-                })
-                ->addColumn('organization', function (Supplier $supplier) {
-                    return $supplier->organization->name;
-                })
-                ->addColumn('regime', function (Supplier $supplier) {
-                    return $supplier->regime->name;
-                })
-
-                ->addColumn('edit', 'admin/supplier/actions')
-                ->rawcolumns(['edit'])
-                ->make(true);
+            ->addIndexColumn()
+            ->addColumn('document', function (Supplier $supplier) {
+                return $supplier->document->initial;
+            })
+            ->addColumn('edit', 'admin/supplier/actions')
+            ->rawcolumns(['edit'])
+            ->make(true);
         }
         return view('admin.supplier.index');
     }
@@ -56,13 +46,8 @@ class SupplierController extends Controller
      */
     public function create()
     {
-        $departments = Department::get();
-        $municipalities = Municipality::get();
         $documents = Document::get();
-        $liabilities = Liability::get();
-        $organizations = Organization::get();
-        $regimes = Regime::get();
-        return view('admin.supplier.create', compact('departments', 'municipalities', 'documents', 'liabilities', 'organizations', 'regimes'));
+        return view('admin.supplier.create', compact('documents'));
     }
 
     /**
@@ -74,8 +59,6 @@ class SupplierController extends Controller
     public function store(StoreSupplierRequest $request)
     {
         $branch = $request->session()->get('branch');
-        $nitS = 0;
-        $emailS = 0;
         $nitSupplier = Supplier::get();
         foreach ($nitSupplier as $key => $nitSup) {
             if ($nitSup->number == $request->number) {
@@ -89,20 +72,10 @@ class SupplierController extends Controller
         }
 
         $supplier = new Supplier();
-        $supplier->department_id = $request->department_id;
-        $supplier->municipality_id = $request->municipality_id;
         $supplier->document_id = $request->document_id;
-        $supplier->liability_id = $request->liability_id;
-        $supplier->organization_id = $request->organization_id;
-        $supplier->regime_id = $request->regime_id;
         $supplier->name = $request->name;
         $supplier->number = $request->number;
-        $supplier->dv = $request->dv;
-        $supplier->address = $request->address;
-        $supplier->phone = $request->phone;
         $supplier->email = $request->email;
-        $supplier->contact = $request->contact;
-        $supplier->phone_contact = $request->phone_contact;
         $supplier->save();
 
         if($branch > 0)
@@ -134,13 +107,8 @@ class SupplierController extends Controller
     public function edit($id)
     {
         $supplier = Supplier::findOrFail($id);
-        $departments = Department::get();
-        $municipalities = Municipality::get();
         $documents = Document::get();
-        $liabilities = Liability::get();
-        $organizations = Organization::get();
-        $regimes = Regime::get();
-        return view('admin.supplier.edit', compact('supplier', 'departments', 'municipalities', 'documents', 'liabilities', 'organizations', 'regimes'));
+        return view('admin.supplier.edit', compact('supplier', 'documents'));
     }
 
     /**
@@ -153,20 +121,10 @@ class SupplierController extends Controller
     public function update(UpdateSupplierRequest $request, $id)
     {
         $supplier = Supplier::findOrFail($id);
-        $supplier->department_id = $request->department_id;
-        $supplier->municipality_id = $request->municipality_id;
         $supplier->document_id = $request->document_id;
-        $supplier->liability_id = $request->liability_id;
-        $supplier->organization_id = $request->organization_id;
-        $supplier->regime_id = $request->regime_id;
         $supplier->name = $request->name;
         $supplier->number = $request->number;
-        $supplier->dv = $request->dv;
-        $supplier->address = $request->address;
-        $supplier->phone = $request->phone;
         $supplier->email = $request->email;
-        $supplier->contact = $request->contact;
-        $supplier->phone_contact = $request->phone_contact;
         $supplier->update();
         return redirect('supplier');
     }
@@ -180,15 +138,5 @@ class SupplierController extends Controller
     public function destroy(Supplier $supplier)
     {
         //
-    }
-
-    public function getMunicipalities(Request $request, $id)
-    {
-        if($request)
-        {
-            $municipalities = Municipality::where('department_id', '=', $id)->get();
-
-            return response()->json($municipalities);
-        }
     }
 }

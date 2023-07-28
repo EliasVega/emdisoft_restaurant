@@ -10,16 +10,12 @@ use App\Models\Bank;
 use App\Models\Branch_product;
 use App\Models\Card;
 use App\Models\Customer;
-use App\Models\Indicator;
 use App\Models\Invoice;
 use App\Models\Invoice_product;
 use App\Models\Kardex;
 use App\Models\Order;
 use App\Models\Pay_invoice;
 use App\Models\Pay_invoice_payment_method;
-use App\Models\Payment_form;
-use App\Models\Payment_method;
-use App\Models\Percentage;
 use App\Models\Product;
 use App\Models\Sale_box;
 use Illuminate\Http\Request;
@@ -47,17 +43,6 @@ class OrderProductController extends Controller
     {
 
         $order = Order::where('id', $request->session()->get('order'))->first();
-        /*
-        $orders = Order::from('orders AS ord')
-        ->join('users AS use', 'ord.user_id', 'use.id')
-        ->join('branches AS bra', 'ord.branch_id', 'bra.id')
-        ->join('customers AS cus', 'ord.customer_id', 'cus.id')
-        ->join('payment_forms AS pf', 'ord.payment_form_id', 'pf.id')
-        ->join('payment_methods AS pm', 'ord.payment_method_id', 'pm.id')
-        ->select('ord.id', 'ord.due_date', 'ord.items', 'ord.total', 'ord.total_iva', 'ord.total_pay', 'ord.pay', 'ord.balance', 'ord.retention', 'ord.status', 'ord.created_at', 'use.name', 'bra.name AS nameB', 'cus.name AS nameC', 'pf.id as idPF', 'pf.name AS namePF', 'pm.name AS namePM')
-        ->where('ord.id', '=', $request->session()->get('order'))
-        ->first();*/
-        //$orderProducts = Order_product::where('order_id', $order->id)->get();
 
         $orderProducts = Order_product::from('order_products AS op')
         ->join('products AS pro', 'op.product_id', '=', 'pro.id')
@@ -67,45 +52,21 @@ class OrderProductController extends Controller
         ->where('op.order_id', '=', $order->id)
         ->get();
         $products = Product::get();
-        /*
-        $products = Product::from('products AS pro')
-        ->join('categories AS cat', 'pro.category_id', '=', 'cat.id')
-        ->select('pro.id', 'pro.name', 'pro.sale_price', 'pro.stock', 'cat.iva')
-        ->where('pro.status', '=', 'ACTIVO')
-        ->get();*/
         $customers = Customer::get();
-        $percentages = Percentage::get();
-        $paymentForms = Payment_form::get();
-        $paymentMethods = Payment_method::get();
         $banks = Bank::get();
         $cards = Card::get();
-        $advances = Advance::where('status', '!=', 'aplicado')->get();
 
         $cont = 0;
-        foreach($orderProducts as $orderProduct){
-            $product = Product::select('stock')->where('id', '=', $orderProduct->idP)->first();
-            if($orderProduct->quantity >= $product->stock){
-                $cont ++;
-            }
-        }
+        return view('admin.order_product.create', compact(
+            'order',
+            'products',
+            'orderProducts',
+            'order',
+            'customers',
+            'banks',
+            'cards'
+        ));
 
-        if ($cont > 0) {
-            return redirect('order')->with('warning', 'La venta de algunos productos supera el stock');
-        } else {
-            return view('admin.order_product.create', compact(
-                'order',
-                'products',
-                'orderProducts',
-                'order',
-                'customers',
-                'percentages',
-                'paymentForms',
-                'paymentMethods',
-                'banks',
-                'cards',
-                'advances'
-            ));
-        }
     }
 
     /**
@@ -120,11 +81,6 @@ class OrderProductController extends Controller
             DB::beginTransaction();
             $order = Order::findOrFail($request->order);
             $orderProducts = Order_product::where('order_id', $order->id)->get();
-            $indicator   = Indicator::where('id', '=', 1)->first();
-            $number      = $indicator->from;
-            $inv      = count(Invoice::get());
-            $invoicey  = $number + $inv;
-            $invoicey  ++;
 
             $paymentMethod = $request->payment_method_id;
             $pay = $request->pay;

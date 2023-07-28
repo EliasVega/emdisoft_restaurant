@@ -15,8 +15,6 @@ class Expense extends Model
 
     protected $fillable = [
         'document',
-        'due_date',
-        'items',
         'total',
         'total_iva',
         'total_pay',

@@ -28,29 +28,4 @@
             });
         });
     });
-    jQuery(document).ready(function($){
-        $(document).ready(function() {
-            $('#liability_id').select2({
-                theme: "classic",
-                width: "100%",
-            });
-        });
-    });
-    jQuery(document).ready(function($){
-        $(document).ready(function() {
-            $('#organization_id').select2({
-                theme: "classic",
-                width: "100%",
-            });
-        });
-    });
-    jQuery(document).ready(function($){
-        $(document).ready(function() {
-            $('#regime_id').select2({
-                theme: "classic",
-                width: "100%",
-            });
-        });
-    });
-
 </script>

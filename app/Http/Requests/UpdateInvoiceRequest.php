@@ -24,25 +24,16 @@ class UpdateInvoiceRequest extends FormRequest
     public function rules()
     {
         return [
-
-            'document'           => 'string|max:20',
-            'items'             => 'integer',
-            'tipDoc'            => 'integer',
-            'tipOpe'            => 'integer',
-            'due_date'          => 'required|date',
             'total'             => 'required|numeric',
             'totalIva'          => 'numeric',
             'totalPay'          => 'numeric',
             'pay'               => 'nullable|numeric',
             'balance'           => '',
-            'retention'         => 'nullable|numeric',
-            'status'            => 'in_array:active,credit_note,debit_note',
             'branch_id'         => 'integer',
             'customer_id'       => 'required|integer',
             'payment_form_id'   => 'required|integer',
             'payment_method_id' => 'required|integer',
-            'percentage_id'      => 'nullable|integer',
-            'voucher_type_id' => 'integer'
+            'restaurant_table_id' => 'required|integer'
         ];
     }
 }

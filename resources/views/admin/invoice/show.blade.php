@@ -39,19 +39,13 @@
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
             <div class="form-group">
                 <label class="form-control-label" for="invoice">FACTURA No.</label>
-                <h6>{{ $invoice->document }}</h6>
+                <h6>{{ $invoice->id }}</h6>
             </div>
         </div>
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
             <div class="form-group">
                 <label class="form-control-label" for="Fecha">FECHA EMISION</label>
                 <h6>{{ date('d-m-Y', strtotime($invoice->created_at)) }}</h6>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-            <div class="form-group">
-                <label class="form-control-label" for="due_date">VENCE</label>
-                <h6>{{ $invoice->due_date }}</h6>
             </div>
         </div>
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
@@ -93,19 +87,6 @@
                                 <th colspan="3"><p align="right">TOTAL IVA:</p></th>
                                 <th><p align="right">${{ number_format($invoice->total_iva, 2) }}</p></th>
                             </tr>
-
-                            @if ($invoice->retention > 0)
-                                <tr>
-                                    <th colspan="3"><p align="right">RETENCION:</p></th>
-                                    <th><p align="right">${{ number_format($invoice->retention, 2) }}</p></th>
-                                </tr>
-                                <tr>
-                                    <th colspan="3"><p align="right">TOTAL - DESC:</p></th>
-                                    <th><p align="right">${{ number_format($invoice->total_pay - $invoice->retention, 2) }}</p></th>
-                                </tr>
-
-                            @endif
-
                             <tr>
                                 <th  colspan="3"><p align="right">TOTAL PAGAR:</p></th>
                                 <th><p align="right">${{ number_format($invoice->total_pay, 2) }}</p></th>

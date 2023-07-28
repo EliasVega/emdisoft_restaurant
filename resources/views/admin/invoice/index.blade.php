@@ -10,10 +10,7 @@
                 <a href="invoice/create" class="btn btn-celeste btn-sm mb-2"><i class="fa fa-plus mr-2"></i> Agregar Venta</a>
                 <a href="{{ route('branch.index') }}" class="btn btn-bluR btn-sm"><i class="fas fa-undo-alt mr-2"></i>Regresar</a>
                 <a href="{{ route('customer.index') }}" class="btn btn-gris btn-sm mb-2"><i class="fas fa-undo-alt mr-2"></i>Clientes</a>
-                <a href="{{ route('pay_invoice.index') }}" class="btn btn-gris btn-sm mb-2"><i class="fas fa-undo-alt mr-2"></i>Abonos</a>
-                <a href="{{ route('advance.index') }}" class="btn btn-gris btn-sm mb-2"><i class="fas fa-undo-alt mr-2"></i>Anticipos</a>
-                <a href="{{ route('order.index') }}" class="btn btn-gris btn-sm mb-2"><i class="fas fa-undo-alt mr-2"></i>Pre Venta</a>
-                <a href="{{ route('ncinvoice.index') }}" class="btn btn-gris btn-sm"><i class="fas fa-undo-alt mr-2"></i>N:C</a>
+                <a href="{{ route('order.index') }}" class="btn btn-gris btn-sm mb-2"><i class="fas fa-undo-alt mr-2"></i>Comandas</a>
         </div>
 
     </div>
@@ -27,10 +24,7 @@
                             <th>Sucursal</th>
                             <th>Cliente</th>
                             <th>Valor</th>
-                            <th>Abonos</th>
-                            <th>Saldo</th>
                             <th>Fecha</th>
-                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -56,10 +50,7 @@
                 {data: 'branch'},
                 {data: 'customer'},
                 {data: 'total_pay', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
-                {data: 'pay', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
-                {data: 'balance', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
                 {data: 'created_at'},
-                {data: 'status'},
                 {data: 'btn'},
             ],
             dom: '<"pull-left"B><"pull-right"f>rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',

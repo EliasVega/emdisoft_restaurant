@@ -49,20 +49,12 @@
                     <div id="titc">
                         <span id="tc">CC o NIT: </span><br>
                         <span id="tc">NOMBRE:   </span><br>
-                        <span id="tc">REGIMEN:  </span><br>
-                        <span id="tc">CIUDAD:   </span><br>
-                        <span id="tc">TELEFONO: </span><br>
                         <span id="tc">EMAIL:    </span><br>
-                        <span id="tc">DIRECCION:</span><br>
                     </div>
                     <div id="titd">
                         <span id="td">{{ $expense->supplier->number }}</span><br>
                         <span id="td">{{ $expense->supplier->name }}</span><br>
-                        <span id="td">{{ $expense->supplier->regime->name }}</span><br>
-                        <span id="td">{{ $expense->supplier->municipality->name }}</span><br>
-                        <span id="td">{{ $expense->supplier->phone }}</span><br>
                         <span id="td">{{ $expense->supplier->email }}</span><br>
-                        <span id="td">{{ $expense->supplier->address }}</span><br>
                     </div>
                 </div>
                 <div id="fpago">
@@ -75,7 +67,6 @@
                     <div id="dfpago">
                         <span id="td">{{ $expense->paymentForm->name }}</span><br>
                         <span id="td">{{ $expense->paymentMethod->name }}</span><br>
-                        <span id="td">{{ $expense->due_date }}</span><br>
                     </div>
                 </div>
 

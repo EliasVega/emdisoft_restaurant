@@ -22,7 +22,6 @@
                         <tr class="bg-info">
                             <th>Id</th>
                             <th>Proveedor</th>
-                            <th>#Comprobante</th>
                             <th>Valor</th>
                             <th>Saldo</th>
                             <th>Fecha</th>
@@ -49,7 +48,6 @@
             [
                 {data: 'id'},
                 {data: 'supplier'},
-                {data: 'document'},
                 {data: 'total_pay', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
                 {data: 'balance', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
                 {data: 'created_at'},

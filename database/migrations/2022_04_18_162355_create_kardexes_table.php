@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('kardexes', function (Blueprint $table) {
             $table->id();
 
-            $table->enum('operation', ['inventario', 'compra', 'editar compra', 'venta', 'editar venta', 'nc_compra','nd_compra','nc_venta', 'nd_venta']);
+            $table->enum('operation', ['inventario', 'compra', 'editar compra', 'venta', 'editar venta']);
             $table->integer('number');
             $table->decimal('quantity',10,2);
             $table->decimal('stock',10,2);

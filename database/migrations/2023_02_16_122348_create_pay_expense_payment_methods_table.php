@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('payment_method_id')->constrained()->onUpdate('cascade');
             $table->foreignId('bank_id')->constrained()->onUpdate('cascade');
             $table->foreignId('card_id')->constrained()->onUpdate('cascade');
-            $table->foreignId('payment_id')->nullable()->constrained()->onUpdate('cascade');
 
             $table->decimal('payment', 20,2);
             $table->string('transaction', 20);

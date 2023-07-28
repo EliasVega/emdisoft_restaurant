@@ -60,11 +60,6 @@
             <button class="btn btn-celeste btn-sm" type="button" id="noDefined" data-toggle="tooltip" data-placement="top" title="Metodo no definido">Indefinido </button>
         </div>
     </div>
-    <div class="col-lg-4 col-md-3 col-sm-3 col-xs-12">
-        <div class="form-group">
-            <button class="btn btn-celeste btn-sm" type="button" id="advance" data-toggle="tooltip" data-placement="top" title="Anticipo">Anticipo</button>
-        </div>
-    </div>
 
     <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
         <div class="box-danger">
@@ -105,21 +100,6 @@
                 class="form-control blanco" placeholder="pay" pattern="[0-9]{0,15}">
         </div>
     </div>
-
-    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" id="payPaymentAdvance">
-        <div class="form-group">
-            <label class="form-control-label requerido" for="abpayment">Anticipo</label>
-            <input type="number" id="abpayment" name="abpayment"
-                class="form-control blanco" placeholder="valor" pattern="[0-9]{0,15}">
-        </div>
-    </div>
-    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" id="payAdvance">
-        <div class="form-group">
-            <label class="form-control-label" for="advance">Abono +</label>
-            <input type="number" id="advance" name="advance"
-                class="form-control blanco" placeholder="valor" pattern="[0-9]{0,15}">
-        </div>
-    </div>
     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" id="payTransaction">
         <div class="form-group">
             <label class="form-control-label" for="transaction">#Transaccion</label>
@@ -149,14 +129,6 @@
                 @foreach($cards as $car)
                 <option value="{{ $car->id }}">{{ $car->name }}</option>
                 @endforeach
-            </select>
-        </div>
-    </div>
-    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12" id="payAdvanceId">
-        <div class="form-group">
-            <label for="advance_id">Pago Anticipado</label>
-            <select name="advance_id" class="form-control" id="advance_id">
-                <option value ="" disabled selected>Seleccionar...</option>
             </select>
         </div>
     </div>

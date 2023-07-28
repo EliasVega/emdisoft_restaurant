@@ -14,18 +14,6 @@
             </select>
         </div>
     </div>
-    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12" id="aditDocument">
-        <div class="form-group">
-            <label class="form-control-label" for="document">Comprobante</label>
-            <input type="text" id="document" name="document" value="{{ $expense->document }}" class="form-control" placeholder="Numero de la factura" required readonly>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12" id="editDueDate">
-        <div class="form-group">
-            <label class="form-control-label" for="due_date">Vencimiento</label>
-            <input type="date" name="due_date" value="{{ $expense->due_date }}" class="form-control" placeholder="Fecha Vencimiento">
-        </div>
-    </div>
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" id="editIva">
         <div class="form-group">
             <label class="form-control-label" for="iva">Iva</label>

@@ -56,14 +56,10 @@ class CompanyController extends Controller
         $company = new company();
         $company->department_id   = $request->department_id;
         $company->municipality_id = $request->municipality_id;
-        $company->liability_id    = $request->liability_id;
-        $company->organization_id = $request->organization_id;
-        $company->regime_id       = $request->regime_id;
         $company->name          = $request->name;
         $company->nit             = $request->nit;
         $company->dv              = $request->dv;
         $company->email           = $request->email;
-        $company->emailfe         = $request->emailfe;
         if($request->hasFile('logo')){
             $path = $request->file('logo')->store('public/images/logos');
             $fileNameToStore = Storage::url($path);
@@ -100,10 +96,7 @@ class CompanyController extends Controller
     {
         $departments    = Department::get();
         $municipalities = Municipality::get();
-        $liabilities    = Liability::get();
-        $organizations  = Organization::get();
-        $regimes        = Regime::get();
-        return view("admin.company.edit", compact('company', 'departments', 'municipalities', 'liabilities', 'organizations', 'regimes'));
+        return view("admin.company.edit", compact('company', 'departments', 'municipalities'));
     }
 
     /**
@@ -117,14 +110,10 @@ class CompanyController extends Controller
     {
         $company->department_id   = $request->department_id;
         $company->municipality_id = $request->municipality_id;
-        $company->liability_id    = $request->liability_id;
-        $company->organization_id = $request->organization_id;
-        $company->regime_id       = $request->regime_id;
         $company->name            = $request->name;
         $company->nit             = $request->nit;
         $company->dv              = $request->dv;
         $company->email           = $request->email;
-        $company->emailfe         = $request->emailfe;
         //Handle File Upload
         if($request->hasFile('logo')){
             $path = $request->file('logo')->store('public/images/logos');

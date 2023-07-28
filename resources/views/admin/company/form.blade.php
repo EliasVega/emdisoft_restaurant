@@ -25,12 +25,6 @@
     </div>
     <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
         <div class="form-group">
-            <label for="emailfe">Email de Fact Electronica</label>
-            <input type="email" name="emailfe" value="{{ $company->emailfe }}" class="form-control" placeholder="Ingrese el email FE">
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-        <div class="form-group">
         <label for="department_id">Departamento</label>
             <select name="department_id" class="form-control" id="department_id">
                 @foreach($departments as $dep)
@@ -57,51 +51,6 @@
                 </select>
         </div>
     </div>
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-        <div class="form-group">
-        <label for="liability_id">Res. Fiscal</label>
-            <select name="liability_id" class="form-control" id="liability_id">
-                @foreach($liabilities as $lia)
-                    @if($lia->id == $company->liability_id)
-                        <option value="{{ $lia->id }}" selected>{{ $lia->name }}</option>
-                    @else
-                        <option value="{{ $lia->id }}">{{ $lia->name }}</option>
-                    @endif
-                @endforeach
-            </select>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-        <div class="form-group">
-        <label for="organization_id">Organizacion</label>
-            <select name="organization_id" class="form-control" id="organization_id">
-                @foreach($organizations as $org)
-                    @if($org->id == $company->organization_id)
-                        <option value="{{ $org->id }}" selected>{{ $org->name }}</option>
-                    @else
-                        <option value="{{ $org->id }}">{{ $org->name }}</option>
-                    @endif
-                @endforeach
-            </select>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-        <div class="form-group">
-        <label for="regime_id">Regimen</label>
-            <select name="regime_id" class="form-control" id="regime_id">
-                @foreach($regimes as $reg)
-                    @if($reg->id == $company->regime_id)
-                        <option value="{{ $reg->id }}" selected>{{ $reg->name }}</option>
-                    @else
-                        <option value="{{ $reg->id }}">{{ $reg->name }}</option>
-                    @endif
-                @endforeach
-            </select>
-        </div>
-    </div>
-
-
-
     <div class="col-lg-8 col-md-8 col-sm-10 col-xs-12">
         <div class="form-group">
             <label for="logo">Imagen</label>

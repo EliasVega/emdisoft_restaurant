@@ -6,16 +6,16 @@
             <input type="text" name="idModal" id="idModal"class="form-control" placeholder="id " readonly>
         </div>
     </div>
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="productIdModal">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="menuIdModal">
         <div class="form-group">
-            <label for="product_idModal">id</label>
-            <input type="number" name="product_idModal" id="product_idModal"class="form-control" placeholder="product_id " readonly>
+            <label for="menu_idModal">id</label>
+            <input type="number" name="menu_idModal" id="menu_idModal"class="form-control" placeholder="menu_id " readonly>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="form-group">
-            <label for="productModal">Producto</label>
-            <input type="text" name="productModal" id="productModal" class="form-control" placeholder="Producto" readonly>
+            <label for="menuModal">Menu</label>
+            <input type="text" name="menuModal" id="menuModal" class="form-control" placeholder="menuo" readonly>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="ivamod">

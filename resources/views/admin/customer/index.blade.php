@@ -23,8 +23,6 @@
                             <th>Nombre</th>
                             <th>DOC.</th>
                             <th>Numero</th>
-                            <th>Direccion</th>
-                            <th>Telefono</th>
                             <th>Email</th>
                             <th>editar</th>
                         </tr>
@@ -51,8 +49,6 @@
                 {data: 'name'},
                 {data: 'document'},
                 {data: 'number'},
-                {data: 'address'},
-                {data: 'phone'},
                 {data: 'email'},
                 {data: 'edit'},
             ],

@@ -45,17 +45,11 @@
                     <div id="titc">
                         <span id="tc">CC o NIT: </span><br>
                         <span id="tc">NOMBRE:   </span><br>
-                        <span id="tc">DIRECCION:</span><br>
-                        <span id="tc">CIUDAD:   </span><br>
-                        <span id="tc">TELEFONO: </span><br>
                         <span id="tc">EMAIL:    </span><br>
                     </div>
                     <div id="titd">
                         <span id="td">{{ $expense->supplier->number }}</span><br>
                         <span id="td">{{ $expense->supplier->name }}</span><br>
-                        <span id="td">{{ $expense->supplier->address }}</span><br>
-                        <span id="td">{{ $expense->supplier->municipality->name }}</span><br>
-                        <span id="td">{{ $expense->supplier->phone }}</span><br>
                         <span id="td">{{ $expense->supplier->email }}</span><br>
                     </div>
                 </div>

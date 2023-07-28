@@ -48,12 +48,6 @@
                 <h6>{{ date('d-m-Y', strtotime($expense->created_at)) }}</h6>
             </div>
         </div>
-        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-            <div class="form-group">
-                <label class="form-control-label" for="due_date">VENCE</label>
-                <h6>{{ $expense->due_date }}</h6>
-            </div>
-        </div>
     </div><br>
     <div class="box-body row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

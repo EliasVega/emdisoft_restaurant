@@ -27,18 +27,13 @@
     $("#card1").hide();
     $("#card2").hide();
     $("#noDefined").hide();
-    $("#advance").hide();
-    $("#transvenped").hide();
     $("#payPayment").hide();
     //$("#payPurchase").hide();
 
     $("#payPay").hide();
-    $("#payPaymentAdvance").hide();
-    $("#payAdvance").hide();
     $("#payTransaction").hide();
     $("#payBank").hide();
     $("#payCard").hide();
-    $("#payAdvanceId").hide();
     $("#payment_form_id").val(1);
     $("#payment_method_id").val(1);
 
@@ -84,7 +79,6 @@
     function see(){
         $("#noDefined").show();
         $("#cash").show();
-        $("#advance").show();
         $("#transfer").show();
         $("#nequi").show();
         $("#card1").show();
@@ -112,9 +106,6 @@
         $("#payCard").hide();
         $("#payTransaction").hide();
         $("#payPay").show();
-        $("#payPaymentAdvance").hide();
-        $("#payAdvanceId").hide();
-        $("#advance").val(0);
     }
     $(document).ready(function(){
         $("#transfer").click(function(){
@@ -131,12 +122,10 @@
         $("#payment_method_id").val(47);
         $("#card_id").val(1);
         $("#payPay").show();
-        $("#payPaymentAdvance").hide();
         $("#payTransaction").show();
         $("#payBank").show();
         $("#payCard").hide();
         $("#mpay").hide();
-        $("#payAdvanceId").hide();
     }
     $(document).ready(function(){
         $("#nequi").click(function(){
@@ -154,12 +143,10 @@
         $("#bank_id").val(2);
         $("#card_id").val(1);
         $("#payPay").show();
-        $("#payPaymentAdvance").hide();
         $("#payTransaction").show();
         $("#payCard").hide();
         $("#mpay").hide();
         $("#payBank").hide();
-        $("#payAdvanceId").hide();
     }
     $(document).ready(function(){
         $("#card1").click(function(){
@@ -174,12 +161,10 @@
         $("#pay").val();
         $("#returned").val(0);
         $("#payment_method_id").val(48);
-        $("#payPaymentAdvance").hide();
         $("#mpay").hide();
         $("#payPay").show();
         $("#payBank").show();
         $("#payCard").show();
-        $("#payAdvanceId").hide();
         $("#payTransaction").show();
     }
     $(document).ready(function(){
@@ -195,12 +180,10 @@
         $("#pay").val();
         $("#returned").val(0);
         $("#payment_method_id").val(49);
-        $("#payPaymentAdvance").hide();
         $("#mpay").hide();
         $("#payPay").show();
         $("#payBank").show();
         $("#payCard").show();
-        $("#payAdvanceId").hide();
         $("#payTransaction").show();
     }
     $(document).ready(function(){
@@ -223,34 +206,8 @@
         $("#payBank").hide();
         $("#payCard").hide();
         $("#payPay").show();
-        $("#payPaymentAdvance").hide();
-        $("#payAdvanceId").hide();
-        $("#advance").val(0);
     }
-    $(document).ready(function(){
-        $("#advance").click(function(){
-            totalInvoice = $("#balance").val();
-            totalPay = $("#pay_purchase").val();
-            tpay = totalInvoice - totalPay;
-            $("#pay").val(tpay);
-            advance();
-        });
-    });
-    function advance(){
-        $("#pay").val();
-        $("#returned").val(0);
-        $("#payment_method_id").val(1);
-        $("#transaction").val("N/A");
-        $("#bank_id").val(1);
-        $("#card_id").val(1);
-        $("#payPay").hide();
-        $("#payPaymentAdvance").show();
-        $("#payTransaction").hide();
-        $("#payCard").hide();
-        $("#mpay").hide();
-        $("#payBank").hide();
-        $("#payAdvanceId").show();
-    }
+
     $(document).ready(function(){
         $("#pay").keyup(function(){
             $("#pay").val();
@@ -275,68 +232,6 @@
             })
             $("#pay").val(0)
             payment();
-        }
-    }
-
-    prueba = [];
-    $("#provider_id").change(function(event){
-        $.get("getAdvance/" + event.target.value + "", function(response){
-            $("#advance_id").empty();
-            $("#advance_id").append("<option value = '#' disabled selected>Seleccionar ...</option>");
-            for(i = 0; i < response.length; i++){
-                $("#advance_id").append("<option value = '" + response[i].id + "'>" + response[i].origin + '  ' + response[i].balance + "</option>");
-                prueba = response[i].balance;
-            }
-            $("#advance_id").selectpicker('refresh');
-        });
-    });
-    $(document).ready(function(){
-        $("#advance_id").change(function(){
-            parseFloat($("#abpayment").val(prueba))
-            $("#payPaymentAdvance").show();
-            prepaidnew();
-        });
-    });
-    function prepaidnew(){
-        ttp = parseFloat($("#total_pay").val())
-        tpp = parseFloat($("#pay_purchase").val())
-        abn = parseFloat($("#abpayment").val())
-        tpp_abn = tpp + abn;
-        balancey = ttp - (tpp + abn);
-        if (ttp >= tpp_abn) {
-            $("#returned").val(balancey);
-            $("#pay").val(abn);
-            $("#payment").val(abn);
-        } else {
-            $("#payAdvance").show();
-            //prepaid()
-        }
-    }
-    $(document).ready(function(){
-        $("#advance").keyup(function(){
-            $("#advance").val();
-            prepaid();
-        });
-    });
-    function prepaid(){
-        ttpnew = parseFloat($("#total_pay").val())
-        tppnew = parseFloat($("#pay_purchase").val())
-        abnnew = parseFloat($("#advance").val())
-        tppnew_abnnew = tppnew + abn;
-        balanceynew = ttpnew - (tppnew + abnnew);
-        if (ttpnew >= tppnew_abnnew) {
-            $("#returned").val(balanceynew);
-            $("#advance").val(abnnew);
-            $("#pay").val(abnnew);
-        } else {
-            //alert("Rellene todos los campos del detalle de la venta");
-            Swal.fire({
-            type: 'error',
-            //title: 'Oops...',
-            text: 'El abono supera el valor de la compra',
-            })
-            $("#advance").val(0)
-            prepaid();
         }
     }
 </script>

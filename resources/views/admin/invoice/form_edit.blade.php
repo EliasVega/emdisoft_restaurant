@@ -14,12 +14,6 @@
             </select>
         </div>
     </div>
-    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12" id="editDueDate">
-        <div class="form-group">
-            <label class="form-control-label" for="due_date">Vencimiento</label>
-            <input type="date" name="due_date" value="{{ $invoice->due_date }}" class="form-control" placeholder="Fecha Vencimiento">
-        </div>
-    </div>
     <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
         <div class="box-danger">
             <label class="form-control-label">
@@ -33,33 +27,6 @@
             <input type="number" id="idP" name="idP" class="form-control" placeholder="Id Prod." disabled>
         </div>
     </div>
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12" id="editRadio">
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="percentage" value="1" id="rtfon">
-            <label class="form-check-label" for="retefte">
-                Retenciones
-            </label>
-            </div>
-            <div class="form-check">
-            <input class="form-check-input" type="radio" name="percentage" value="0" id="rtfoff" checked>
-            <label class="form-check-label" for="retefte">
-                No Retenciones
-            </label>
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12" id="editPercentageId">
-        <div class="form-group row">
-            <label class="form-control-label" for="percentage_id">Porcentaje</label>
-            <select name="percentage_id" class="form-control selectpicker" id="percentage_id"
-                data-live-search="true">
-                <option value="1" disabled selected>Seleccionar.</option>
-                @foreach($percentages as $per)
-                <option
-                    value="{{ $per->id }}_{{ $per->percentage }}">{{ $per->percentage }}</option>
-                @endforeach
-            </select>
-        </div>
-    </div>
     <div class="clearfix"></div>
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" id="editSuggestedPrice">
         <div class="form-group">
@@ -68,25 +35,11 @@
                 placeholder="Precio sugerido" disabled>
         </div>
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" id="editStock">
-        <div class="form-group">
-            <label class="form-control-label" for="stock">Stock</label>
-            <input type="number" id="stock" name="stock" value="{{ old('stock') }}" class="form-control"
-                placeholder="stock" disabled pattern="[0-9]{0,15}">
-        </div>
-    </div>
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" id="editIva">
         <div class="form-group">
             <label class="form-control-label" for="iva">Iva</label>
             <input type="number" id="iva" name="iva" class="form-control" placeholder="Iva" disabled
                 pattern="[0-9]{0,15}">
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" id="editPercentage">
-        <div class="form-group">
-            <label class="form-control-label" for="percentage">% Ret</label>
-            <input type="number" id="percentage" name="percentage" value="0" class="form-control"
-                placeholder="V impuesto" disabled pattern="[0-9]{0,15}">
         </div>
     </div>
     <div class="clearfix">
@@ -97,10 +50,10 @@
             <select name="product_id" class="form-control selectpicker" id="product_id"
                 data-live-search="true">
                 <option value="0" disabled selected>Seleccionar el Producto</option>
-                @foreach($branch_products as $bp)
+                @foreach($products as $product)
                 <option
-                    value="{{ $bp->id }}_{{ $bp->stock }}_{{ $bp->sale_price }}_{{ $bp->iva }}_{{ $bp->idP }}">
-                    {{ $bp->name }}--{{ $bp->stock }}</option>
+                    value="{{ $product->id }}_{{ $product->sale_price }}_{{ $product->iva }}">
+                    {{ $product->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -157,16 +110,6 @@
                         <td class="footder"><strong id="total_iva_html">$ 0.00</strong>
                             <input type="hidden" name="total_iva" id="total_iva">
                         </td>
-                    </tr>
-                    <tr id="rtferase">
-                        <th colspan="7" class="footder">RETENCION:</th>
-                        <td class="footder"><strong id="retention_html">$ 0.00</strong>
-                            <input type="hidden" name="retention" id="retention"></td>
-                    </tr>
-                    <tr id="rtftotal">
-                        <th colspan="7" class="footder">TOTAL - DESC:</th>
-                        <td class="footder"><strong id="total_desc_html">$ 0.00</strong>
-                            <input type="hidden" name="total_desc" id="total_desc"></td>
                     </tr>
                     <tr>
                         <th colspan="7" class="footder">TOTAL PAGAR:</th>

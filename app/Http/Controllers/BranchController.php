@@ -12,8 +12,6 @@ use App\Models\Sale_box;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\FacadesSession;
-use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\DataTables;
 
 class BranchController extends Controller
@@ -53,7 +51,6 @@ class BranchController extends Controller
                 ->addColumn('order', 'admin/branch/btn/order')
                 ->addColumn('invoice', 'admin/branch/btn/invoice')
                 ->addColumn('box', 'admin/branch/btn/box')
-                ->addColumn('prePurchase', 'admin/branch/btn/prePurchase')
                 ->addColumn('purchase', 'admin/branch/btn/purchase')
                 ->addColumn('expense', 'admin/branch/btn/expense')
                 ->addColumn('product', 'admin/branch/btn/product')
@@ -286,7 +283,7 @@ class BranchController extends Controller
         ->first();
         if ($user->role_id != 1) {
             if(is_null($sale_box)){
-                return redirect("order")->with('warning', 'Debes tener una caja Abierta para realizar Pedidos');
+                return redirect("branch")->with('warning', 'Debes tener una caja Abierta para realizar Pedidos');
             }
         }
 

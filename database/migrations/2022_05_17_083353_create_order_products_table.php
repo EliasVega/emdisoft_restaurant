@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('iva', 10,2);
             $table->decimal('subtotal', 11,2);
             $table->decimal('ivasubt', 11,2);
+            $table->enum('status', ['enviado', 'nuevo'])->default('nuevo');
 
             $table->foreignId('order_id')->constrained()->onUpdate('cascade');
             $table->foreignId('product_id')->constrained()->onUpdate('cascade');

@@ -24,13 +24,11 @@
                             <th>O.P</th>
                             <th>F.V</th>
                             <th>BOX</th>
-                            <th>O.C</th>
                             <th>F.C</th>
                             <th>F.G</th>
                             <th>PRO</th>
                             <th>TRF</th>
                             <th>Id</th>
-                            <th>Departamento</th>
                             <th>Municipio</th>
                             <th>Sucursal</th>
                             <th>Nit</th>
@@ -60,13 +58,11 @@
                 {data: 'order'},
                 {data: 'invoice'},
                 {data: 'box'},
-                {data: 'prePurchase'},
                 {data: 'purchase'},
                 {data: 'expense'},
                 {data: 'product'},
                 {data: 'transfer'},
                 {data: 'id'},
-                {data: 'department'},
                 {data: 'municipality'},
                 {data: 'name'},
                 {data: 'company'},

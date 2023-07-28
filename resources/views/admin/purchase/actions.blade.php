@@ -13,9 +13,4 @@
 <a href="{{ route('post_purchase', $id) }}" class="btn btn-dark" target="_blank" data-toggle="tooltip" data-placement="top" title="pdf Post" >
     <i class="fas fa-receipt"></i>
 </a>
-@if ($status != 'debit_note')
-    <a href="{{ route('show_ndpurchase', $id) }}" class="btn btn-danger"data-toggle="tooltip" data-placement="top" title="Eliminar" >
-        <i class="fas fa-receipt"></i>
-    </a>
-@endif
 

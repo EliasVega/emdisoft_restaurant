@@ -27,18 +27,8 @@ class UpdateSupplierRequest extends FormRequest
 
             'name'            => 'required|max:45',
             'number'          => 'required|max:20',
-            'dv'              => '',
-            'address'         => 'required|max:45',
-            'phone'           => 'required|max:20',
-            'email'           => 'required|max:45',
-            'contact'         => 'required|max:50',
-            'phone_contact'    => 'required|max:20',
-            'department_id'   => 'required',
-            'municipality_id' => 'required',
+            'email'           => 'max:45',
             'document_id'     => 'required',
-            'liability_id'    => 'required',
-            'organization_id' => 'required',
-            'regime_id'       => 'required'
         ];
     }
 }

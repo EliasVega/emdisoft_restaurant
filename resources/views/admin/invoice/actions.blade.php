@@ -16,8 +16,3 @@
 <a href="{{ route('post', $id) }}" class="btn btn-dark" target="_blank" data-toggle="tooltip" data-placement="top" title="pdf Post" >
     <i class="fas fa-file-invoice-dollar"></i>
 </a>
-@if ($status != 'credit_note')
-    <a href="{{ route('show_ncinvoice', $id) }}" class="btn btn-danger"data-toggle="tooltip" data-placement="top" title="Eliminar" >
-        <i class="fas fa-receipt"></i>
-    </a>
-@endif

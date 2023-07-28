@@ -24,7 +24,6 @@
     $("#addPays").hide();
     $("#noDefined").hide();
     $("#cash").hide();
-    $("#advance").hide();
     $("#transfer").hide();
     $("#nequi").hide();
     $("#card1").hide();
@@ -38,8 +37,6 @@
     $("#transactiony").hide();
     $("#banky").hide();
     $("#cardy").hide();
-    //$("#paymenty").hide();
-    $("#addAdvance").hide();
 
     $(document).ready(function(){
         $("#payment_form_id").change(function(){
@@ -47,7 +44,6 @@
         if(form == 1){
             $("#noDefined").show();
             $("#cash").show();
-            $("#advance").show();
             $("#transfer").show();
             $("#nequi").show();
             $("#card1").show();
@@ -57,7 +53,6 @@
             $("#addPays").show();
             $("#noDefined").hide();
             $("#cash").hide();
-            $("#advance").hide();
             $("#transfer").hide();
             $("#nequi").hide();
             $("#card1").hide();
@@ -75,7 +70,6 @@
     function see(){
         $("#noDefined").show();
         $("#cash").show();
-        $("#advance").show();
         $("#transfer").show();
         $("#nequi").show();
         $("#card1").show();
@@ -105,7 +99,6 @@
         $("#cardy").hide();
         $("#payi").show();
         $("#abpaymenty").hide();
-        $("#addAdvance").hide();
         $("#payment").val(0);
     }
 
@@ -128,7 +121,6 @@
         $("#banky").show();
         $("#cardy").hide();
         $("#mpay").hide();
-        $("#addAdvance").hide();
         $("#payment").val(0);
     }
 
@@ -152,7 +144,6 @@
         $("#cardy").hide();
         $("#mpay").hide();
         $("#banky").hide();
-        $("#addAdvance").hide();
         $("#payment").val(0);
     }
 
@@ -170,7 +161,6 @@
         $("#payment_method_id").val(48);
         $("#abpaymenty").hide();
         $("#mpay").hide();
-        $("#addAdvance").hide();
         $("#payi").show();
         $("#banky").show();
         $("#cardy").show();
@@ -192,7 +182,6 @@
         $("#payment_method_id").val(49);
         $("#abpaymenty").hide();
         $("#mpay").hide();
-        $("#addAdvance").hide();
         $("#payi").show();
         $("#banky").show();
         $("#cardy").show();
@@ -219,33 +208,10 @@
         $("#banky").hide();
         $("#cardy").hide();
         $("#payi").show();
-        $("#abpaymenty").hide();//valor del anticipo
-        $("#addAdvance").hide();//modelo
         $("#payment").val(0);
     }
 
-    $(document).ready(function(){
-        $("#advance").click(function(){
-            $("#pay").val("");
-            advance();
-        });
-    });
 
-    function advance(){
-        $("#pay").val();
-        $("#returned").val(0);
-        $("#payment_method_id").val(1);
-        $("#transaction").val("N/A");
-        $("#bank_id").val(1);
-        $("#card_id").val(1);
-        $("#payi").hide();
-        $("#abpaymenty").show();
-        $("#transactiony").hide();
-        $("#cardy").hide();
-        $("#mpay").hide();
-        $("#banky").hide();
-        $("#addAdvance").show();
-    }
     $(document).ready(function(){
         $("#pay").keyup(function(){
             $("#pay").val();
@@ -269,69 +235,6 @@
             })
             $("#pay").val(0)
             paymentor();
-        }
-    }
-
-    prueba = [];
-    $("#supplier_id").change(function(event){
-        $.get("getPayment/" + event.target.value + "", function(response){
-            $("#payment_id").empty();
-            $("#payment_id").append("<option value = '#' disabled selected>Seleccionar ...</option>");
-            for(i = 0; i < response.length; i++){
-                $("#payment_id").append("<option value = '" + response[i].id + "'>" + response[i].origin + response[i].balance + "</option>");
-                prueba = response[i].balance;
-            }
-            $("#payment_id").selectpicker('refresh');
-        });
-    });
-
-    $(document).ready(function(){
-        $("#payment_id").change(function(){
-            parseFloat($("#abpayment").val(prueba))
-            $("#abpaymenty").show();
-            prepaidnew();
-        });
-    });
-
-    $(document).ready(function(){
-        $("#payment").keyup(function(){
-            $("#payment").val();
-            prepaid();
-        });
-    });
-
-    function prepaidnew(){
-        ttp = parseFloat($("#total_pay").val())
-        abn = parseFloat($("#abpayment").val())
-
-        balancey = ttp - abn;
-        if (ttp >= abn) {
-            $("#returned").val(balancey);
-            $("#pay").val(abn);
-            $("#payment").val(abn);
-        } else {
-            $("#abvto").show();
-            //prepaid()
-        }
-    }
-
-    function prepaid(){
-        ttpnew = parseFloat($("#total_pay").val())
-        abnnew = parseFloat($("#payment").val())
-        balanceynew = ttpnew - abnnew;
-        if (ttpnew >= abnnew) {
-            $("#returned").val(balanceynew);
-            $("#payment").val(abnnew);
-            $("#pay").val(abnnew);
-        } else {
-            //alert("Rellene todos los campos del detalle de la venta");
-            Swal.fire({
-            type: 'error',
-            //title: 'Oops...',
-            text: 'El abono supera el valor de la compra',
-            })
-            $("#payment").val(0)
-            prepaid();
         }
     }
 </script>
