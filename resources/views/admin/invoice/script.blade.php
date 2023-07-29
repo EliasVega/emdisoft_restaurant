@@ -12,7 +12,7 @@
     });
     jQuery(document).ready(function($){
         $(document).ready(function() {
-            $('#product_id').select2({
+            $('#menu_id').select2({
                 theme: "classic",
                 width: "100%",
             });
@@ -28,16 +28,16 @@
     var ret = 0;
     var vrte = 0;
     //form invoice
-    $("#addIdProduct").hide();
+    $("#addIdmenu").hide();
     $("#save").hide();
 
-    $("#product_id").change(productValue);
+    $("#menu_id").change(menuValue);
 
-    function productValue(){
-        dataProduct = document.getElementById('product_id').value.split('_');
-        $("#sale_price").val(dataProduct[1]);
-        $("#iva").val(dataProduct[2]);
-        $("#suggested_price").val(dataProduct[2]);
+    function menuValue(){
+        datamenu = document.getElementById('menu_id').value.split('_');
+        $("#sale_price").val(datamenu[1]);
+        $("#iva").val(datamenu[2]);
+        $("#suggested_price").val(datamenu[1]);
     }
     $(document).ready(function(){
         $("#add").click(function(){
@@ -45,37 +45,28 @@
         });
     });
     function add(){
-        dataProduct = document.getElementById('product_id').value.split('_');
-        product_id= dataProduct[0];
-        product= $("#product_id option:selected").text();
+        datamenu = document.getElementById('menu_id').value.split('_');
+        menu_id= datamenu[0];
+        menu= $("#menu_id option:selected").text();
         quantity= $("#quantity").val();
         price= $("#sale_price").val();
         iva= $("#iva").val();
         pay = $("#pay").val();
-        if(product_id !="" && quantity!="" && quantity>0  && price!="" && iva!=""){
+        if(menu_id !="" && quantity!="" && quantity>0  && price!="" && iva!=""){
+            subtotal[cont]= parseFloat(quantity) * parseFloat(price);
+            total= total+subtotal[cont];
+            ivita= subtotal[cont]*iva/100;
+            total_iva=total_iva+ivita;
 
-            if (parseFloat(quantity) > parseFloat(stock) ) {
-                //alert("Rellene todos los campos del detalle de la venta");
-                Swal.fire({
-                type: 'error',
-                //title: 'Oops...',
-                text: 'La cantidad a vender supera el stock',
-            })
-            } else {
-                subtotal[cont]= parseFloat(quantity) * parseFloat(price);
-                total= total+subtotal[cont];
-                ivita= subtotal[cont]*iva/100;
-                total_iva=total_iva+ivita;
+            var fila= '<tr class="selected" id="fila'+cont+'"><td><button type="button" class="btn btn-danger btn-sm" onclick="eliminar('+cont+');"><i class="fa fa-times"></i></button></td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td> <td><input type="hidden" id="quantity" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" id="price" name="price[]" value="'+parseFloat(price).toFixed(2)+'">'+price+'</td> td> <td><input type="hidden" name="iva[]" value="'+iva+'">'+iva+'</td>  <td> $'+parseFloat(subtotal[cont]).toFixed(2)+'</td></tr>';
+            cont++;
 
-                var fila= '<tr class="selected" id="fila'+cont+'"><td><button type="button" class="btn btn-danger btn-sm" onclick="eliminar('+cont+');"><i class="fa fa-times"></i></button></td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td> <td><input type="hidden" id="quantity" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" id="price" name="price[]" value="'+parseFloat(price).toFixed(2)+'">'+price+'</td> td> <td><input type="hidden" name="iva[]" value="'+iva+'">'+iva+'</td>  <td> $'+parseFloat(subtotal[cont]).toFixed(2)+'</td></tr>';
-                cont++;
+            totals();
+            assess();
+            $('#details').append(fila);
+            //$('#menu_id option:selected').remove();
+            clean();
 
-                totals();
-                assess();
-                $('#details').append(fila);
-                //$('#product_id option:selected').remove();
-                clean();
-            }
 
         }else{
             //alert("Rellene todos los campos del detalle de la venta");
@@ -87,7 +78,7 @@
         }
     }
     function clean(){
-        $("#product_id").val("");
+        $("#menu_id").val("");
         $("#quantity").val("");
         $("#sale_price").val("");
     }

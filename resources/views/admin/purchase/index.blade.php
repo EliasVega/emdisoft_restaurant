@@ -23,7 +23,6 @@
                             <th>Valor</th>
                             <th>Saldo</th>
                             <th>Fecha</th>
-                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -48,8 +47,8 @@
                 {data: 'id'},
                 {data: 'supplier'},
                 {data: 'total_pay', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
+                {data: 'balance', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
                 {data: 'created_at'},
-                {data: 'status'},
                 {data: 'btn'},
             ],
             dom: '<"pull-left"B><"pull-right"f>rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',

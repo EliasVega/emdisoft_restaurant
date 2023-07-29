@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('menu_products', function (Blueprint $table) {
             $table->id();
 
-            $table->decimal('quantity', 10, 2);
-            $table->decimal('consumer_price', 11, 2);
-            $table->decimal('subtotal', 11, 2);
+            $table->decimal('quantity', 10, 2);//cantidad de producto que consume el menu
+            $table->decimal('consumer_price', 11, 2);//precio del producto
+            $table->decimal('subtotal', 11, 2);//cantidad por el precio
 
             $table->foreignId('menu_id')->constrained()->onUpdate('restrict');
             $table->foreignId('product_id')->constrained()->onUpdate('restrict');

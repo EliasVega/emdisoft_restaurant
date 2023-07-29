@@ -12,13 +12,16 @@ use App\Models\Company;
 use App\Models\Customer;
 use App\Models\Document;
 use App\Models\Invoice_product;
+use App\Models\InvoiceMenu;
 use App\Models\Kardex;
 use App\Models\Menu;
+use App\Models\MenuProduct;
 use App\Models\Pay_invoice;
 use App\Models\Pay_invoice_payment_method;
 use App\Models\Payment_form;
 use App\Models\Payment_method;
 use App\Models\Product;
+use App\Models\RestaurantTable;
 use App\Models\Sale_box;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -76,6 +79,7 @@ class InvoiceController extends Controller
         $banks = Bank::get();
         $cards = Card::get();
         $menus = Menu::get();
+        $restaurantTables = RestaurantTable::get();
         return view('admin.invoice.create', compact(
             'documents',
             'customers',
@@ -83,7 +87,8 @@ class InvoiceController extends Controller
             'payment_methods',
             'banks',
             'cards',
-            'menus'
+            'menus',
+            'restaurantTables'
         ));
     }
 
@@ -102,13 +107,11 @@ class InvoiceController extends Controller
             $inv      = count(Invoice::get());
             $inv ++;
 
-            $product_id = $request->product_id;
+            $menu_id = $request->menu_id;
             $quantity   = $request->quantity;
             $price      = $request->price;
             $iva        = $request->iva;
-            $idP        = $request->idP;
-            $pay        = $request->pay;
-            $advance = $request->advance;
+            $total_pay = $request->total_Pay;
 
             $invoice                    = new Invoice();
             $invoice->user_id           = Auth::user()->id;
@@ -116,61 +119,84 @@ class InvoiceController extends Controller
             $invoice->customer_id       = $request->customer_id;
             $invoice->payment_form_id   = $request->payment_form_id;
             $invoice->payment_method_id = $request->payment_method_id;
+            $invoice->restaurant_table_id = $request->restaurant_table_id;
             $invoice->total             = $request->total;
             $invoice->total_iva         = $request->total_iva;
-            $invoice->total_pay         = $request->total_pay;
-            $invoice->pay               = $request->pay;
-            $invoice->balance           = $request->total_pay - $pay;
+            $invoice->total_pay         = $total_pay;
+            $invoice->pay               = $total_pay;
+            $invoice->balance           = 0;
             $invoice->save();
 
             $sale_box = Sale_box::where('user_id', '=', $invoice->user_id)->where('status', '=', 'open')->first();
             $sale_box->invoice += $invoice->total_pay;
             $sale_box->in_total += $invoice->pay;
             $sale_box->update();
-            if($pay > 0){
 
-                $pay_invoice                  = new Pay_invoice();
-                $pay_invoice->pay             = $pay;
-                $pay_invoice->balance_invoice = $invoice->balance - $pay;
-                $pay_invoice->user_id         = $invoice->user_id;
-                $pay_invoice->branch_id       = $invoice->branch_id;
-                $pay_invoice->invoice_id      = $invoice->id;
-                $pay_invoice->save();
 
-                $pay_invoice_Payment_method  = new Pay_invoice_payment_method();
-                $pay_invoice_Payment_method->pay_invoice_id     = $pay_invoice->id;
-                $pay_invoice_Payment_method->payment_method_id  = $request->payment_method_id;
-                $pay_invoice_Payment_method->bank_id            = $request->bank_id;
-                $pay_invoice_Payment_method->card_id            = $request->card_id;
-                $pay_invoice_Payment_method->advance_id         = $request->advance_id;
-                $pay_invoice_Payment_method->payment            = $request->pay;
-                $pay_invoice_Payment_method->transaction        = $request->transaction;
-                $pay_invoice_Payment_method->save();
+            $pay_invoice                  = new Pay_invoice();
+            $pay_invoice->pay             = $total_pay;
+            $pay_invoice->user_id         = $invoice->user_id;
+            $pay_invoice->branch_id       = $invoice->branch_id;
+            $pay_invoice->invoice_id      = $invoice->id;
+            $pay_invoice->save();
 
-                $mp = $request->payment_method_id;
-                //metodo para actualizar la caja
-                $sale_box = Sale_box::where('user_id', '=', $invoice->user_id)->where('status', '=', 'open')->first();
-                if($mp == 10){
-                    $sale_box->in_invoice_cash += $pay;
-                    $sale_box->cash += $pay;
-                }
-                $sale_box->in_invoice += $pay;
-                $sale_box->update();
+            $pay_invoice_Payment_method  = new Pay_invoice_payment_method();
+            $pay_invoice_Payment_method->pay_invoice_id     = $pay_invoice->id;
+            $pay_invoice_Payment_method->payment_method_id  = $request->payment_method_id;
+            $pay_invoice_Payment_method->bank_id            = $request->bank_id;
+            $pay_invoice_Payment_method->card_id            = $request->card_id;
+            $pay_invoice_Payment_method->transaction        = $request->transaction;
+            $pay_invoice_Payment_method->payment            = $total_pay;
+            $pay_invoice_Payment_method->save();
 
+            $mp = $request->payment_method_id;
+            //metodo para actualizar la caja
+            $sale_box = Sale_box::where('user_id', '=', $invoice->user_id)->where('status', '=', 'open')->first();
+            if($mp == 10){
+                $sale_box->in_invoice_cash += $total_pay;
+                $sale_box->cash += $total_pay;
             }
+            $sale_box->in_invoice += $total_pay;
+            $sale_box->update();
 
             $cont = 0;
 
-            while($cont < count($product_id)){
+            while($cont < count($menu_id)){
 
                 $subtotal = $quantity[$cont] * $price[$cont];
                 $ivasub   = $subtotal * $iva[$cont]/100;
-                $item     = $cont + 1;
-                $prodid   = $product_id[$cont];
 
+                $invoiceMenu = new InvoiceMenu();
+                $invoiceMenu->invoice_id = $invoice->id;
+                $invoiceMenu->menu_id = $menu_id[$cont];
+                $invoiceMenu->quantity   = $quantity[$cont];
+                $invoiceMenu->price      = $price[$cont];
+                $invoiceMenu->iva        = $iva[$cont];
+                $invoiceMenu->subtotal   = $subtotal;
+                $invoiceMenu->ivasubt    = $ivasub;
+                $invoiceMenu->save();
+
+                $menuProducts = MenuProduct::where('menu_id', $menu_id[$cont])->get();
+                foreach ($menuProducts as $key => $menuProduct) {
+                    $menuProductQuantity = $menuProduct->quantity;
+                    $quantityTotal = $menuProductQuantity * $quantity[$cont];
+                    $product = Product::findOrFail($menuProduct->product_id);
+                    $product->stock -= $quantityTotal;
+                    $product->update();
+
+                    $kardex = new Kardex();
+                    $kardex->product_id = $product->id;
+                    $kardex->branch_id = $invoice->branch_id;
+                    $kardex->operation = 'venta';
+                    $kardex->number = $invoice->id;
+                    $kardex->quantity = $quantityTotal;
+                    $kardex->stock = $product->stock;
+                    $kardex->save();
+                }
+                /*
                 $invoice_product = new Invoice_product();
                 $invoice_product->invoice_id = $invoice->id;
-                $invoice_product->product_id = $idP[$cont];
+                $invoice_product->product_id = $product_id[$cont];
                 $invoice_product->quantity   = $quantity[$cont];
                 $invoice_product->price      = $price[$cont];
                 $invoice_product->iva        = $iva[$cont];
@@ -181,16 +207,7 @@ class InvoiceController extends Controller
                 //reeplazando trigger
                 $product = Product::findOrFail($invoice_product->product_id);
                 $product->stock -= $quantity[$cont];
-                $product->update();
-
-                $kardex = new Kardex();
-                $kardex->product_id = $product->id;
-                $kardex->branch_id = $invoice->branch_id;
-                $kardex->operation = 'venta';
-                $kardex->number = $invoice->id;
-                $kardex->quantity = $quantity[$cont];
-                $kardex->stock = $product->stock;
-                $kardex->save();
+                $product->update();*/
 
                 $cont++;
             }

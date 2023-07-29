@@ -1,5 +1,18 @@
+<div class="box-body">
+    <label for="restaurant_table_id">Mesas</label>
+        <br>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
+            @foreach($restaurantTables as $restaurantTable)
+            <div class="col-lg-2 col-md-2 col-sm-3 col-xs-12">
+            <label>
+                {!! Form::radio('restaurant_table_id', $restaurantTable->id, false, array('class' => 'name mr-3')) !!}
+                {{ $restaurantTable->name }}</label>
+            </div>
+            @endforeach
+        </div>
+</div>
 <div class="box-body row">
-    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12" id="addCustomer">
+    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12" id="addCustomer">
         <div class="form-group">
             <label for="customer_id">Cliente   <button class="btn btn-celeste btn-sm mb-2" type="button"
                 data-toggle="modal" data-target="#customer"><i class="fa fa-plus mr-md-2"></i>Agregar</button></label>
@@ -12,22 +25,14 @@
             </select>
         </div>
     </div>
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-        <div class="box-danger">
-            <label class="form-control-label">
-                <strong>Agregar Productos</strong>
-            </label>
-        </div>
-    </div>
-    <div class="clearfix"></div>
-    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" id="addSuggestedPrice">
+    <div class="col-lg-3 col-md-4 col-sm-3 col-xs-12" id="addSuggestedPrice">
         <div class="form-group">
             <label class="form-control-label" for="precio">P/sugerido</label>
             <input type="number" id="suggested_price" name="pricesug" class="form-control"
                 placeholder="Precio sugerido" disabled>
         </div>
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" id="addIva">
+    <div class="col-lg-3 col-md-4 col-sm-3 col-xs-12" id="addIva">
         <div class="form-group">
             <label class="form-control-label" for="iva">Iva</label>
             <input type="number" id="iva" name="iva" class="form-control" placeholder="Iva" disabled
@@ -36,16 +41,16 @@
     </div>
     <div class="clearfix">
     </div>
-    <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" id="addProduct">
+    <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" id="addmenu">
         <div class="form-group row">
-            <label class="form-control-label" for="product_id">Producto</label>
-            <select name="product_id" class="form-control selectpicker" id="product_id"
+            <label class="form-control-label" for="menu_id">Menu</label>
+            <select name="menu_id" class="form-control selectpicker" id="menu_id"
                 data-live-search="true">
-                <option value="0" disabled selected>Seleccionar el Producto</option>
-                @foreach($products as $product)
+                <option value="0" disabled selected>Seleccionar Menu</option>
+                @foreach($menus as $menu)
                 <option
-                    value="{{ $product->id }}_{{ $product->sale_price }}_{{ $product->iva }}">
-                    {{ $product->name }}</option>
+                    value="{{ $menu->id }}_{{ $menu->sale_price }}_{{ $menu->category->iva }}">
+                    {{ $menu->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -82,8 +87,7 @@
                 <thead>
                     <tr>
                         <th>Eliminar</th>
-                        <th>Id</th>
-                        <th>Producto</th>
+                        <th>Menu</th>
                         <th>Cantidad</th>
                         <th>precio ($)</th>
                         <th>iva ($)</th>
@@ -92,18 +96,18 @@
                 </thead>
                 <tfoot>
                     <tr>
-                        <th colspan="6" class="footder">TOTAL:</th>
+                        <th colspan="5" class="footder">TOTAL:</th>
                         <td class="footder"><strong id="total_html">$ 0.00</strong>
                             <input type="hidden" name="total" id="total"></td>
                     </tr>
                     <tr>
-                        <th colspan="6" class="footder">TOTAL IVA:</th>
+                        <th colspan="5" class="footder">TOTAL IVA:</th>
                         <td class="footder"><strong id="total_iva_html">$ 0.00</strong>
                             <input type="hidden" name="total_iva" id="total_iva">
                         </td>
                     </tr>
                     <tr>
-                        <th colspan="6" class="footder">TOTAL PAGAR:</th>
+                        <th colspan="5" class="footder">TOTAL PAGAR:</th>
                         <td class="footder"><strong id="total_pay_html">$ 0.00</strong>
                             <input type="hidden" name="total_pay" id="total_pay"></td>
                     </tr>

@@ -79,16 +79,16 @@
                         <thead>
                             <tr>
                                 <th id="uno">Cant.</th>
-                                <th id="dos">Descripcion del producto</th>
+                                <th id="dos">Descripcion del Menu</th>
                                 <th>Valor</th>
                                 <th>SubTotal ($)</th>
                             </tr>
                         </thead>
                         <tbody class="detalle">
-                            @foreach ($invoice_products as $ip)
+                            @foreach ($invoice_menus as $ip)
                             <tr>
                                 <td id="ccent">{{ number_format($ip->quantity,2) }}</td>
-                                <td>{{ $ip->product->name }}</td>
+                                <td>{{ $ip->menu->name }}</td>
                                 <td class="tdder">${{ number_format($ip->price,2)}}</td>
                                 <td class="tdder">${{number_format($ip->quantity * $ip->price,2)}}</td>
                             </tr>

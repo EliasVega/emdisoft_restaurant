@@ -70,7 +70,7 @@
                     <table class="table table-striped table-bordered table-condensed table-hover">
                         <thead>
                             <tr class="bg-info">
-                                <th>Producto</th>
+                                <th>Menu</th>
                                 <th>Precio ($)</th>
                                 <th>Cantidad</th>
                                 <th>Subtotal</th>
@@ -94,9 +94,9 @@
 
                         </tfoot>
                         <tbody>
-                            @foreach($invoice_products as $ip)
+                            @foreach($invoice_menus as $ip)
                                 <tr>
-                                    <td>{{ $ip->product->name }}</td>
+                                    <td>{{ $ip->menu->name }}</td>
                                     <td>${{ $ip->price }}</td>
                                     <td class="tdder">{{ $ip->quantity }}</td>
                                     <td class="tdder">{{ number_format($ip->subtotal, 2) }}</td>

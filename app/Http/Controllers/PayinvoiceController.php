@@ -127,10 +127,8 @@ class PayinvoiceController extends Controller
         $payment_methods = Payment_method::get();
         $cards = Card::get();
         $invoice = Invoice::where('id', $request->session()->get('invoice'))->first();
-        $custom = $invoice->customer->id;
-        $advances = Advance::where('status', '!=', 'aplicado')->where('customer_id', $custom)->get();
 
-        return view('admin.pay_invoice.create', compact('invoice', 'banks', 'payment_methods', 'cards', 'advances'));
+        return view('admin.pay_invoice.create', compact('invoice', 'banks', 'payment_methods', 'cards'));
     }
 
     /**
@@ -153,32 +151,14 @@ class PayinvoiceController extends Controller
             $pay_invoice->branch_id = $user->branch_id;
             $pay_invoice->invoice_id = $invoice->id;
             $pay_invoice->pay = $total;
-            $pay_invoice->balance_invoice = $balance - $total;
             $pay_invoice->save();
 
             $cont = 0;
             $payment_method = $request->payment_method_id;
             $bank = $request->bank_id;
             $card = $request->card_id;
-            $advance_id = $request->advance_id;
             $pay = $request->pay;
             $transaction = $request->transaction;
-            $adv = $request->advance;
-
-            if ($adv != 0) {
-
-                $advance = Advance::findOrFail( $request->advance_id);
-                $adv_total = $advance->balance - $adv;
-
-                $advance->destination = $invoice->id;
-                if ($adv_total == 0) {
-                    $advance->status = 'aplicado';
-                } else {
-                    $advance->status = 'parcial';
-                }
-                $advance->balance = $adv_total;
-                $advance->update();
-            }
 
             while($cont < count($payment_method)){
                 $pay = $request->pay[$cont];
@@ -187,11 +167,8 @@ class PayinvoiceController extends Controller
                 $pay_invoice_payment_method->payment_method_id = $payment_method[$cont];
                 $pay_invoice_payment_method->bank_id = $bank[$cont];
                 $pay_invoice_payment_method->card_id = $card[$cont];
-                if (isset($advance_id[$cont])){
-                    $pay_invoice_payment_method->advance_id = $advance_id[$cont];
-                }
-                $pay_invoice_payment_method->payment = $pay;
                 $pay_invoice_payment_method->transaction = $transaction[$cont];
+                $pay_invoice_payment_method->payment = $pay;
                 $pay_invoice_payment_method->save();
 
                 $mp = $payment_method[$cont];

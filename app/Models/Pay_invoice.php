@@ -9,8 +9,6 @@ class Pay_invoice extends Model
 
     protected $fillable = [
         'pay',
-        'balance_invoice',
-        'status',
         'user_id',
         'branch_id',
         'invoice_id',

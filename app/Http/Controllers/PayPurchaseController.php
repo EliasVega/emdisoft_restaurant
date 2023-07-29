@@ -128,9 +128,8 @@ class PayPurchaseController extends Controller
         $payment_methods = Payment_method::get();
         $cards = Card::get();
         $purchase = Purchase::where('id', '=', $request->session()->get('purchase'))->first();
-        $payments = Payment::where('status', '!=', 'aplicado')->where('supplier_id', $purchase->supplier->id)->get();
 
-        return view('admin.pay_purchase.create', compact('purchase', 'banks', 'payment_methods', 'cards', 'payments'));
+        return view('admin.pay_purchase.create', compact('purchase', 'banks', 'payment_methods', 'cards'));
     }
 
     /**

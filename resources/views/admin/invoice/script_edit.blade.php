@@ -4,7 +4,7 @@
         });*/
     jQuery(document).ready(function($){
         $(document).ready(function() {
-            $('#product_id').select2({
+            $('#menu_id').select2({
                 theme: "classic",
                 width: "100%",
             });
@@ -20,19 +20,19 @@
     var ret = 0;
     var vrte = 0;
     //form purchase
-    $("#editIdProduct").hide();
+    $("#editIdmenu").hide();
     $("#editPercentageId").hide();
     $("#editPercentage").hide();
     $("#save").hide();
     //$("#addDocument").hide();
 
-    $("#product_id").change(productValue);
+    $("#menu_id").change(menuValue);
 
-    function productValue(){
-        dataProduct = document.getElementById('product_id').value.split('_');
-        $("#suggested_price").val(dataProduct[1]);
-        $("#iva").val(dataProduct[2]);
-        $("#sale_price").val(dataProduct[1]);
+    function menuValue(){
+        datamenu = document.getElementById('menu_id').value.split('_');
+        $("#suggested_price").val(datamenu[1]);
+        $("#iva").val(datamenu[2]);
+        $("#sale_price").val(datamenu[1]);
     }
     $(document).ready(function(){
         $("#add").click(function(){
@@ -40,27 +40,27 @@
         });
     });
     function add(){
-        dataProduct = document.getElementById('product_id').value.split('_');
-        product_id= dataProduct[0]
-        product= $("#product_id option:selected").text();
+        datamenu = document.getElementById('menu_id').value.split('_');
+        menu_id= datamenu[0]
+        menu= $("#menu_id option:selected").text();
         quantity= $("#quantity").val();
         price= $("#sale_price").val();
         iva= $("#iva").val();
 
-        if(product_id !="" && quantity!="" && quantity>0  && price!=""){
+        if(menu_id !="" && quantity!="" && quantity>0  && price!=""){
             subtotal[cont]= parseFloat(quantity) * parseFloat(price);
             total= total+subtotal[cont];
             ivita= subtotal[cont]*iva/100;
             total_iva=total_iva+ivita;
 
-            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+product_id+'">'+product_id+'</td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
+            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+menu_id+'">'+menu_id+'</td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
 
             cont++;
 
             totals();
             assess();
             $('#details').append(row);
-            //$('#product_id option:selected').remove();
+            //$('#menu_id option:selected').remove();
             clean();
 
 
@@ -75,7 +75,7 @@
     }
 
     function clean(){
-        $("#product_id").val("");
+        $("#menu_id").val("");
         $("#quantity").val("");
         $("#sale_price").val("");
         $("#suggested_price").val("");
@@ -141,8 +141,8 @@
             // Buscar datos en la fila y asignar a campos del formulario:
             // Primera columna (0) tiene ID, segunda (1) tiene nombre, tercera (2) capacidad
             $("#contModal").val(index);
-            $("#product_idModal").val(row.find("td:eq(2)").text());
-            $("#productModal").val(row.find("td:eq(3)").text());
+            $("#menu_idModal").val(row.find("td:eq(2)").text());
+            $("#menuModal").val(row.find("td:eq(3)").text());
             $("#quantityModal").val(row.find("td:eq(4)").text());
             $("#priceModal").val(row.find("td:eq(5)").text());
             $("#ivaModal").val(row.find("td:eq(6)").text());
@@ -164,21 +164,21 @@
         // Primera columna (0) tiene ID, segunda (1) tiene nombre, tercera (2) capacidad
         contedit = $("#contModal").val();
         //id = $("#idModal").val();
-        product_id = $("#product_idModal").val();
-        product = $("#productModal").val();
+        menu_id = $("#menu_idModal").val();
+        menu = $("#menuModal").val();
         quantity = $("#quantityModal").val();
         price = $("#priceModal").val();
         iva = $("#ivaModal").val();
 
         $('#priceModal').prop("readonly", true)
 
-        if(product_id !="" && quantity!="" && quantity>0 && price!="" && price>0){
+        if(menu_id !="" && quantity!="" && quantity>0 && price!="" && price>0){
             subtotal[cont]= parseFloat(quantity) * parseFloat(price);
             total= total+subtotal[cont];
             ivita= subtotal[cont]*iva/100;
             total_iva=total_iva+ivita;
 
-            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+product_id+'">'+product_id+'</td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
+            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+menu_id+'">'+menu_id+'</td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
 
             cont++;
             deleterow(contedit);
@@ -186,9 +186,9 @@
             assess();
             $('#details').append(row);
             $('#editModal').modal('hide');
-            //$('#product_id option:selected').remove();
+            //$('#menu_id option:selected').remove();
         }else{
-            // alert("Rellene todos los campos del detalle de la compra, revise los datos del producto");
+            // alert("Rellene todos los campos del detalle de la compra, revise los datos del menuo");
             Swal.fire({
                 type: 'error',
                 //title: 'Oops...',
@@ -198,32 +198,32 @@
     }
 
     //function editing(){
-        invoice = {!! json_encode($invoiceProducts) !!};
+        invoice = {!! json_encode($invoiceMenus) !!};
         invoice.forEach((value, i) => {
             if (value['quantity'] > 0) {
 
                 id = value['id'];
-                product_id= value['idP'];
-                product= value['name'];
+                menu_id= value['idP'];
+                menu= value['name'];
                 quantity= value['quantity'];
                 price= value['price'];
                 iva= value['iva'];
                 balance = value['balance'];
 
-                if(product_id !="" && quantity!="" && quantity>0  && price!="" && price>0){
+                if(menu_id !="" && quantity!="" && quantity>0  && price!="" && price>0){
                     subtotal[cont]= parseFloat(quantity) * parseFloat(price);
                     total= total+subtotal[cont];
                     ivita= subtotal[cont]*iva/100;
                     total_iva=total_iva+ivita;
 
-                    var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+product_id+'">'+product_id+'</td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
+                    var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+menu_id+'">'+menu_id+'</td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
                     cont++;
 
                     totals();
                     assess();
                     $('#details').append(row);
 
-                    //$('#product_id option:selected').remove();
+                    //$('#menu_id option:selected').remove();
                     clean();
                 }else{
                     //alert("Rellene todos los campos del detalle para esta compra");
@@ -237,7 +237,7 @@
         });
     //}
     function detailclear(){
-        invoice = {!! json_encode($invoiceProducts) !!};
+        invoice = {!! json_encode($invoiceMenus) !!};
         invoice.forEach((value, i) => {
             if (value['quantity'] > 0) {
                 deleterow(i);

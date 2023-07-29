@@ -77,13 +77,13 @@
     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12" id="payBalanceOld">
         <div class="form-group">
             <label for="balance_old">Saldo Factura</label>
-            <input type="text" name="balance_old" id="balance_old" value="{{ old('balance_old', $invoice->balance ?? '') }}" class="form-control" placeholder="Codigo del product" readonly>
+            <input type="text" name="balance_old" id="balance_old" value="{{ old('balance_old', $invoice->balance ?? '') }}" class="form-control" placeholder="saldo" readonly>
         </div>
     </div>
     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12" id="payInvoice">
         <div class="form-group">
             <label for="pay_invoice">Pagos Factura</label>
-            <input type="text" name="pay_invoice" id="pay_invoice" value="{{ old('pay_invoice', $payInvoices ?? '') }}" class="form-control" placeholder="Codigo del product" readonly>
+            <input type="text" name="pay_invoice" id="pay_invoice" value="{{ old('pay_invoice', $payInvoices ?? '') }}" class="form-control" placeholder="saldito" readonly>
         </div>
     </div>
     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" id="payReturned">

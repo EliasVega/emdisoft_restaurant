@@ -47,7 +47,7 @@ class PurchaseController extends Controller
                 $purchases = Purchase::get();
             } else {
                 //Consulta para mostrar Purchase a roles 3 -4 -5
-                $purchases = Purchase::where('branch_id', $user->branch_id)->where('user_id', $user->id)->get();
+                $purchases = Purchase::where('branch_id', 1)->where('user_id', $user->id)->get();
             }
 
             return DataTables::of($purchases)
@@ -57,15 +57,6 @@ class PurchaseController extends Controller
             })
             ->addColumn('branch', function (Purchase $purchase) {
                 return $purchase->branch->name;
-            })
-            ->addColumn('status', function (Purchase $purchase) {
-                if ($purchase->status == 'active') {
-                    return $purchase->status == 'active' ? 'Activa' : 'Compra';
-                } elseif ($purchase->status == 'debit_note') {
-                    return $purchase->status == 'debit_note' ? 'Nota Debito' : 'Anulada';
-                } else {
-                    return $purchase->status == 'credit_note' ? 'Nota Credito' : 'Editada';
-                }
             })
             ->editColumn('created_at', function(Purchase $purchase){
                 return $purchase->created_at->format('yy-m-d: h:m');
@@ -91,25 +82,18 @@ class PurchaseController extends Controller
         $banks = Bank::get();
         $cards = Card::get();
         $branchs = Branch::get();
-        $products = Product::where('status', 'activo')->get();
+        $products = Product::where('status', 'active')->get();
         return view('admin.purchase.create',
         compact(
             'suppliers',
             'products',
-            'departments',
-            'municipalities',
             'documents',
-            'liabilities',
-            'organizations',
             'suppliers',
-            'regimes',
             'payment_forms',
             'payment_methods',
             'banks',
             'cards',
             'branchs',
-            'payments',
-            'percentages',
             'products'
         ));
     }
@@ -129,16 +113,14 @@ class PurchaseController extends Controller
             $price      = $request->price;
             $iva        = $request->iva;
             $pay        = $request->pay;
-            $branch     = $request->branch_id[0];
 
             //Crea un registro de compras
             $purchase = new Purchase();
             $purchase->user_id     = Auth::user()->id;
-            $purchase->branch_id   = $branch;
+            $purchase->branch_id   = 1;
             $purchase->supplier_id = $request->supplier_id;
             $purchase->payment_form_id = $request->payment_form_id;
             $purchase->payment_method_id = $request->payment_method_id;
-            $purchase->document    = $request->document;
             $purchase->total       = $request->total;
             $purchase->total_iva    = $request->total_iva;
             $purchase->total_pay    = $request->total_pay;
@@ -168,9 +150,8 @@ class PurchaseController extends Controller
                 $pay_purchase_Payment_method->payment_method_id  = $request->payment_method_id;
                 $pay_purchase_Payment_method->bank_id            = $request->bank_id;
                 $pay_purchase_Payment_method->card_id            = $request->card_id;
-                $pay_purchase_Payment_method->payment_id         = $request->payment_id;
-                $pay_purchase_Payment_method->payment            = $pay;
                 $pay_purchase_Payment_method->transaction        = $request->transaction;
+                $pay_purchase_Payment_method->payment            = $pay;
                 $pay_purchase_Payment_method->save();
 
                 $mp = $request->payment_method_id;
@@ -189,7 +170,6 @@ class PurchaseController extends Controller
             $cont = 0;
             //Ingresa los productos que vienen en el array
             while($cont < count($product_id)){
-                $item = $cont + 1;
 
                 $product_purchase = new Product_purchase();
                 $product_purchase->purchase_id = $purchase->id;
@@ -204,10 +184,10 @@ class PurchaseController extends Controller
                 $products = Product::where('id', $product_purchase->product_id)->first();
 
                 //$id = $products->id;
-                $utility = $products->category->utility;
+                //$utility = $products->category->utility;
                 $priceProd = $products->price;
                 $stockardex = $products->stock;
-                $priceSale = $priceProd + ($priceProd * $utility / 100);
+                //$priceSale = $priceProd + ($priceProd * $utility / 100);
                 $priceProduct = (($stockardex * $priceProd) + ($quantity[$cont] * $price[$cont])) / ($stockardex + $quantity[$cont]);
                 //Cambia el valor de venta del producto
                 //$product = Product::findOrFail($id);
@@ -218,7 +198,7 @@ class PurchaseController extends Controller
 
                 //selecciona el producto de la sucursal que sea el mismo del array
                 $branch_products = Branch_product::where('product_id', '=', $product_purchase->product_id)
-                ->where('branch_id', '=', $branch)
+                ->where('branch_id', '=', 1)
                 ->first();
 
                 if (isset($branch_products)) {
@@ -230,7 +210,7 @@ class PurchaseController extends Controller
                 } else {
                     //metodo para crear el producto en la sucursal y asignar stock
                     $branch_product = new Branch_product();
-                    $branch_product->branch_id = $branch;
+                    $branch_product->branch_id = 1;
                     $branch_product->product_id = $product_purchase->product_id;
                     $branch_product->stock = $product_purchase->quantity;
                     $branch_product->order_product = 0;
@@ -240,7 +220,7 @@ class PurchaseController extends Controller
                 //Actualiza la tabla del Kardex
                 $kardex = new Kardex();
                 $kardex->product_id = $product_id[$cont];
-                $kardex->branch_id = $purchase->branch_id;
+                $kardex->branch_id = 1;
                 $kardex->operation = 'compra';
                 $kardex->number = $purchase->id;
                 $kardex->quantity = $quantity[$cont];
@@ -290,7 +270,7 @@ class PurchaseController extends Controller
         $productPurchases = Product_purchase::from('product_purchases as pp')
         ->join('products as pro', 'pp.product_id', 'pro.id')
         ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
-        ->select('pp.id', 'pro.id as idP', 'pro.name', 'pro.stock', 'pp.quantity', 'pp.price', 'pp.iva', 'pp.subtotal', 'pur.retention')
+        ->select('pp.id', 'pro.id as idP', 'pro.name', 'pro.stock', 'pp.quantity', 'pp.price', 'pp.iva', 'pp.subtotal')
         ->where('purchase_id', $purchase->id)
         ->get();
         return view('admin.purchase.edit',
@@ -326,7 +306,6 @@ class PurchaseController extends Controller
             $iva        = $request->iva;
             $pay        = $request->pay;
             $total_pay = $request->total_pay;
-            $branch     = $request->branch_id[0];
 
             //llamado de todos los pagos y pago nuevo para la diferencia
             $payOld = Pay_purchase::where('purchase_id', $purchase->id)->sum('pay');
@@ -346,22 +325,10 @@ class PurchaseController extends Controller
             $purchase->user_id     = Auth::user()->id;
             $purchase->payment_form_id = $request->payment_form_id;
             $purchase->payment_method_id = $request->payment_method_id;
-            $purchase->document    = $request->document;
             $purchase->total       = $request->total;
             $purchase->total_iva    = $request->total_iva;
             $purchase->total_pay    = $request->total_pay;
-            if ($payOld > 0 && $pay == 0) {
-                $purchase->pay = $payOld;
-            } elseif ($pay > 0 && $payOld == 0) {
-                $purchase->pay = $pay;
-            } else {
-                $purchase->pay = $payTotal;
-            }
-            if ($payOld > $total_pay) {
-                $purchase->balance = 0;
-            } else {
-                $purchase->balance = $total_pay - $payTotal;
-            }
+            $purchase->balance = $total_pay - $payOld;
             $purchase->update();
 
             //actualizar la caja
@@ -372,7 +339,7 @@ class PurchaseController extends Controller
                 $sale_box->update();
             }
 
-
+            /*
             //inicio proceso si hay pagos
             if($pay > 0){
 
@@ -406,7 +373,7 @@ class PurchaseController extends Controller
                 $sale_box->out_purchase += $pay;
                 $sale_box->out_total += $pay;
                 $sale_box->update();
-            }
+            }*/
 
             $productPurchases = Product_purchase::where('purchase_id', $purchase->id)->get();
             foreach ($productPurchases as $key => $productPurchase) {
@@ -418,7 +385,7 @@ class PurchaseController extends Controller
 
                 //selecciona el producto de la sucursal que sea el mismo del array
                 $branch_products = Branch_product::where('product_id', '=', $productPurchase->product_id)
-                ->where('branch_id', '=', $branch)
+                ->where('branch_id', 1)
                 ->first();
                 $branch_products->stock -= $productPurchase->quantity;
                 $branch_products->update();
@@ -441,7 +408,6 @@ class PurchaseController extends Controller
             //Toma el Request del array
 
             $cont = 0;
-            $item = 1;
             //Ingresa los productos que vienen en el array
             while($cont < count($product_id)){
                 $productPurchase = Product_purchase::where('purchase_id', $purchase->id)
@@ -458,9 +424,7 @@ class PurchaseController extends Controller
                     $product_purchase->iva = $iva[$cont];
                     $product_purchase->subtotal = $subtotal;
                     $product_purchase->ivasubt = $ivasub;
-                    $product_purchase->item = $item;
                     $product_purchase->save();
-                    $item ++;
                     //selecciona el producto que viene del array
                     $products = Product::where('id', $product_purchase->product_id)->first();
 
@@ -476,7 +440,7 @@ class PurchaseController extends Controller
 
                     //selecciona el producto de la sucursal que sea el mismo del array
                     $branch_products = Branch_product::where('product_id', '=', $product_purchase->product_id)
-                    ->where('branch_id', '=', $branch)
+                    ->where('branch_id', 1)
                     ->first();
 
                     if (isset($branch_products)) {
@@ -486,7 +450,7 @@ class PurchaseController extends Controller
                     } else {
                         //metodo para crear el producto en la sucursal y asignar stock
                         $branch_product = new Branch_product();
-                        $branch_product->branch_id = $branch;
+                        $branch_product->branch_id = 1;
                         $branch_product->product_id = $product_purchase->product_id;
                         $branch_product->stock = $product_purchase->quantity;
                         $branch_product->order_product = 0;
@@ -511,13 +475,11 @@ class PurchaseController extends Controller
                         $productPurchase->iva = $iva[$cont];
                         $productPurchase->subtotal = $subtotal;
                         $productPurchase->ivasubt = $ivasub;
-                        $productPurchase->item = $item;
                         $productPurchase->update();
-                        $item ++;
                     }
                     //selecciona el producto de la sucursal que sea el mismo del array
                     $branch_products = Branch_product::where('product_id', '=', $productPurchase->product_id)
-                    ->where('branch_id', '=', $branch)
+                    ->where('branch_id', 1)
                     ->first();
                     $branch_products->stock +=  $quantity[$cont];
                     $branch_products->update();
@@ -549,13 +511,8 @@ class PurchaseController extends Controller
         catch(Exception $e){
             DB::rollback();
         }
-        if ($payOld > $total_pay) {
-            Alert::success('Compra','Editada Satisfactoriamente. Con creacion de anticipo de Proveedor');
-            return redirect('purchase');
-
-        } else {
             return redirect("purchase")->with('success', 'Compra Editada Satisfactoriamente');
-        }
+
     }
 
     /**
@@ -579,11 +536,9 @@ class PurchaseController extends Controller
 
         $purchase = Purchase::findOrFail($id);
         \session()->put('purchase', $purchase->id, 60 * 24 * 365);
-        \session()->put('due_date', $purchase->due_date, 60 * 24 *365);
         \session()->put('total', $purchase->total, 60 * 24 *365);
         \session()->put('total_iva', $purchase->total_iva, 60 * 24 *365);
         \session()->put('total_pay', $purchase->total_Pay, 60 * 24 *365);
-        \session()->put('status', $purchase->status, 60 * 24 *365);
 
         return redirect('pay_purchase/create');
      }

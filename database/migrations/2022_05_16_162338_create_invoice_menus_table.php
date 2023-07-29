@@ -13,14 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('pay_invoices', function (Blueprint $table) {
+        Schema::create('invoice_menus', function (Blueprint $table) {
             $table->id();
 
-            $table->decimal('pay',10,2);
+            $table->decimal('quantity', 10, 2);
+            $table->decimal('price', 11, 2);
+            $table->decimal('iva', 10, 2);
+            $table->decimal('subtotal', 11, 2);
+            $table->decimal('ivasubt', 11, 2);
 
-            $table->foreignId('user_id')->constrained()->onUpdate('cascade');
-            $table->foreignId('branch_id')->constrained()->onUpdate('cascade');
             $table->foreignId('invoice_id')->constrained()->onUpdate('cascade');
+            $table->foreignId('menu_id')->constrained()->onUpdate('cascade');
 
             $table->timestamps();
         });
@@ -33,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pay_invoices');
+        Schema::dropIfExists('invoice_menus');
     }
 };

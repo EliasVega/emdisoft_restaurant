@@ -1,3 +1,4 @@
+
 <script>
     /*$(document).ready(function(){
             alert('estoy funcionando correctamanete empresa');
@@ -21,14 +22,13 @@
     //form invoice
     //$("#save").hide();
     //form pay
+    $("#payPayment").hide();
     $("#cash").hide();
     $("#transfer").hide();
     $("#nequi").hide();
     $("#card1").hide();
     $("#card2").hide();
     $("#noDefined").hide();
-    $("#transvenped").hide();
-    $("#payPayment").hide();
 
     $("#payPay").hide();
     $("#payTransaction").hide();
@@ -40,22 +40,22 @@
         $("#payment_form_id").change(function(){
             form = $("#payment_form_id").val();
             if(form == 1){
-                $("#noDefined").show();
+                $("#payPayment").hide();
                 $("#cash").show();
                 $("#transfer").show();
                 $("#nequi").show();
                 $("#card1").show();
                 $("#card2").show();
                 $("#mpay").hide();
-                $("#payPayment").hide();
+                $("#noDefined").show();
             }else{
                 $("#payPayment").show();
-                $("#noDefined").hide();
                 $("#cash").hide();
                 $("#transfer").hide();
                 $("#nequi").hide();
                 $("#card1").hide();
                 $("#card2").hide();
+                $("#noDefined").hide();
                 $("#mpay").hide();
                 $("#payment_method_id").val(1);
 
@@ -203,6 +203,9 @@
         ttp = parseFloat($("#total_pay").val())
         abn = parseFloat($("#pay").val())
         balancey = ttp - abn;
+
+        $("#returned").val(balancey);
+
         if (ttp >= abn) {
             $("#returned").val(balancey);
         } else {

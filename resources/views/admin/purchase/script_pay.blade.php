@@ -22,14 +22,12 @@
     $("#save").hide();
     //form pay
     $("#addPays").hide();
-    $("#noDefined").hide();
     $("#cash").hide();
     $("#transfer").hide();
     $("#nequi").hide();
     $("#card1").hide();
     $("#card2").hide();
-
-    $("#transvenped").hide();
+    $("#noDefined").hide();
 
     $("#payi").hide();
     $("#abpaymenty").hide();

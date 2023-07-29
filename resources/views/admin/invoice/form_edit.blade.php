@@ -17,13 +17,13 @@
     <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
         <div class="box-danger">
             <label class="form-control-label">
-                <strong>Agregar Productos</strong>
+                <strong>Agregar Menus</strong>
             </label>
         </div>
     </div>
-    <div class="col-lg-2 col-md-2 col-sm-6 col-xs-12" id="editIdProduct">
+    <div class="col-lg-2 col-md-2 col-sm-6 col-xs-12" id="editIdmenu">
         <div class="form-group">
-            <label class="form-control-label" for="idP">ID Producto</label>
+            <label class="form-control-label" for="idP">ID menu</label>
             <input type="number" id="idP" name="idP" class="form-control" placeholder="Id Prod." disabled>
         </div>
     </div>
@@ -44,16 +44,16 @@
     </div>
     <div class="clearfix">
     </div>
-    <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" id="addProduct">
+    <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12" id="addmenu">
         <div class="form-group row">
-            <label class="form-control-label" for="product_id">Producto</label>
-            <select name="product_id" class="form-control selectpicker" id="product_id"
+            <label class="form-control-label" for="menu_id">Menu</label>
+            <select name="menu_id" class="form-control selectpicker" id="menu_id"
                 data-live-search="true">
-                <option value="0" disabled selected>Seleccionar el Producto</option>
-                @foreach($products as $product)
+                <option value="0" disabled selected>Seleccionar Menu</option>
+                @foreach($menus as $menu)
                 <option
-                    value="{{ $product->id }}_{{ $product->sale_price }}_{{ $product->iva }}">
-                    {{ $product->name }}</option>
+                    value="{{ $menu->id }}_{{ $menu->sale_price }}_{{ $menu->iva }}">
+                    {{ $menu->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -92,7 +92,7 @@
                         <th>Eliminar</th>
                         <th>Editar</th>
                         <th>Id</th>
-                        <th>Producto</th>
+                        <th>Menu</th>
                         <th>Cantidad</th>
                         <th>precio ($)</th>
                         <th>iva ($)</th>

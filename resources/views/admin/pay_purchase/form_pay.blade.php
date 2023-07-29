@@ -122,18 +122,6 @@
             </select>
         </div>
     </div>
-    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" id="paymenty">
-        <div class="form-group">
-            <label for="payment_id">Anticipo</label>
-            <select name="payment_id" class="form-control selectpicker" id="payment_id"
-                data-live-search="true">
-                <option value="" disabled selected>seleccionar...</option>
-                @foreach($payments as $pay)
-                <option value="{{ $pay->id }}_{{ $pay->balance }}">{{ $pay->supplier->name }}-- {{ $pay->balance }}</option>
-                @endforeach
-            </select>
-        </div>
-    </div>
     <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
         <div class="box-danger">
             <label class="form-control-label">

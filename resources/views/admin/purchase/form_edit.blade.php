@@ -86,6 +86,7 @@
                         <th>Producto</th>
                         <th>Cantidad</th>
                         <th>precio ($)</th>
+                        <th>Iva%</th>
                         <th>SubTotal ($)</th>
                     </tr>
                 </thead>

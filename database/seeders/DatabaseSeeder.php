@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CustomersTableSeeder::class);
         $this->call(ServiceTableSeeder::class);
         $this->call(MenuSeeder::class);
+        $this->call(MenuProductSeeder::class);
         $this->call(RestaurantTableSeeder::class);
     }
 }
