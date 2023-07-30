@@ -6,8 +6,8 @@
 <main class="main">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <h5>Listado de Ventas
-                <a href="order/create" class="btn btn-celeste btn-sm"><i class="fa fa-plus mr-2"></i> Agregar Pedido</a>
+            <h5>Listado de Comandas
+                <a href="order/create" class="btn btn-celeste btn-sm"><i class="fa fa-plus mr-2"></i> Nueva Comanda</a>
                 <a href="{{ route('branch.index') }}" class="btn btn-bluR btn-sm"><i class="fas fa-undo-alt mr-2"></i>Regresar</a>
                 <a href="{{ route('customer.index') }}" class="btn btn-gris btn-sm"><i class="fas fa-undo-alt mr-2"></i>Clientes</a>
             </h5>

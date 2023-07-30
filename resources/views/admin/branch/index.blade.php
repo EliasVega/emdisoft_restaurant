@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <h3>Listado de Sucursales
-                    <a href="branch/create"><button class="btn btn-celeste"><i class="fa fa-plus mr-2"></i> Agregar Sucursal</button></a>
+                    <a href="#/create"><button class="btn btn-celeste"><i class="fa fa-plus mr-2"></i> Agregar Sucursal</button></a>
                     <a href="{{ route('product.index') }}" class="btn btn-celeste"><i class="fas fa-undo-alt mr-2"></i>Inventario General</a>
                 </h3>
             </div>

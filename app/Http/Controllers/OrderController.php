@@ -5,27 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
-use App\Models\Advance;
-use App\Models\Bank;
-use App\Models\Branch_product;
-use App\Models\Card;
 use App\Models\Company;
-use App\Models\Customer;
-use App\Models\Department;
 use App\Models\Document;
-use App\Models\Liability;
 use App\Models\Menu;
 use App\Models\MenuOrder;
-use App\Models\Municipality;
-use App\Models\Order_product;
-use App\Models\Organization;
-use App\Models\Payment_form;
-use App\Models\Payment_method;
-use App\Models\Pay_order;
-use App\Models\Pay_order_payment_method;
-use App\Models\Percentage;
-use App\Models\Product;
-use App\Models\Regime;
 use App\Models\RestaurantTable;
 use App\Models\Sale_box;
 use Carbon\Carbon;
@@ -101,6 +84,12 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
+        $ordered = Order::where('restaurant_table_id', $request->restaurant_table_id)->where('status', 'pendient')->get();
+
+        if (isset($ordered)) {
+            Alert::success('Error','Esta mesa ya tiene una comanda abierta');
+            return redirect('order');
+        }
         try{
             DB::beginTransaction();
             //Obteniendo variables
@@ -379,8 +368,9 @@ class OrderController extends Controller
     public function orderPost(Request $request)
     {
         sleep(3);
-        $ord = Order::select("id")->latest()->first();
-        $ord ++;
+        $ordered = Order::latest()->first();
+        $ord = $ordered->id;
+        //$ord ++;
         $order = Order::where('id', $ord)->first();
         $menuOrders = MenuOrder::where('order_id', $order->id)->where('quantity', '>', 0)->get();
         $company = Company::where('id', 1)->first();

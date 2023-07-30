@@ -309,32 +309,7 @@ body {
  .requerido:after{
      content:"*"; color: red;
  }
-/*
- .celeste{
-     background-color: #150080 !important;
-     color: #FFFFFF !important;
-     font-size: 24px !important;
+
+ .rdcolor {
+    background-color: #007ff5;
  }
-
-.rojo{
-    background-color: #ff0404 !important;
-    color: #FFFFFF !important;
-    font-size: 24px !important;
-}
-
-.gris{
-    background-color: #fafafa !important;
-    font-size: 24px !important;
-}
-
-.blanco{
-    font-size: 24px !important;
-}
-
-.tpdf{
-    font-size: 1.5rem;
-}
-
-.th-gris{
-    background: #ffffff !important;
-}*/
