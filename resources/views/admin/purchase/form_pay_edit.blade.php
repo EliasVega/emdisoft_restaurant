@@ -74,12 +74,6 @@
             <input type="number" id="balance" name="balance" value="0" class="form-control gris" disabled pattern="[0-9]{0,15}">
         </div>
     </div>
-    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12" id="payBalanceOld">
-        <div class="form-group">
-            <label for="balance_old">Saldo Factura</label>
-            <input type="text" name="balance_old" id="balance_old" value="{{ old('balance_old', $purchase->balance ?? '') }}" class="form-control" placeholder="Codigo del product" readonly>
-        </div>
-    </div>
     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" id="payReturned">
         <div class="form-group">
             <label class="form-control-label" for="returned">Saldo</label>
@@ -91,7 +85,7 @@
         <div class="form-group">
             <label class="form-control-label requerido" for="pay">Abono</label>
             <input type="number" id="pay" name="pay" value="0"
-                class="form-control blanco" placeholder="pay" pattern="[0-9]{0,15}">
+                class="form-control blanco" pattern="[0-9]{0,15}">
         </div>
     </div>
     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12" id="payTransaction">

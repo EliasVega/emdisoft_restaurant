@@ -19,7 +19,7 @@
         });
     });
     //form invoice
-    //$("#save").hide();
+    $("#save").hide();
     //form pay
     $("#cash").hide();
     $("#transfer").hide();
@@ -34,10 +34,10 @@
     $("#payTransaction").hide();
     $("#payBank").hide();
     $("#payCard").hide();
-    $("#payment_form_id").val(1);
-    $("#payment_method_id").val(1);
+    //$("#payment_form_id").val(1);
+    //$("#payment_method_id").val(1);
 
-    /*$(document).ready(function(){
+    $(document).ready(function(){
         $("#payment_form_id").change(function(){
             form = $("#payment_form_id").val();
             if(form == 1){
@@ -50,7 +50,7 @@
                 $("#card2").show();
                 $("#mpay").hide();
                 $("#payPayment").hide();
-            }else{
+            }else if(form == 2){
                 $("#payPayment").show();
                 $("#noDefined").hide();
                 $("#cash").hide();
@@ -70,7 +70,7 @@
                 $("#advance").val(0);
             }
         });
-    });*/
+    });
     $(document).ready(function(){
         $("#payPays").click(function(){
             see();
@@ -88,10 +88,11 @@
     }
     $(document).ready(function(){
         $("#cash").click(function(){
-            totalInvoice = $("#balance").val();
+
+            totalInvoice = $("#balance").val();/*
             totalPay = $("#pay_purchase").val();
-            tpay = totalInvoice - totalPay;
-            $("#pay").val(tpay);
+            tpay = totalInvoice - totalPay;*/
+            $("#pay").val(totalInvoice);
             payCash();
         });
     });

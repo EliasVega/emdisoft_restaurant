@@ -305,7 +305,9 @@ class PurchaseController extends Controller
             $price      = $request->price;
             $iva        = $request->iva;
             $pay        = $request->pay;
+
             $total_pay = $request->total_pay;
+            $payment_method = $request->payment_method_id;
 
             //llamado de todos los pagos y pago nuevo para la diferencia
             $payOld = Pay_purchase::where('purchase_id', $purchase->id)->sum('pay');
@@ -339,41 +341,78 @@ class PurchaseController extends Controller
                 $sale_box->update();
             }
 
-            /*
+
+
+
+
             //inicio proceso si hay pagos
             if($pay > 0){
-
-                //si no hay pago anticipado se crea un pago a compra
-                $pay_purchase = new Pay_purchase();
-                $pay_purchase->pay = $pay;
-                $pay_purchase->balance_purchase = $purchase->balance - $pay;
-                $pay_purchase->user_id = $purchase->user_id;
-                $pay_purchase->branch_id = $purchase->branch_id;
-                $pay_purchase->purchase_id = $purchase->id;
-                $pay_purchase->save();
-
-                //metodo que registra el pago a compra y el methodo de pago
-                $pay_purchase_Payment_method = new Pay_purchase_payment_method();
-                $pay_purchase_Payment_method->pay_purchase_id = $pay_purchase->id;
-                $pay_purchase_Payment_method->payment_method_id = $request->payment_method_id;
-                $pay_purchase_Payment_method->bank_id = $request->bank_id;
-                $pay_purchase_Payment_method->card_id = $request->card_id;
-                $pay_purchase_Payment_method->payment_id = $request->payment_id;
-                $pay_purchase_Payment_method->payment = $pay;
-                $pay_purchase_Payment_method->transaction = $request->transaction;
-                $pay_purchase_Payment_method->save();
-
-                $mp = $request->payment_method_id;
-                //metodo para actualizar la caja
                 $sale_box = Sale_box::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
-                if($mp == 10){
-                    $sale_box->out_purchase_cash += $pay;
-                    $sale_box->departure += $pay;
+                $payPurchase = Pay_purchase::where('purchase_id', $purchase->id)->first();
+                if (isset($payPurchase)) {
+                    $payPurchase->pay = $pay;
+                    $payPurchase->balance_purchase = 0;
+                    $payPurchase->update();
+
+                    $payPurchase_paymentMethod = Pay_purchase_payment_method::where('pay_purchase_id', $payPurchase->id)->first();
+
+
+                    $mp = $payPurchase_paymentMethod->payment_method_id;
+                    //metodo para actualizar la caja
+                    if($mp == 10){
+                        $sale_box->out_purchase_cash -= $payPurchase_paymentMethod->payment;
+                        $sale_box->departure -= $payPurchase_paymentMethod->payment;
+                    }
+                    $sale_box->out_purchase -= $payPurchase_paymentMethod->payment;
+                    $sale_box->out_total -= $payPurchase_paymentMethod->payment;
+                    $sale_box->update();
+
+                    $payPurchase_paymentMethod->payment = $pay;
+                    $payPurchase_paymentMethod->payment_method_id = $payment_method;
+                    $payPurchase_paymentMethod->update();
+
+                    $mp = $payment_method;
+                    //metodo para actualizar la caja
+                    if($mp == 10){
+                        $sale_box->out_purchase_cash += $payPurchase_paymentMethod->payment;
+                        $sale_box->departure += $payPurchase_paymentMethod->payment;
+                    }
+                    $sale_box->out_purchase += $payPurchase_paymentMethod->payment;
+                    $sale_box->out_total += $payPurchase_paymentMethod->payment;
+                    $sale_box->update();
+                } else {
+                    //si no hay pago anticipado se crea un pago a compra
+                    $pay_purchase = new Pay_purchase();
+                    $pay_purchase->pay = $pay;
+                    $pay_purchase->balance_purchase = $purchase->balance - $pay;
+                    $pay_purchase->user_id = $purchase->user_id;
+                    $pay_purchase->branch_id = $purchase->branch_id;
+                    $pay_purchase->purchase_id = $purchase->id;
+                    $pay_purchase->save();
+
+                    //metodo que registra el pago a compra y el methodo de pago
+                    $pay_purchase_Payment_method = new Pay_purchase_payment_method();
+                    $pay_purchase_Payment_method->pay_purchase_id = $pay_purchase->id;
+                    $pay_purchase_Payment_method->payment_method_id = $request->payment_method_id;
+                    $pay_purchase_Payment_method->bank_id = $request->bank_id;
+                    $pay_purchase_Payment_method->card_id = $request->card_id;
+                    $pay_purchase_Payment_method->payment_id = $request->payment_id;
+                    $pay_purchase_Payment_method->payment = $pay;
+                    $pay_purchase_Payment_method->transaction = $request->transaction;
+                    $pay_purchase_Payment_method->save();
+
+                    $mp = $request->payment_method_id;
+                    //metodo para actualizar la caja
+                    $sale_box = Sale_box::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
+                    if($mp == 10){
+                        $sale_box->out_purchase_cash += $pay;
+                        $sale_box->departure += $pay;
+                    }
+                    $sale_box->out_purchase += $pay;
+                    $sale_box->out_total += $pay;
+                    $sale_box->update();
                 }
-                $sale_box->out_purchase += $pay;
-                $sale_box->out_total += $pay;
-                $sale_box->update();
-            }*/
+            }
 
             $productPurchases = Product_purchase::where('purchase_id', $purchase->id)->get();
             foreach ($productPurchases as $key => $productPurchase) {
