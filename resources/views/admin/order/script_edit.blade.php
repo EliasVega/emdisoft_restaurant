@@ -127,7 +127,7 @@
         order.forEach((value, i) => {
             if (value['quantity'] > 0) {
 
-                menu_id = value['id'];
+                menu_id = value['idM'];
                 menu= value['name'];
                 quantity= value['quantity'];
                 price= value['price'];

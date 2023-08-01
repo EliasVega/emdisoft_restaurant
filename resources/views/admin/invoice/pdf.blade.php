@@ -17,12 +17,12 @@
             <div class="empresa">
                 <p><strong id="nombre">{{  $company->name  }}</strong></p>
 
-                <p id="datos">Nit: {{ $company->nit }} -- {{ $company->dv }} --  {{ $company->liability->name }} -- <br> {{ $company->regime->name }} - {{ $company->organization->name }} <br>Resolucion N°. {{ $indicators->resolution }} Prefijo: {{ $indicators->prefix }} Rango {{ $indicators->from }} <br> al {{ $indicators->to }} -- Vigencia: desde {{ $indicators->date_from }} hasta {{ $indicators->date_to }} <br> {{ $invoice->branch->municipality->name }} -- {{ $invoice->branch->department->name }}  <br> --Sucursal - {{ $invoice->branch->name }} -- {{ $invoice->branch->address }} <br> Email: {{ $company->email }}
+                <p id="datos">Nit: {{ $company->nit }} -- {{ $company->dv }} {{ $invoice->branch->municipality->name }} -- {{ $invoice->branch->department->name }}  <br> --Sucursal - {{ $invoice->branch->name }} -- {{ $invoice->branch->address }} <br> Email: {{ $company->email }}
                     </p>
             </div>
             <!--DATOS FACTURA -->
             <div id="factura">
-                <p> <h4>DOCUMENTO <br> DE VENTA <br> <strong id="numfact">N°.{{ $indicators->prefix }} - {{ $invoice->id }}</strong>  </h4>
+                <p> <h4>DOCUMENTO <br> DE VENTA <br> <strong id="numfact">N°. {{ $invoice->id }}</strong>  </h4>
 
                 </p>
                 <p> <h4>FECHA DE EMISION <br> <strong id="detosfact">{{ date('d-m-Y', strtotime($invoice->created_at)) }}</strong>  </h4>
@@ -85,12 +85,12 @@
                             </tr>
                         </thead>
                         <tbody class="detalle">
-                            @foreach ($invoice_menus as $ip)
+                            @foreach ($invoiceMenus as $invoiceMenu)
                             <tr>
-                                <td id="ccent">{{ number_format($ip->quantity,2) }}</td>
-                                <td>{{ $ip->menu->name }}</td>
-                                <td class="tdder">${{ number_format($ip->price,2)}}</td>
-                                <td class="tdder">${{number_format($ip->quantity * $ip->price,2)}}</td>
+                                <td id="ccent">{{ number_format($invoiceMenu->quantity,2) }}</td>
+                                <td>{{ $invoiceMenu->menu->name }}</td>
+                                <td class="tdder">${{ number_format($invoiceMenu->price,2)}}</td>
+                                <td class="tdder">${{number_format($invoiceMenu->quantity * $invoiceMenu->price,2)}}</td>
                             </tr>
                             @endforeach
                         </tbody>

@@ -84,8 +84,8 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        $ordered = Order::where('restaurant_table_id', $request->restaurant_table_id)->where('status', 'pendient')->get();
-
+        $table = $request->restaurant_table_id;
+        $ordered = Order::where('restaurant_table_id', $table)->where('status', 'pendiente')->first();
         if (isset($ordered)) {
             Alert::success('Error','Esta mesa ya tiene una comanda abierta');
             return redirect('order');
@@ -173,7 +173,7 @@ class OrderController extends Controller
         $menuOrders = MenuOrder::from('menu_orders as mo')
         ->join('menus as men', 'mo.menu_id', 'men.id')
         ->join('orders as ord', 'mo.order_id', 'ord.id')
-        ->select('mo.id', 'men.name', 'mo.quantity', 'mo.price', 'mo.iva', 'mo.subtotal')
+        ->select('mo.id', 'men.id as idM', 'men.name', 'mo.quantity', 'mo.price', 'mo.iva', 'mo.subtotal')
         ->where('order_id', $order->id)
         ->get();
         return view('admin.order.edit', compact(
@@ -198,8 +198,6 @@ class OrderController extends Controller
         try{
             DB::beginTransaction();
             //llamado a variables
-            $idP          = $request->idP;
-
             $menu_id = $request->menu_id;
             $quantity   = $request->quantity;
             $price      = $request->price;
@@ -317,17 +315,11 @@ class OrderController extends Controller
     {
     $orders = Order::findOrFail($id);
     \session()->put('order', $orders->id, 60 * 24 * 365);
-    \session()->put('branch_id', $orders->branch_id, 60 * 24 *365);
-    \session()->put('customer_id', $orders->customer_id, 60 * 24 *365);
-    \session()->put('payment_form_id', $orders->payment_form_id, 60 * 24 *365);
-    \session()->put('payment_method_id', $orders->payment_method_id, 60 * 24 *365);
-    \session()->put('retention_id', $orders->retention_id, 60 * 24 *365);
-    \session()->put('due_date', $orders->due_date, 60 * 24 *365);
     \session()->put('total', $orders->total, 60 * 24 *365);
     \session()->put('total_iva', $orders->total_iva, 60 * 24 *365);
     \session()->put('total_pay', $orders->total_pay, 60 * 24 *365);
     \session()->put('status', $orders->estado, 60 * 24 *365);
-    return redirect('order_product/create');
+    return redirect('menuOrder/create');
     }
 
     public function show_pdf_order(Request $request,$id)

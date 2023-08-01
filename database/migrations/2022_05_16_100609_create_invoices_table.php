@@ -19,6 +19,8 @@ return new class extends Migration
             $table->decimal('total', 20, 2);
             $table->decimal('total_iva', 11, 2);
             $table->decimal('total_pay', 20, 2);
+            $table->decimal('pay', 20, 2);
+            $table->decimal('balance', 20, 2);
             $table->string('note', 255)->nullable();
 
             $table->foreignId('user_id')->constrained();

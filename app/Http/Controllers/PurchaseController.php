@@ -124,8 +124,8 @@ class PurchaseController extends Controller
             $purchase->total       = $request->total;
             $purchase->total_iva    = $request->total_iva;
             $purchase->total_pay    = $request->total_pay;
-            $purchase->pay         = $pay;
-            $purchase->balance     = $request->total_pay - $pay;
+            $purchase->pay         = $request->total_pay;
+            $purchase->balance     = 0;
             $purchase->save();
 
             $sale_box = Sale_box::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
@@ -330,7 +330,8 @@ class PurchaseController extends Controller
             $purchase->total       = $request->total;
             $purchase->total_iva    = $request->total_iva;
             $purchase->total_pay    = $request->total_pay;
-            $purchase->balance = $total_pay - $payOld;
+            $purchase->pay = $request->total_pay;
+            $purchase->balance = 0;
             $purchase->update();
 
             //actualizar la caja

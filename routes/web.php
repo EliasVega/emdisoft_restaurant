@@ -17,6 +17,7 @@ use App\Http\Controllers\IndicatorController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\KardexController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\MenuOrderController;
 use App\Http\Controllers\MunicipalityController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderProductController;
@@ -104,6 +105,7 @@ Route::resource('cash_in', CashInController::class);
 Route::resource('menu', MenuController::class);
 Route::resource('cash_receipt', CashReceiptController::class);
 Route::resource('restaurantTable', RestaurantTableController::class);
+Route::resource('menuOrder', MenuOrderController::class);
 
 Route::get('branch/create/{id}', [BranchController::class, 'getMunicipalities']);
 Route::get('show_purchase/{id}', [BranchController::class, 'show_purchase'])->name('show_purchase');

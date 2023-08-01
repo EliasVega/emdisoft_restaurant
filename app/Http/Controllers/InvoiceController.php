@@ -227,14 +227,13 @@ class InvoiceController extends Controller
      * @param  \App\Models\Invoice  $invoice
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Invoice $invoice)
     {
-        $invoice = Invoice::where('id', $id)->first();
 
         /*mostrar detalles*/
-        $invoice_products = Invoice_product::where('invoice_id', $id)->where('quantity', '>', 0)->get();
+        $invoiceMenus = InvoiceMenu::where('invoice_id', $invoice->id)->where('quantity', '>', 0)->get();
 
-        return view('admin.invoice.show', compact('invoice', 'invoice_products'));
+        return view('admin.invoice.show', compact('invoice', 'invoiceMenus'));
     }
 
      public function edit(Invoice $invoice)
@@ -503,13 +502,13 @@ class InvoiceController extends Controller
     public function show_pdf_invoice(Request $request, $id)
     {
         $invoice = Invoice::findOrFail($id);
-        $invoice_products = Invoice_product::where('invoice_id', $id)->where('quantity', '>', 0)->get();
+        $invoiceMenus = InvoiceMenu::where('invoice_id', $id)->where('quantity', '>', 0)->get();
         $company = Company::findOrFail(1);
 
         $days = $invoice->created_at->diffInDays($invoice->fecven);
         $invoicepdf = "FACT-". $invoice->document;
         $logo = './imagenes/logos'.$company->logo;
-        $view = \view('admin.invoice.pdf', compact('invoice', 'days', 'invoice_products', 'company', 'logo'));
+        $view = \view('admin.invoice.pdf', compact('invoice', 'days', 'invoiceMenus', 'company', 'logo'));
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         //$pdf->setPaper ( 'A7' , 'landscape' );
@@ -523,13 +522,13 @@ class InvoiceController extends Controller
         sleep(2);
         $inv      = count(Invoice::get());
         $invoice = Invoice::where('id', $inv)->first();
-        $invoice_products = Invoice_product::where('invoice_id', $invoice->id)->where('quantity', '>', 0)->get();
+        $invoiceMenus = InvoiceMenu::where('invoice_id', $invoice->id)->where('quantity', '>', 0)->get();
         $company = Company::findOrFail(1);
 
         $days = $invoice->created_at->diffInDays($invoice->fecven);
         $invoicepdf = "FACT-". $invoice->document;
         $logo = './imagenes/logos'.$company->logo;
-        $view = \view('admin.invoice.pdf', compact('invoice', 'days', 'invoice_products', 'company', 'logo', 'indicators'));
+        $view = \view('admin.invoice.pdf', compact('invoice', 'days', 'invoiceMenus_products', 'company', 'logo'));
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         //$pdf->setPaper ( 'A7' , 'landscape' );
@@ -541,13 +540,13 @@ class InvoiceController extends Controller
     public function post(Request $request, $id)
     {
         $invoice = Invoice::findOrFail($id);
-        $invoice_products = Invoice_product::where('invoice_id', $id)->where('quantity', '>', 0)->get();
+        $invoiceMenus = InvoiceMenu::where('invoice_id', $id)->where('quantity', '>', 0)->get();
         $company = Company::where('id', 1)->first();
 
         $days = $invoice->created_at->diffInDays($invoice->fecven);
         $invoicepdf = "FACT-". $invoice->document;
         $logo = './imagenes/logos'.$company->logo;
-        $view = \view('admin.invoice.post', compact('invoice', 'days', 'invoice_products', 'company', 'logo', 'indicators'))->render();
+        $view = \view('admin.invoice.post', compact('invoice', 'days', 'invoiceMenus', 'company', 'logo'))->render();
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         $pdf->setPaper (array(0,0,226.76,497.64), 'portrait');
@@ -561,13 +560,13 @@ class InvoiceController extends Controller
         sleep(3);
         $inv      = count(Invoice::get());
         $invoice = Invoice::where('id', $inv)->first();
-        $invoice_products = Invoice_product::where('invoice_id', $invoice->id)->where('quantity', '>', 0)->get();
+        $invoiceMenus = InvoiceMenu::where('invoice_id', $invoice->id)->where('quantity', '>', 0)->get();
         $company = Company::where('id', 1)->first();
 
         $days = $invoice->created_at->diffInDays($invoice->fecven);
         $invoicepdf = "FACT-". $invoice->document;
         $logo = './imagenes/logos'.$company->logo;
-        $view = \view('admin.invoice.post', compact('invoice', 'days', 'invoice_products', 'company', 'logo', 'indicators'))->render();
+        $view = \view('admin.invoice.post', compact('invoice', 'days', 'invoiceMenus', 'company', 'logo'))->render();
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         $pdf->setPaper (array(0,0,226.76,497.64), 'portrait');

@@ -94,12 +94,12 @@
 
                         </tfoot>
                         <tbody>
-                            @foreach($invoice_menus as $ip)
+                            @foreach($invoiceMenus as $invoiceMenu)
                                 <tr>
-                                    <td>{{ $ip->menu->name }}</td>
-                                    <td>${{ $ip->price }}</td>
-                                    <td class="tdder">{{ $ip->quantity }}</td>
-                                    <td class="tdder">{{ number_format($ip->subtotal, 2) }}</td>
+                                    <td>{{ $invoiceMenu->menu->name }}</td>
+                                    <td>${{ $invoiceMenu->price }}</td>
+                                    <td class="tdder">{{ $invoiceMenu->quantity }}</td>
+                                    <td class="tdder">{{ number_format($invoiceMenu->subtotal, 2) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

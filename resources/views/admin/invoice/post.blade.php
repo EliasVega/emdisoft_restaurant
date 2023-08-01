@@ -23,7 +23,7 @@
             <div class="empresa">
                 <p><strong id="nombre">{{  $company->name  }}</strong></p>
 
-                <p id="datos">Nit: {{ $company->nit }} - {{ $company->dv }} - {{ $company->regime->name }} - {{ $company->organization->name }} - {{ $invoice->branch->address }}- {{ $invoice->branch->phone }} - {{ $company->municipality->name }} - {{ $company->department->name }} <br> Email: {{ $invoice->branch->email }}
+                <p id="datos">Nit: {{ $company->nit }} - {{ $company->dv }} } - {{ $invoice->branch->address }}- {{ $invoice->branch->phone }} - {{ $company->municipality->name }} - {{ $company->department->name }} <br> Email: {{ $invoice->branch->email }}
                     </p>
             </div>
             <!--DATOS FACTURA -->
@@ -66,12 +66,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($invoice_menus as $ip)
+                    @foreach ($invoiceMenus as $invoiceMenu)
                     <tr>
-                        <td>{{ $ip->menu->name }}</td>
-                        <td id="ccent">{{ number_format($ip->quantity,2) }}</td>
-                        <td class="tdder">${{ number_format($ip->price,2)}}</td>
-                        <td class="tdder">${{number_format($ip->quantity * $ip->price,2)}}</td>
+                        <td>{{ $invoiceMenu->menu->name }}</td>
+                        <td id="ccent">{{ number_format($invoiceMenu->quantity,2) }}</td>
+                        <td class="tdder">${{ number_format($invoiceMenu->price,2)}}</td>
+                        <td class="tdder">${{number_format($invoiceMenu->quantity * $invoiceMenu->price,2)}}</td>
                     </tr>
                     @endforeach
                 </tbody>

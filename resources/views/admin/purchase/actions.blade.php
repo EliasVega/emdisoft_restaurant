@@ -4,9 +4,11 @@
 <a href="{{ route('purchase.show', $id) }}" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Ver Compra">
     <i class="far fa-eye"></i>
 </a>
-<a href="{{ route('show_pay_purchase', $id) }}" class="btn btn-ver" data-toggle="tooltip" data-placement="top" title="Agregar Abono" >
-    <i class="fas fa-file-invoice-dollar"></i>
-</a>
+@if ($balance > 0)
+    <a href="{{ route('show_pay_purchase', $id) }}" class="btn btn-ver" data-toggle="tooltip"
+    data-placement="top" title="Agregar Abono" ><i class="fas fa-file-invoice-dollar"></i></a>
+@endif
+
 <a href="{{ route('show_pdf_purchase', $id) }}" class="btn btn-red" target="_blank" data-toggle="tooltip" data-placement="top" title="Compra pdf">
     <i class="fas fa-file-pdf"></i>
 </a>

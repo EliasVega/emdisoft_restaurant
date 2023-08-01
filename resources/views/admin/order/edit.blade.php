@@ -26,11 +26,15 @@
     </div>
     {!!Form::model($order, ['method'=>'PATCH','route'=>['order.update', $order->id]])!!}
     {!!Form::token()!!}
-    <div class="row m-1">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            @include('admin/order.form_edit')
+        <div class="row m-1">
+            <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                @include('admin/order.form_table')
+            </div>
+
+            <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+                @include('admin/order.form_edit')
+            </div>
         </div>
-    </div>
     {!!Form::close()!!}
     @include('admin/order.editmodal')
 @endsection

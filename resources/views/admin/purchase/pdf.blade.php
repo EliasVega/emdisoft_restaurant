@@ -18,7 +18,7 @@
             <div class="empresa">
                 <p><strong id="nombre">{{  $company->name  }}</strong></p>
 
-                <p id="datos">Nit: {{ $company->nit }} -- {{ $company->dv }} --  {{ $company->liability->name }} -- <br> R. fiscal. {{ $company->regime->name }}  <br> {{ $company->organization->name }}  {{ $company->address }} <br> {{ $company->municipality->name }} -- {{ $company->department->name }} <br> Email: {{ $company->email }}
+                <p id="datos">Nit: {{ $company->nit }} -- {{ $company->dv }}  {{ $company->address }} <br> {{ $company->municipality->name }} -- {{ $company->department->name }} <br> Email: {{ $company->email }}
                     </p>
             </div>
             <!--DATOS FACTURA -->
@@ -62,12 +62,10 @@
                     <div id="tfpago">
                         <span id="tc">F. pago: </span><br>
                         <span id="tc">M. pago:   </span><br>
-                        <span id="tc">Vence:</span><br>
                     </div>
                     <div id="dfpago">
                         <span id="td">{{ $purchase->paymentForm->name }}</span><br>
                         <span id="td">{{ $purchase->paymentMethod->name }}</span><br>
-                        <span id="td">{{ $purchase->due_date }}</span><br>
                     </div>
                 </div>
             </div>
