@@ -125,10 +125,12 @@ Route::get('indicator/restaurantStatus/{id}', [IndicatorController::class, 'rest
 Route::get('customer/create/{id}', [CustomerController::class, 'getProducts']);
 Route::get('customer/create/{id}', [CustomerController::class, 'getMunicipalities']);
 
-Route::get('expense/show_pdf_expense/{id}', [ExpenseController::class, 'show_pdf_expense'])->name('show_pdf_expense');
 Route::get('expense/show_pay_expense/{id}', [ExpenseController::class, 'show_pay_expense'])->name('show_pay_expense');
-Route::get('expense/create/{id}', [InvoiceController::class, 'getMunicipalities']);
-Route::get('expense/post_expense/{id}', [ExpenseController::class, 'post_expense'])->name('post_expense');
+Route::get('expense/create/{id}', [ExpenseController::class, 'getMunicipalities']);
+Route::get('expense/expensePdf/{id}', [ExpenseController::class, 'expensePdf'])->name('expensePdf');
+Route::get('expense/expensePost/{id}', [ExpenseController::class, 'expensePost'])->name('expensePost');
+Route::get('pdfExpense', [ExpenseController::class, 'pdfExpense'])->name('pdfExpense');
+Route::get('postExpense', [ExpenseController::class, 'postExpense'])->name('postExpense');
 
 Route::get('invoice/show_pdf_invoice/{id}', [InvoiceController::class, 'show_pdf_invoice'])->name('show_pdf_invoice');
 Route::get('invoice/show_pay_invoice/{id}', [InvoiceController::class, 'show_pay_invoice'])->name('show_pay_invoice');

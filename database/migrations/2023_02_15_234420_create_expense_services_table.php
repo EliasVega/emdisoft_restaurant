@@ -19,7 +19,6 @@ return new class extends Migration
             $table->decimal('iva', 10, 2);
             $table->decimal('subtotal', 11, 2);
             $table->decimal('ivasubt', 11, 2);
-            $table->integer('item');
 
             $table->foreignId('expense_id')->constrained()->onUpdate('restrict');
             $table->foreignId('service_id')->constrained()->onUpdate('restrict');

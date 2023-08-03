@@ -21,8 +21,7 @@ class Expense_service extends Model
         'subtotal',
         'ivasubt',
         'expense_id',
-        'service_id',
-        'item'
+        'service_id'
     ];
 
     public function expense(){
