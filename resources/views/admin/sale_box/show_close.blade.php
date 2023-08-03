@@ -124,122 +124,8 @@
         @if ($sale_box->order > 0)
             <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
                 <div class="form-group">
-                    <label class="form-control-label" for="in_order_cash">Total Pedidos</label>
+                    <label class="form-control-label" for="in_order_cash">Total Comandas</label>
                     <p>${{ number_format($sale_box->order,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->in_order > 0)
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="pay">Ingresos X Pedidos</label>
-                    <p>${{ number_format($sale_box->in_order,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->in_order_cash > 0)
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="in_order_cash">Pedidos Efectivo</label>
-                    <p>${{ number_format($sale_box->in_order_cash,2) }}</p>
-                </div>
-            </div>
-        @endif
-
-
-        @if ($sale_box->in_ndinvoice_cash > 0)
-            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="in_invoice_cash">NC ventas Efectivo</label>
-                    <p>${{ number_format($sale_box->in_ndinvoice_cash,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->in_ndinvoice > 0)
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="abono">T/Ingresos NC ventas</label>
-                    <p>${{ number_format($sale_box->in_ndinvoice,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->out_ncinvoice_cash > 0)
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="in_invoice_cash">NC ventas Efectivo</label>
-                    <p>${{ number_format($sale_box->out_ncinvoice_cash,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->out_ncinvoice > 0)
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="abono">T/Ingresos NC ventas</label>
-                    <p>${{ number_format($sale_box->out_ncinvoice,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->out_ndpurchase_cash > 0)
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="in_invoice_cash">ND compras Efectivo</label>
-                    <p>${{ number_format($sale_box->out_ndpurchase_cash,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->out_ndpurchase > 0)
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="abono">T/Egresos ND compras</label>
-                    <p>${{ number_format($sale_box->out_ndpurchase,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->in_ncpurchase_cash > 0)
-            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="in_invoice_cash">NC compras Efectivo</label>
-                    <p>${{ number_format($sale_box->in_ncpurchase_cash,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->in_ncpurchase > 0)
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="abono">T/Ingresos NC compras</label>
-                    <p>${{ number_format($sale_box->in_ncpurchase,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->out_payment_cash > 0)
-            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="abono">ANT. PROVEEDORES EFECTIVO</label>
-                    <p>${{ number_format($sale_box->out_payment_cash,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->out_payment > 0)
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="abono">ANTICIPO PROVEEDORES</label>
-                    <p>${{ number_format($sale_box->out_payment,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->in_advance_cash > 0)
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="abono">ANT. CLIENTES EFECTIVO</label>
-                    <p>${{ number_format($sale_box->in_advance_cash,2) }}</p>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->in_advance > 0)
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <label class="form-control-label" for="abono">ANTICIPOS CLIENTES</label>
-                    <p>${{ number_format($sale_box->in_advance,2) }}</p>
                 </div>
             </div>
         @endif
@@ -352,14 +238,14 @@
                                 </tr>
                             </tfoot>
                             <tbody>
-                                @foreach($invoiceProducts as $invoiceProduct)
+                                @foreach($invoiceMenus as $invoiceMenu)
                                     <tr>
-                                        <td>{{ $invoiceProduct->id }}</td>
-                                        <td>{{ $invoiceProduct->name }}</td>
-                                        <td>{{ $invoiceProduct->stock }}</td>
-                                        <td class="tdder">$ {{ number_format($invoiceProduct->price,2) }}</td>
-                                        <td class="tdder">$ {{ number_format($invoiceProduct->salePrice,2) }}</td>
-                                        <td class="tdder">$ {{ number_format($invoiceProduct->price + $invoiceProduct->salePrice,2) }}</td>
+                                        <td>{{ $invoiceMenu->id }}</td>
+                                        <td>{{ $invoiceMenu->name }}</td>
+                                        <td>{{ $invoiceMenu->stock }}</td>
+                                        <td class="tdder">$ {{ number_format($invoiceMenu->price,2) }}</td>
+                                        <td class="tdder">$ {{ number_format($invoiceMenu->salePrice,2) }}</td>
+                                        <td class="tdder">$ {{ number_format($invoiceMenu->price + $invoiceMenu->salePrice,2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -511,7 +397,7 @@
             <div class="box-body row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
                     <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <strong class="tpdf">Detalle Pedidos</strong>
+                        <strong class="tpdf">Detalle Comandas</strong>
                     </div>
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -520,19 +406,14 @@
                             <thead>
                                 <tr class="bg-info">
                                     <th>Fecha</th>
-                                    <th>N°.P</th>
-                                    <th>Cliente</th>
+                                    <th>Comanda</th>
                                     <th>Estado</th>
-                                    <th>Abonos</th>
-                                    <th>Saldo</th>
                                     <th>Valor</th>
                                 </tr>
                             </thead>
                             <tfoot>
                                 <tr>
-                                    <th  colspan="4"><p align="right">TOTAL:</p></th>
-                                    <th><p align="right">${{ number_format($order_pay,2) }}</p></th>
-                                    <th><p align="right">${{ number_format($order_balance,2) }}</p></th>
+                                    <th  colspan="3"><p align="right">TOTAL:</p></th>
                                     <th><p align="right">${{ number_format($sale_box->order,2) }}</p></th>
                                 </tr>
                             </tfoot>
@@ -541,10 +422,7 @@
                                     <tr>
                                         <td>{{ $order->created_at }}</td>
                                         <td>{{ $order->id }}</td>
-                                        <td>{{ $order->customer->name }}</td>
                                         <td>{{ $order->status }}</td>
-                                        <td class="tdder">$ {{ number_format($order->pay,2) }}</td>
-                                        <td class="tdder">$ {{ number_format($order->balance,2) }}</td>
                                         <td class="tdder">$ {{ number_format($order->total_pay,2) }}</td>
                                     </tr>
                                 @endforeach
@@ -554,211 +432,7 @@
                 </div>
             </div>
         @endif
-        @if ($sale_box->ndinvoice > 0)
-            <div class="box-body row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <strong class="tpdf">Detalle Notas Debito Ventas</strong>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-condensed table-hover">
-                            <thead>
-                                <tr class="bg-info">
-                                    <th>Fecha</th>
-                                    <th>N°. ND</th>
-                                    <th>N°. Fact</th>
-                                    <th>Cliente</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th  colspan="4"><p align="right">TOTAL:</p></th>
-                                    <th><p align="right">${{ $totalnd }}</p></th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                @foreach($ndinvoices as $nd)
-                                    <tr>
-                                        <td>{{ $nd->created_at }}</td>
-                                        <td>{{ $nd->id }}</td>
-                                        <td>{{ $nd->invoice->id }}</td>
-                                        <td>{{ $nd->customer->name }}</td>
-                                        <td>$ {{ $nd->total_pay }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->ndinvoice > 0)
-            <div class="box-body row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <strong class="tpdf">Detalle Notas Credito Venta</strong>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-condensed table-hover">
-                            <thead>
-                                <tr class="bg-info">
-                                    <th>Fecha</th>
-                                    <th>N°.NC</th>
-                                    <th>N° Factura</th>
-                                    <th>Cliente</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th  colspan="4"><p align="right">TOTAL:</p></th>
-                                    <th><p align="right">${{ $totalnc }}</p></th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                @foreach($ncinvoices as $nc)
-                                    <tr>
-                                        <td>{{ $nc->created_at }}</td>
-                                        <td>{{ $nc->id }}</td>
-                                        <td>{{ $nc->invoice->id }}</td>
-                                        <td>{{ $nc->customer->name }}</td>
-                                        <td>$ {{ $nc->total_pay }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->ndpurchase > 0)
-            <div class="box-body row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <strong class="tpdf">Detalle Notas Debito Compras</strong>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-condensed table-hover">
-                            <thead>
-                                <tr class="bg-info">
-                                    <th>Fecha</th>
-                                    <th>N°. ND</th>
-                                    <th>N°. Fact</th>
-                                    <th>Cliente</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th  colspan="4"><p align="right">TOTAL:</p></th>
-                                    <th><p align="right">${{ number_format($ndpurchaseTotal,2) }}</p></th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                @foreach($ndpurchases as $ndpurchase)
-                                    <tr>
-                                        <td>{{ $ndpurchase->created_at }}</td>
-                                        <td>{{ $ndpurchase->id }}</td>
-                                        <td>{{ $ndpurchase->purchase_id }}</td>
-                                        <td>{{ $ndpurchase->supplier->name }}</td>
-                                        <td class="tdder">$ {{ number_format($ndpurchase->total_pay,2) }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->ncpurchase > 0)
-            <div class="box-body row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <strong class="tpdf">Detalle Notas Credito Compras</strong>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-condensed table-hover">
-                            <thead>
-                                <tr class="bg-info">
-                                    <th>Fecha</th>
-                                    <th>N°.NC</th>
-                                    <th>N° Factura</th>
-                                    <th>Cliente</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th  colspan="4"><p align="right">TOTAL:</p></th>
-                                    <th><p align="right">${{ $totalnc }}</p></th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                @foreach($ncinvoices as $nc)
-                                    <tr>
-                                        <td>{{ $nc->created_at }}</td>
-                                        <td>{{ $nc->id }}</td>
-                                        <td>{{ $nc->invoice->id }}</td>
-                                        <td>{{ $nc->customer->name }}</td>
-                                        <td>$ {{ $nc->total_pay }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->in_order > 0)
-            <div class="box-body row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <strong class="tpdf">Detalle Abonos a Pedidos</strong>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-condensed table-hover">
-                            <thead>
-                                <tr class="bg-info">
-                                    <th>Fecha</th>
-                                    <th>ID</th>
-                                    <th>N° Pedido</th>
-                                    <th>Cliente</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th  colspan="4"><p align="right">TOTAL:</p></th>
-                                    <th><p align="right">${{ number_format($sum_pay_orders,2) }}</p></th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                @foreach($pay_orders as $pay_order)
-                                    <tr>
-                                        <td>{{ $pay_order->created_at }}</td>
-                                        <td>{{ $pay_order->id }}</td>
-                                        <td>{{ $pay_order->order->id }}</td>
-                                        <td>{{ $pay_order->order->customer->name }}</td>
-                                        <td class="tdder">$ {{ number_format($pay_order->pay,2) }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        @endif
+
         @if ($sale_box->in_invoice > 0)
             <div class="box-body row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
@@ -882,84 +556,6 @@
                 </div>
             </div>
         @endif
-        @if ($sale_box->out_payment > 0)
-            <div class="box-body row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <strong class="tpdf">Detalle Anticipos a proveedores</strong>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-condensed table-hover">
-                            <thead>
-                                <tr class="bg-info">
-                                    <th>Fecha</th>
-                                    <th>ID</th>
-                                    <th>Proveedor</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th  colspan="3"><p align="right">TOTAL:</p></th>
-                                    <th><p align="right">${{ number_format($sum_payments,2) }}</p></th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                @foreach($payments as $payment)
-                                    <tr>
-                                        <td>{{ $payment->created_at }}</td>
-                                        <td>{{ $payment->id }}</td>
-                                        <td>{{ $payment->supplier->name }}</td>
-                                        <td class="tdder">$ {{ number_format($payment->pay,2) }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        @endif
-        @if ($sale_box->in_advance > 0)
-            <div class="box-body row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
-                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
-                        <strong class="tpdf">Detalle Anticipos de Clientes</strong>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-condensed table-hover">
-                            <thead>
-                                <tr class="bg-info">
-                                    <th>Fecha</th>
-                                    <th>ID</th>
-                                    <th>Cliente</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th  colspan="3"><p align="right">TOTAL:</p></th>
-                                    <th><p align="right">${{ number_format($sum_advances,2) }}</p></th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                @foreach($advances as $advance)
-                                    <tr>
-                                        <td>{{ $advance->created_at }}</td>
-                                        <td>{{ $advance->id }}</td>
-                                        <td>{{ $advance->customer->name }}</td>
-                                        <td class="tdder">$ {{ number_format($advance->pay,2) }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        @endif
         @if ($sale_box->out_cash > 0)
             <div class="box-body row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
@@ -981,11 +577,50 @@
                             <tfoot>
                                 <tr>
                                     <th  colspan="3"><p align="right">TOTAL:</p></th>
-                                    <th><p align="right">${{ $sum_pay_cashs }}</p></th>
+                                    <th><p align="right">${{ $sum_pay_cashOuts }}</p></th>
                                 </tr>
                             </tfoot>
                             <tbody>
                                 @foreach($cash_outs as $cas)
+                                    <tr>
+                                        <td>{{ $cas->created_at }}</td>
+                                        <td>{{ $cas->id }}</td>
+                                        <td>{{ $cas->name }}</td>
+                                        <td class="tdder">$ {{ $cas->payment }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        @endif
+        @if ($sale_box->in_cash > 0)
+            <div class="box-body row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
+                    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                        <strong class="tpdf">Detalle Ingresos de efectivo</strong>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-condensed table-hover">
+                            <thead>
+                                <tr class="bg-info">
+                                    <th>Fecha</th>
+                                    <th>ID</th>
+                                    <th>Recibe Administrador</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th  colspan="3"><p align="right">TOTAL:</p></th>
+                                    <th><p align="right">${{ $sum_pay_cashIns }}</p></th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                                @foreach($cash_ins as $cas)
                                     <tr>
                                         <td>{{ $cas->created_at }}</td>
                                         <td>{{ $cas->id }}</td>
