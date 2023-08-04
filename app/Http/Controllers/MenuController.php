@@ -47,9 +47,8 @@ class MenuController extends Controller
         $categories = Category::select('id', 'name')->get();
         $measures = Unit_measure::where('status', 'activo')->get();
         $products = Product::get();
-        $indicator = Indicator::findOrFail(1);
 
-        return view("admin.menu.create", compact('categories', 'measures', 'products', 'indicator'));
+        return view("admin.menu.create", compact('categories', 'measures', 'products'));
     }
 
     /**
@@ -60,17 +59,12 @@ class MenuController extends Controller
      */
     public function store(StoreMenuRequest $request)
     {
-        $indicator = Indicator::findOrFail(1);
         $menu = new Menu();
         $menu->category_id = $request->category_id;
         $menu->unit_measure_id = $request->unit_measure_id;
         $menu->code = $request->code;
         $menu->name = $request->name;
-        if ($indicator->restaurant == 'on') {
-            $menu->price = $request->total;
-        } else {
-            $menu->price = $request->price;
-        }
+        $menu->price = $request->total;
         $menu->sale_price = $request->price;
         $menu->stock = 0;
 
@@ -91,32 +85,19 @@ class MenuController extends Controller
             }
             $menu->image=$fileNameToStore;
         $menu->save();
-        /*
-            //metodo para agregar producto a la sede
-        $branch_product = new Branch_product();
-        $branch_product->branch_id = 1;
-        $branch_product->product_id = $product->id;
-        $branch_product->stock = 0;
-        $branch_product->order_product = 0;
-        $branch_product->save();*/
 
-
-        if ($indicator->restaurant == 'on') {
-            $quantity = $request->quantity;
-            $consumer = $request->consumer_price;
-            $product = $request->product_id;
-            for ($i=0; $i < count($quantity); $i++) {
-                $menuProducts = new MenuProduct();
-                $menuProducts->quantity = $quantity[$i];
-                $menuProducts->consumer_price = $consumer[$i];
-                $menuProducts->subtotal = $quantity[$i] * $consumer[$i];
-                $menuProducts->menu_id = $menu->id;
-                $menuProducts->product_id = $product[$i];
-                $menuProducts->save();
-            }
-
+        $quantity = $request->quantity;
+        $consumer = $request->consumer_price;
+        $product = $request->product_id;
+        for ($i=0; $i < count($quantity); $i++) {
+            $menuProducts = new MenuProduct();
+            $menuProducts->quantity = $quantity[$i];
+            $menuProducts->consumer_price = $consumer[$i];
+            $menuProducts->subtotal = $quantity[$i] * $consumer[$i];
+            $menuProducts->menu_id = $menu->id;
+            $menuProducts->product_id = $product[$i];
+            $menuProducts->save();
         }
-
         return redirect('menu');
     }
 

@@ -15,25 +15,6 @@
         </div>
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-        <div class="form-group">
-            <label for="name">Nombre</label>
-            <input type="text" name="name" value="{{ old('name', $product->name ?? '') }}" class="form-control" placeholder="Nombre del producto">
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-        <div class="form-group">
-            <label for="code">Codigo</label>
-            <input type="text" name="code" value="{{ old('code', $product->code ?? '') }}" class="form-control" placeholder="Codigo del product">
-        </div>
-    </div>
-
-    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-        <div class="form-group">
-            <label for="price">Precio Unidad</label>
-            <input type="text" name="price" value="{{ old('price', $product->price ?? '') }}" class="form-control" placeholder="Precio de Compra">
-        </div>
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
         <label for="unit_measure_id">Unidad de Medida</label>
         <div class="select">
             <select id="unit_measure_id" name="unit_measure_id" class="form-control selectpicker" data-live-search="true" required>
@@ -46,6 +27,31 @@
                     @endif
                 @endforeach
             </select>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="form-group">
+            <label for="name">Nombre</label>
+            <input type="text" name="name" value="{{ old('name', $product->name ?? '') }}" class="form-control" placeholder="Nombre del producto">
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+        <div class="form-group">
+            <label for="code">Codigo</label>
+            <input type="text" name="code" value="{{ old('code', $product->code ?? '') }}" class="form-control" placeholder="Codigo del product">
+        </div>
+    </div>
+
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+        <div class="form-group">
+            <label for="price">Precio Unidad</label>
+            <input type="text" name="price" value="{{ old('price', $product->price ?? '') }}" class="form-control" placeholder="Precio de Compra">
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+        <div class="form-group">
+            <label for="stock">Stock</label>
+            <input type="text" name="stock" value="{{old('stock', $product->stock ?? '') }}" class="form-control" placeholder="Ingrese el Stock" readonly>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

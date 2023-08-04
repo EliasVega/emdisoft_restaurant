@@ -40,9 +40,8 @@ class ProductController extends Controller
     {
         $categories = Category::select('id', 'name')->get();
         $measures = Unit_measure::where('status', 'activo')->get();
-        $indicator = Indicator::findOrFail(1);
 
-        return view("admin.product.create", compact('categories', 'measures', 'indicator'));
+        return view("admin.product.create", compact('categories', 'measures'));
     }
 
     /**
@@ -53,7 +52,6 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        $indicator = Indicator::findOrFail(1);
         $product = new Product();
         $product->category_id = $request->category_id;
         $product->unit_measure_id = $request->unit_measure_id;
@@ -116,8 +114,6 @@ class ProductController extends Controller
         $product->code = $request->code;
         $product->name = $request->name;
         $product->price = $request->price;
-        $product->stock = $request->stock;
-        $product->status = $request->status;
         $product->update();
 
         $branchProduct = Branch_product::where('product_id', $product->id)->first();
