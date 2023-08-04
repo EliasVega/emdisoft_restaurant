@@ -24,7 +24,7 @@ class UpdateMenuRequest extends FormRequest
     public function rules()
     {
         return [
-            'code'            => 'required|max:20',
+            'code'            => 'required|string|unique:menus,code,'.$this->menu->id,'|max:20',
             'name'            => 'required|max:100',
             'price'           => '',
             'sale_price'      => '',

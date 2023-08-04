@@ -27,7 +27,7 @@
                         <th>Menu</th>
                         <th>Cantidad</th>
                         <th>precio ($)</th>
-                        <th>iva ($)</th>
+                        <th>inc ($)</th>
                         <th>SubTotal ($)</th>
                     </tr>
                 </thead>
@@ -38,9 +38,9 @@
                             <input type="hidden" name="total" id="total"></td>
                     </tr>
                     <tr>
-                        <th colspan="5" class="footder">TOTAL IVA:</th>
-                        <td class="footder"><strong id="total_iva_html">$ 0.00</strong>
-                            <input type="hidden" name="total_iva" id="total_iva">
+                        <th colspan="5" class="footder">TOTAL INC:</th>
+                        <td class="footder"><strong id="total_inc_html">$ 0.00</strong>
+                            <input type="hidden" name="total_inc" id="total_inc">
                         </td>
                     </tr>
                     <tr>

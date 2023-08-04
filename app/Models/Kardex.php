@@ -13,7 +13,8 @@ class Kardex extends Model
         'operation',
         'number',
         'quantity',
-        'stock'
+        'stock',
+        'observation'
     ];
 
     public function product(){

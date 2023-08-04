@@ -14,7 +14,7 @@
     var cont = 0;
     var total = 0;
     var subtotal = [];
-    var total_iva = 0;
+    var total_inc = 0;
     var total_pay = 0;
     var total_desc = 0;
     var ret = 0;
@@ -27,13 +27,13 @@
     //$("#addDocument").hide();
 
     function totals(){
-        var total_pay = total + total_iva;
+        var total_pay = total + total_inc;
 
         $("#total_html").html("$ " + total.toFixed(2));
         $("#total").val(total.toFixed(2));
 
-        $("#total_iva_html").html("$ " + total_iva.toFixed(2));
-        $("#total_iva").val(total_iva.toFixed(2));
+        $("#total_inc_html").html("$ " + total_inc.toFixed(2));
+        $("#total_inc").val(total_inc.toFixed(2));
 
         $("#total_pay_html").html("$ " + total_pay.toFixed(2));
         $("#total_pay").val(total_pay.toFixed(2));
@@ -60,16 +60,16 @@
                 menu= value['name'];
                 quantity= value['quantity'];
                 price= value['price'];
-                iva= value['iva'];
+                inc= value['inc'];
                 balance = value['balance'];
 
                 if(menu_id !="" && quantity!="" && quantity>0  && price!="" && price>0){
                     subtotal[cont]= parseFloat(quantity) * parseFloat(price);
                     total= total+subtotal[cont];
-                    ivita= subtotal[cont]*iva/100;
-                    total_iva=total_iva+ivita;
+                    ivita= subtotal[cont]*inc/100;
+                    total_inc=total_inc+ivita;
 
-                    var row= '<tr class="selected" id="row'+cont+'"><td><input type="hidden" name="id[]"  value="'+menu_id+'">'+menu_id+'</td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="iva[]"  value="'+iva+'">'+iva+'</td><td>$'+subtotal[cont]+' </td></tr>';
+                    var row= '<tr class="selected" id="row'+cont+'"><td><input type="hidden" name="id[]"  value="'+menu_id+'">'+menu_id+'</td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="inc[]"  value="'+inc+'">'+inc+'</td><td>$'+subtotal[cont]+' </td></tr>';
                     cont++;
 
                     totals();

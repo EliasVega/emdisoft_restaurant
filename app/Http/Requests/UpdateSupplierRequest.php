@@ -26,8 +26,8 @@ class UpdateSupplierRequest extends FormRequest
         return [
 
             'name'            => 'required|max:45',
-            'number'          => 'required|max:20',
-            'email'           => 'max:45',
+            'number'          => 'required|string|unique:suppliers,number,'.$this->supplier->id,'|max:12',
+            'email'           => 'required|string|unique:suppliers,email,'.$this->supplier->id,'|max:45',
             'document_id'     => 'required',
         ];
     }

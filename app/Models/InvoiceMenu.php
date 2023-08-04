@@ -12,9 +12,9 @@ class InvoiceMenu extends Model
     protected $fillable = [
         'quantity',
         'price',
-        'iva',
+        'inc',
         'subtotal',
-        'ivasubt',
+        'incsubt',
         'item',
         'invoice_id',
         'product_id',

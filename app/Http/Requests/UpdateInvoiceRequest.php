@@ -25,7 +25,7 @@ class UpdateInvoiceRequest extends FormRequest
     {
         return [
             'total'             => 'required|numeric',
-            'total_iva'          => 'numeric',
+            'total_inc'          => 'numeric',
             'total_pay'          => 'numeric',
             'pay'               => 'nullable|numeric',
             'balance'           => '',

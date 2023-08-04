@@ -66,7 +66,6 @@ class ProductController extends Controller
         $branch_product->branch_id = 1;
         $branch_product->product_id = $product->id;
         $branch_product->stock = 0;
-        $branch_product->order_product = 0;
         $branch_product->save();
 
         return redirect('product');

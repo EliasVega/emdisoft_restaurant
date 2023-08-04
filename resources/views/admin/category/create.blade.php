@@ -30,8 +30,8 @@
 
                 <div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
                     <div class="form-group">
-                        <label for="iva">IVA</label>
-                        <input type="number" name="iva" value="{{ old('iva') }}" class="form-control" placeholder="Ingrese el IVA para la category">
+                        <label for="inc">INC</label>
+                        <input type="number" name="inc" value="{{ old('inc') }}" class="form-control" placeholder="Ingrese el inc para la category">
                     </div>
                 </div>
 

@@ -76,8 +76,8 @@
                             </tr>
 
                             <tr>
-                                <th colspan="3"><p align="right">TOTAL IVA:</p></th>
-                                <th><p align="right">${{ number_format($purchase->total_iva, 2) }}</p></th>
+                                <th colspan="3"><p align="right">TOTAL INC:</p></th>
+                                <th><p align="right">${{ number_format($purchase->total_inc, 2) }}</p></th>
                             </tr>
                             <tr>
                                 <th  colspan="3"><p align="right">TOTAL PAGAR:</p></th>

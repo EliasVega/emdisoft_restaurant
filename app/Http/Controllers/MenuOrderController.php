@@ -48,7 +48,7 @@ class MenuOrderController extends Controller
         $menuOrders = MenuOrder::from('menu_orders as mo')
         ->join('menus as men', 'mo.menu_id', 'men.id')
         ->join('orders as ord', 'mo.order_id', 'ord.id')
-        ->select('mo.id', 'men.id as idM', 'men.name', 'mo.quantity', 'mo.price', 'mo.iva', 'mo.subtotal')
+        ->select('mo.id', 'men.id as idM', 'men.name', 'mo.quantity', 'mo.price', 'mo.inc', 'mo.subtotal')
         ->where('order_id', $order->id)
         ->get();
         $menus = Menu::get();
@@ -86,7 +86,7 @@ class MenuOrderController extends Controller
             $menu_id = $request->menu_id;
             $quantity   = $request->quantity;
             $price      = $request->price;
-            $iva        = $request->iva;
+            $inc        = $request->inc;
 
             $invoice                    = new Invoice();
             $invoice->user_id           = Auth::user()->id;
@@ -96,7 +96,7 @@ class MenuOrderController extends Controller
             $invoice->payment_method_id = $request->payment_method_id;
             $invoice->restaurant_table_id = $order->restaurant_table_id;
             $invoice->total             = $order->total;
-            $invoice->total_iva         = $order->total_iva;
+            $invoice->total_inc         = $order->total_inc;
             $invoice->total_pay         = $order->total_pay;
             $invoice->pay               = $order->total_pay;
             $invoice->balance           = 0;
@@ -139,16 +139,16 @@ class MenuOrderController extends Controller
             while($cont < count($menu_id)){
 
                 $subtotal = $quantity[$cont] * $price[$cont];
-                $ivasub   = $subtotal * $iva[$cont]/100;
+                $incsub   = $subtotal * $inc[$cont]/100;
 
                 $invoiceMenu = new InvoiceMenu();
                 $invoiceMenu->invoice_id = $invoice->id;
                 $invoiceMenu->menu_id = $menu_id[$cont];
                 $invoiceMenu->quantity   = $quantity[$cont];
                 $invoiceMenu->price      = $price[$cont];
-                $invoiceMenu->iva        = $iva[$cont];
+                $invoiceMenu->inc        = $inc[$cont];
                 $invoiceMenu->subtotal   = $subtotal;
-                $invoiceMenu->ivasubt    = $ivasub;
+                $invoiceMenu->incsubt    = $incsub;
                 $invoiceMenu->save();
 
                 $menuProducts = MenuProduct::where('menu_id', $menu_id[$cont])->get();
@@ -174,9 +174,9 @@ class MenuOrderController extends Controller
                 $invoice_product->product_id = $product_id[$cont];
                 $invoice_product->quantity   = $quantity[$cont];
                 $invoice_product->price      = $price[$cont];
-                $invoice_product->iva        = $iva[$cont];
+                $invoice_product->inc        = $inc[$cont];
                 $invoice_product->subtotal   = $subtotal;
-                $invoice_product->ivasubt    = $ivasub;
+                $invoice_product->incsubt    = $incsub;
                 $invoice_product->save();
 
                 //reeplazando trigger

@@ -22,7 +22,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\DataTables;
 
@@ -98,7 +97,7 @@ class ExpenseController extends Controller
         $service_id = $request->service_id;
         $quantity   = $request->quantity;
         $price      = $request->price;
-        $iva        = $request->iva;
+        $inc        = $request->inc;
         $pay        = $request->pay;
         $branch     = $request->session()->get('branch');
 
@@ -109,7 +108,7 @@ class ExpenseController extends Controller
         $expense->payment_form_id = $request->payment_form_id;
         $expense->payment_method_id = $request->payment_method_id;
         $expense->total       = $request->total;
-        $expense->total_iva    = $request->total_iva;
+        $expense->total_inc    = $request->total_inc;
         $expense->total_pay    = $request->total_pay;
         $expense->pay           = $request->pay;
         $expense->pay         = $pay;
@@ -160,7 +159,7 @@ class ExpenseController extends Controller
         //Ingresa los productos que vienen en el array
         while($cont < count($service_id)){
             $subtotal = $quantity[$cont] * $price[$cont];
-            $ivasub = $subtotal * $iva[$cont]/100;
+            $incsub = $subtotal * $inc[$cont]/100;
             $servid = $service_id[$cont];
 
             $expense_service = new Expense_service();
@@ -168,9 +167,9 @@ class ExpenseController extends Controller
             $expense_service->service_id  = $service_id[$cont];
             $expense_service->quantity    = $quantity[$cont];
             $expense_service->price       = $price[$cont];
-            $expense_service->iva         = $iva[$cont];
+            $expense_service->inc         = $inc[$cont];
             $expense_service->subtotal    = $subtotal;
-            $expense_service->ivasubt     = $ivasub;
+            $expense_service->incsubt     = $incsub;
             $expense_service->save();
             //selecciona el producto que viene del array
             $service = Service::where('id', $expense_service->service_id)->first();
@@ -211,7 +210,7 @@ class ExpenseController extends Controller
         $expenseServices = Expense_service::from('expense_services as es')
         ->join('services as ser', 'es.service_id', 'ser.id')
         ->join('expenses as exp', 'es.expense_id', 'exp.id')
-        ->select('ser.id', 'ser.name', 'es.quantity', 'es.price', 'es.iva', 'es.subtotal', 'exp.balance')
+        ->select('ser.id', 'ser.name', 'es.quantity', 'es.price', 'es.inc', 'es.subtotal', 'exp.balance')
         ->where('exp.id', $expense->id)
         ->get();
 
@@ -241,7 +240,7 @@ class ExpenseController extends Controller
         $service_id = $request->service_id;
         $quantity   = $request->quantity;
         $price      = $request->price;
-        $iva        = $request->iva;
+        $inc        = $request->inc;
         $pay        = $request->pay;
         $total_pay = $request->total_pay;
         //llamado de todos los pagos y pago nuevo para la diferencia
@@ -265,7 +264,7 @@ class ExpenseController extends Controller
         $expense->payment_form_id = $request->payment_form_id;
         $expense->payment_method_id = $request->payment_method_id;
         $expense->total       = $request->total;
-        $expense->total_iva    = $request->total_iva;
+        $expense->total_inc    = $request->total_inc;
         $expense->total_pay    = $request->total_pay;
 
         if ($payOld > 0 && $pay == 0) {
@@ -329,9 +328,9 @@ class ExpenseController extends Controller
 
             $expenseService->quantity    = 0;
             $expenseService->price       = 0;
-            $expenseService->iva         = 0;
+            $expenseService->inc         = 0;
             $expenseService->subtotal    = 0;
-            $expenseService->ivasubt     = 0;
+            $expenseService->incsubt     = 0;
             $expenseService->update();
 
         }
@@ -347,35 +346,35 @@ class ExpenseController extends Controller
             //Inicia proceso actualizacio product expense si no existe
             if (is_null($expenseService)) {
                 $subtotal = $quantity[$cont] * $price[$cont];
-                $ivasub = $subtotal * $iva[$cont]/100;
+                $incsub = $subtotal * $inc[$cont]/100;
                 $expense_service = new Expense_service();
                 $expense_service->expense_id = $expense->id;
                 $expense_service->service_id  = $service_id[$cont];
                 $expense_service->quantity    = $quantity[$cont];
                 $expense_service->price       = $price[$cont];
-                $expense_service->iva         = $iva[$cont];
+                $expense_service->inc         = $inc[$cont];
                 $expense_service->subtotal    = $subtotal;
-                $expense_service->ivasubt     = $ivasub;
+                $expense_service->incsubt     = $incsub;
                 $expense_service->save();
             } else {
                 if ($quantity[$cont] > 0) {
 
                     $subtotal = $quantity[$cont] * $price[$cont];
-                    $ivasub = $subtotal * $iva[$cont]/100;
+                    $incsub = $subtotal * $inc[$cont]/100;
 
                     if ($expenseService->quantity > 0) {
                         $expenseService->quantity    += $quantity[$cont];
                         $expenseService->price       = $price[$cont];
-                        $expenseService->iva         = $iva[$cont];
+                        $expenseService->inc         = $inc[$cont];
                         $expenseService->subtotal    += $subtotal;
-                        $expenseService->ivasubt     += $ivasub;
+                        $expenseService->incsubt     += $incsub;
                         $expenseService->update();
                     } else {
                         $expenseService->quantity    = $quantity[$cont];
                         $expenseService->price       = $price[$cont];
-                        $expenseService->iva         = $iva[$cont];
+                        $expenseService->inc         = $inc[$cont];
                         $expenseService->subtotal    = $subtotal;
-                        $expenseService->ivasubt     = $ivasub;
+                        $expenseService->incsubt     = $incsub;
                         $expenseService->update();
                     }
                 }
@@ -429,7 +428,7 @@ class ExpenseController extends Controller
         \session()->put('expense', $expense->id, 60 * 24 * 365);
         \session()->put('due_date', $expense->due_date, 60 * 24 *365);
         \session()->put('total', $expense->total, 60 * 24 *365);
-        \session()->put('total_iva', $expense->total_iva, 60 * 24 *365);
+        \session()->put('total_inc', $expense->total_inc, 60 * 24 *365);
         \session()->put('total_pay', $expense->total_Pay, 60 * 24 *365);
         \session()->put('status', $expense->status, 60 * 24 *365);
 

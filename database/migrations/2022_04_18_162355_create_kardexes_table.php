@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('number');
             $table->decimal('quantity',10,2);
             $table->decimal('stock',10,2);
-            $table->string('observation', 255);
+            $table->string('observation', 255)->nullable();
 
             $table->foreignId('product_id')->constrained()->onUpdate('cascade');
             $table->foreignId('branch_id')->constrained()->onUpdate('cascade');

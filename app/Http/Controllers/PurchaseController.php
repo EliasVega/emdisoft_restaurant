@@ -25,8 +25,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\DataTables;
 
 class PurchaseController extends Controller
@@ -110,7 +108,7 @@ class PurchaseController extends Controller
         $product_id = $request->product_id;
         $quantity   = $request->quantity;
         $price      = $request->price;
-        $iva        = $request->iva;
+        $inc        = $request->inc;
         $pay        = $request->pay;
 
         //Crea un registro de compras
@@ -121,7 +119,7 @@ class PurchaseController extends Controller
         $purchase->payment_form_id = $request->payment_form_id;
         $purchase->payment_method_id = $request->payment_method_id;
         $purchase->total       = $request->total;
-        $purchase->total_iva    = $request->total_iva;
+        $purchase->total_inc    = $request->total_inc;
         $purchase->total_pay    = $request->total_pay;
         $purchase->pay         = $request->total_pay;
         $purchase->balance     = 0;
@@ -175,9 +173,9 @@ class PurchaseController extends Controller
             $product_purchase->product_id  = $product_id[$cont];
             $product_purchase->quantity    = $quantity[$cont];
             $product_purchase->price       = $price[$cont];
-            $product_purchase->iva         = $iva[$cont];
+            $product_purchase->inc         = $inc[$cont];
             $product_purchase->subtotal    = $quantity[$cont] * $price[$cont];
-            $product_purchase->ivasubt     =($quantity[$cont] * $price[$cont] * $iva[$cont])/100;
+            $product_purchase->incsubt     =($quantity[$cont] * $price[$cont] * $inc[$cont])/100;
             $product_purchase->save();
             //selecciona el producto que viene del array
             $products = Product::where('id', $product_purchase->product_id)->first();
@@ -267,7 +265,7 @@ class PurchaseController extends Controller
         $productPurchases = Product_purchase::from('product_purchases as pp')
         ->join('products as pro', 'pp.product_id', 'pro.id')
         ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
-        ->select('pp.id', 'pro.id as idP', 'pro.name', 'pro.stock', 'pp.quantity', 'pp.price', 'pp.iva', 'pp.subtotal')
+        ->select('pp.id', 'pro.id as idP', 'pro.name', 'pro.stock', 'pp.quantity', 'pp.price', 'pp.inc', 'pp.subtotal')
         ->where('purchase_id', $purchase->id)
         ->get();
         return view('admin.purchase.edit',
@@ -298,7 +296,7 @@ class PurchaseController extends Controller
         $product_id = $request->product_id;
         $quantity   = $request->quantity;
         $price      = $request->price;
-        $iva        = $request->iva;
+        $inc        = $request->inc;
         $pay        = $request->pay;
 
         $total_pay = $request->total_pay;
@@ -323,7 +321,7 @@ class PurchaseController extends Controller
         $purchase->payment_form_id = $request->payment_form_id;
         $purchase->payment_method_id = $request->payment_method_id;
         $purchase->total       = $request->total;
-        $purchase->total_iva    = $request->total_iva;
+        $purchase->total_inc    = $request->total_inc;
         $purchase->total_pay    = $request->total_pay;
         $purchase->pay = $request->total_pay;
         $purchase->balance = 0;
@@ -336,11 +334,6 @@ class PurchaseController extends Controller
             //$sale_box->out_total += $purchase->total_pay;
             $sale_box->update();
         }
-
-
-
-
-
         //inicio proceso si hay pagos
         if($pay > 0){
             $sale_box = Sale_box::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
@@ -433,9 +426,9 @@ class PurchaseController extends Controller
             //$product_purchase->product_id  = $product_id[$cont];
             $productPurchase->quantity    = 0;
             $productPurchase->price       = 0;
-            $productPurchase->iva         = 0;
+            $productPurchase->inc         = 0;
             $productPurchase->subtotal    = 0;
-            $productPurchase->ivasubt     = 0;
+            $productPurchase->incsubt     = 0;
             $productPurchase->update();
 
         }
@@ -448,7 +441,7 @@ class PurchaseController extends Controller
             $productPurchase = Product_purchase::where('purchase_id', $purchase->id)
             ->where('product_id', $product_id[$cont])->first();
             $subtotal = $quantity[$cont] * $price[$cont];
-            $ivasub   = $subtotal * $iva[$cont]/100;
+            $incsub   = $subtotal * $inc[$cont]/100;
             //Inicia proceso actualizacio product purchase si no existe
             if (is_null($productPurchase)) {
                 $product_purchase = new Product_purchase();
@@ -456,9 +449,9 @@ class PurchaseController extends Controller
                 $product_purchase->product_id = $product_id[$cont];
                 $product_purchase->quantity = $quantity[$cont];
                 $product_purchase->price = $price[$cont];
-                $product_purchase->iva = $iva[$cont];
+                $product_purchase->inc = $inc[$cont];
                 $product_purchase->subtotal = $subtotal;
-                $product_purchase->ivasubt = $ivasub;
+                $product_purchase->incsubt = $incsub;
                 $product_purchase->save();
                 //selecciona el producto que viene del array
                 $products = Product::where('id', $product_purchase->product_id)->first();
@@ -499,17 +492,18 @@ class PurchaseController extends Controller
                 $kardex->number = $purchase->id;
                 $kardex->quantity = $quantity[$cont];
                 $kardex->stock += $quantity[$cont];
+                $kardex->observation = 'movimiento por compra';
                 $kardex->save();
             } else {
                 if ($quantity[$cont] > 0) {
 
                     $subtotal = $quantity[$cont] * $price[$cont];
-                    $ivasub = $subtotal * $iva[$cont]/100;
+                    $incsub = $subtotal * $inc[$cont]/100;
                     $productPurchase->quantity = $quantity[$cont];
                     $productPurchase->price = $price[$cont];
-                    $productPurchase->iva = $iva[$cont];
+                    $productPurchase->inc = $inc[$cont];
                     $productPurchase->subtotal = $subtotal;
-                    $productPurchase->ivasubt = $ivasub;
+                    $productPurchase->incsubt = $incsub;
                     $productPurchase->update();
                 }
                 //selecciona el producto de la sucursal que sea el mismo del array
@@ -569,7 +563,7 @@ class PurchaseController extends Controller
         $purchase = Purchase::findOrFail($id);
         \session()->put('purchase', $purchase->id, 60 * 24 * 365);
         \session()->put('total', $purchase->total, 60 * 24 *365);
-        \session()->put('total_iva', $purchase->total_iva, 60 * 24 *365);
+        \session()->put('total_inc', $purchase->total_inc, 60 * 24 *365);
         \session()->put('total_pay', $purchase->total_Pay, 60 * 24 *365);
 
         return redirect('pay_purchase/create');

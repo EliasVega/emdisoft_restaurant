@@ -48,7 +48,7 @@ class CategoryController extends Controller
         $category = new Category();
         $category->name      = $request->name;
         $category->description = $request->description;
-        $category->iva         = $request->iva;
+        $category->inc         = $request->inc;
         $category->utility    = $request->utility;
         $category->status      = '1';
         $category->save();
@@ -89,7 +89,7 @@ class CategoryController extends Controller
     {
         $category->name      = $request->name;
         $category->description = $request->description;
-        $category->iva         = $request->iva;
+        $category->inc         = $request->inc;
         $category->utility    = $request->utility;
         $category->status      = 1;
         $category->update();

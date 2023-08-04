@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->string('name', 45);
             $table->string('description', 255);
-            $table->decimal('iva', 10,2);
+            $table->decimal('inc', 10,2);
             $table->decimal('utility', 10,2);
             $table->boolean('status');
 

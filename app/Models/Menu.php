@@ -29,18 +29,6 @@ class Menu extends Model
         return $this->belongsTo(Branch::class);
     }
 
-    public function ncpurchases(){
-        return $this->belongsToMany(Ncpurchase::class);
-    }
-
-    public function purchases(){
-        return $this->hasMany(Purchase::class);
-    }
-
-    public function ndpurchase(){
-        return $this->belongsToMany(Ndpurchase::class);
-    }
-
     public function unitMeasure(){
         return $this->belongsTo(Unit_measure::class);
     }
@@ -54,31 +42,11 @@ class Menu extends Model
         return $this->belongsToMany(Invoice::class);
     }
 
-    public function ndinvoices()
-    {
-        return $this->belongsToMany(Ndinvoice::class);
-    }
-
-    public function ncinvoices()
-    {
-        return $this->belongsToMany(Ncpurchase::class);
-    }
-
     public function kardex(){
         return $this->hasOne(Kardex::class);
     }
 
-    public function productPurchases(){
-        return $this->belongsToMany(Product_purchase::class);
-    }
-
-    public function orderProducts(){
+    public function menuProducts(){
         return $this->belongsToMany(Order_product::class);
-    }
-    public function branchProducts(){
-        return $this->hasMany(Branch_product::class);
-    }
-    public function ndpurchaseProduct(){
-        return $this->belongsTo(Ndpurchase_product::class);
     }
 }

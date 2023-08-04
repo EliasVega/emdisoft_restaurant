@@ -23,7 +23,7 @@ class SuppliersTableSeeder extends Seeder
             0 =>
             array (
                 'id' => 1,
-                'name' => 'NEXANS COLOMBIA',
+                'name' => 'PROVEEDOR UNO',
                 'number' => '223456789-4',
                 'email' => 'nexans@gmail.com',
                 'document_id' => 6,
@@ -33,7 +33,7 @@ class SuppliersTableSeeder extends Seeder
             1 =>
             array (
                 'id' => 2,
-                'name' => 'BLACK&DECKER',
+                'name' => 'PROVEEDOR DOS',
                 'number' => '223456789-5',
                 'email' => 'blackdecker@gmail.com',
                 'document_id' => 6,
@@ -43,7 +43,7 @@ class SuppliersTableSeeder extends Seeder
             2 =>
             array (
                 'id' => 3,
-                'name' => 'ASUS IMPORTACIONES',
+                'name' => 'PROVEEDOR TRES',
                 'number' => '323456789-6',
                 'email' => 'asus@gmail.com',
                 'document_id' => 6,
@@ -53,7 +53,7 @@ class SuppliersTableSeeder extends Seeder
             3 =>
             array (
                 'id' => 4,
-                'name' => 'LENOVO COLOMBIA',
+                'name' => 'PROVEEDOR CUATRO',
                 'number' => '323456789-7',
                 'email' => 'lenovo@gmail.com',
                 'document_id' => 6,

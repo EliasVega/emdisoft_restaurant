@@ -17,9 +17,9 @@ class Expense_service extends Model
 
         'quantity',
         'price',
-        'iva',
+        'inc',
         'subtotal',
-        'ivasubt',
+        'incsubt',
         'expense_id',
         'service_id'
     ];

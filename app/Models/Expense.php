@@ -16,7 +16,7 @@ class Expense extends Model
     protected $fillable = [
         'document',
         'total',
-        'total_iva',
+        'total_inc',
         'total_pay',
         'note',
         'user_id',

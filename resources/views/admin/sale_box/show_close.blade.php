@@ -179,7 +179,7 @@
                                     <th>id</th>
                                     <th>Producto</th>
                                     <th>cantidad</th>
-                                    <th>iva</th>
+                                    <th>inc</th>
                                     <th>subtotal</th>
                                     <th>Total</th>
                                 </tr>
@@ -187,9 +187,9 @@
                             <tfoot>
                                 <tr>
                                     <th  colspan="3"><p align="right">TOTALES:</p></th>
-                                    <th><p align="right">${{ number_format($ivaTotalPurchases,2) }}</p></th>
+                                    <th><p align="right">${{ number_format($incTotalPurchases,2) }}</p></th>
                                     <th><p align="right">${{ number_format($sumSubtotalPurchases,2) }}</p></th>
-                                    <th><p align="right">${{ number_format($ivaTotalPurchases + $sumSubtotalPurchases,2) }}</p></th>
+                                    <th><p align="right">${{ number_format($incTotalPurchases + $sumSubtotalPurchases,2) }}</p></th>
                                 </tr>
                             </tfoot>
                             <tbody>
@@ -232,9 +232,9 @@
                             <tfoot>
                                 <tr>
                                     <th  colspan="3"><p align="right">TOTALES:</p></th>
-                                    <th><p align="right">${{ number_format($ivaTotalInvoices,2) }}</p></th>
+                                    <th><p align="right">${{ number_format($incTotalInvoices,2) }}</p></th>
                                     <th><p align="right">${{ number_format($sumSubtotalInvoices,2) }}</p></th>
-                                    <th><p align="right">${{ number_format($ivaTotalInvoices + $sumSubtotalInvoices,2) }}</p></th>
+                                    <th><p align="right">${{ number_format($incTotalInvoices + $sumSubtotalInvoices,2) }}</p></th>
                                 </tr>
                             </tfoot>
                             <tbody>

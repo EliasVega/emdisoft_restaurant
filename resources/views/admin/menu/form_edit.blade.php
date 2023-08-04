@@ -41,6 +41,7 @@
                     <tr>
                         <th>Eliminar</th>
                         <th>Editar</th>
+                        <th>Id</th>
                         <th>Materia Prina</th>
                         <th>Cantidad</th>
                         <th>Valor</th>
@@ -49,7 +50,7 @@
                 </thead>
                 <tfoot>
                     <tr>
-                        <th colspan="5">
+                        <th colspan="6">
                             <p align="right">TOTAL:</p>
                         </th>
                         <th>

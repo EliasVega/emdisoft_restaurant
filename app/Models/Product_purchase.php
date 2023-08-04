@@ -10,9 +10,9 @@ class Product_purchase extends Model
 
         'quantity',
         'price',
-        'iva',
+        'inc',
         'subtotal',
-        'ivasubt',
+        'incsubt',
         'item',
         'purchase_id',
         'product_id',

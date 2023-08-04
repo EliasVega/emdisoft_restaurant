@@ -23,7 +23,7 @@ class CompaniesTableSeeder extends Seeder
             0 =>
             array (
                 'id' => 1,
-                'name' => 'Ecounts',
+                'name' => 'Restaurante',
                 'nit' => '123456789',
                 'dv' => '3',
                 'email' => 'ecounts@gmail.com',

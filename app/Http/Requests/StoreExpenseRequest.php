@@ -23,7 +23,7 @@ class StoreExpenseRequest extends FormRequest
     {
         return [
             'total'             => 'required|numeric',
-            'total_iva'         => 'required|numeric',
+            'total_inc'         => 'required|numeric',
             'total_pay'         => 'required|numeric',
             'note'              => 'nullable|string|max:255',
             'user_id'           => '',

@@ -27,7 +27,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\DataTables;
 
 class InvoiceController extends Controller
@@ -104,7 +103,7 @@ class InvoiceController extends Controller
         $menu_id = $request->menu_id;
         $quantity = $request->quantity;
         $price = $request->price;
-        $iva = $request->iva;
+        $inc = $request->inc;
 
         $invoice                    = new Invoice();
         $invoice->user_id           = Auth::user()->id;
@@ -114,7 +113,7 @@ class InvoiceController extends Controller
         $invoice->payment_method_id = $request->payment_method_id;
         $invoice->restaurant_table_id = $request->restaurant_table_id;
         $invoice->total             = $request->total;
-        $invoice->total_iva         = $request->total_iva;
+        $invoice->total_inc         = $request->total_inc;
         $invoice->total_pay         = $request->total_pay;
         $invoice->pay               = $request->total_pay;
         $invoice->balance           = 0;
@@ -157,16 +156,16 @@ class InvoiceController extends Controller
         while($cont < count($menu_id)){
 
             $subtotal = $quantity[$cont] * $price[$cont];
-            $ivasub   = $subtotal * $iva[$cont]/100;
+            $incsub   = $subtotal * $inc[$cont]/100;
 
             $invoiceMenu = new InvoiceMenu();
             $invoiceMenu->invoice_id = $invoice->id;
             $invoiceMenu->menu_id = $menu_id[$cont];
             $invoiceMenu->quantity   = $quantity[$cont];
             $invoiceMenu->price      = $price[$cont];
-            $invoiceMenu->iva        = $iva[$cont];
+            $invoiceMenu->inc        = $inc[$cont];
             $invoiceMenu->subtotal   = $subtotal;
-            $invoiceMenu->ivasubt    = $ivasub;
+            $invoiceMenu->incsubt    = $incsub;
             $invoiceMenu->save();
 
             $menuProducts = MenuProduct::where('menu_id', $menu_id[$cont])->get();
@@ -222,7 +221,7 @@ class InvoiceController extends Controller
         $branch_products = Branch_product::from('branch_products as bp')
         ->join('products as pro', 'bp.product_id', 'pro.id')
         ->join('categories as cat', 'pro.category_id', 'cat.id')
-        ->select('bp.id', 'bp.branch_id', 'bp.stock', 'pro.id as idP', 'pro.sale_price', 'pro.name', 'cat.iva')
+        ->select('bp.id', 'bp.branch_id', 'bp.stock', 'pro.id as idP', 'pro.sale_price', 'pro.name', 'cat.inc')
         ->where('bp.branch_id', $invoice->branch->id)
         ->where('bp.stock', '>', 0)
         ->where('pro.status', '=', 'activo')
@@ -231,7 +230,7 @@ class InvoiceController extends Controller
         ->join('products as pro', 'ip.product_id', 'pro.id')
         ->join('invoices as inv', 'ip.invoice_id', 'inv.id')
         ->join('categories as cat', 'pro.category_id', 'cat.id')
-        ->select('ip.id', 'ip.quantity', 'ip.price', 'pro.stock', 'pro.id as idP', 'pro.sale_price', 'pro.name', 'cat.iva', 'inv.balance')
+        ->select('ip.id', 'ip.quantity', 'ip.price', 'pro.stock', 'pro.id as idP', 'pro.sale_price', 'pro.name', 'cat.inc', 'inv.balance')
         ->where('invoice_id', $invoice->id)
         ->get();
 
@@ -264,7 +263,7 @@ class InvoiceController extends Controller
         $product_id = $request->product_id;
         $quantity   = $request->quantity;
         $price      = $request->price;
-        $iva        = $request->iva;
+        $inc        = $request->inc;
         $pay        = $request->pay;
         $total_pay = $request->total_pay;
 
@@ -288,7 +287,7 @@ class InvoiceController extends Controller
         $invoice->payment_form_id   = $request->payment_form_id;
         $invoice->payment_method_id = $request->payment_method_id;
         $invoice->total             = $request->total;
-        $invoice->total_iva         = $request->total_iva;
+        $invoice->total_inc         = $request->total_inc;
         $invoice->total_pay         = $total_pay;
         if ($payOld > 0 && $pay == 0) {
             $invoice->pay = $payOld;
@@ -370,9 +369,9 @@ class InvoiceController extends Controller
 
             $invoiceProduct->quantity    = 0;
             $invoiceProduct->price       = 0;
-            $invoiceProduct->iva         = 0;
+            $invoiceProduct->inc         = 0;
             $invoiceProduct->subtotal    = 0;
-            $invoiceProduct->ivasubt     = 0;
+            $invoiceProduct->incsubt     = 0;
             $invoiceProduct->update();
         }
 
@@ -381,7 +380,7 @@ class InvoiceController extends Controller
         while($cont < count($product_id)){
             $invoiceProduct = Invoice_product::where('invoice_id', $invoice->id)->where('product_id', $product_id[$cont])->first();
             $subtotal = $quantity[$cont] * $price[$cont];
-            $ivasub   = $subtotal * $iva[$cont]/100;
+            $incsub   = $subtotal * $inc[$cont]/100;
             if (is_null($invoiceProduct)) {
 
                 $invoice_product = new Invoice_product();
@@ -389,9 +388,9 @@ class InvoiceController extends Controller
                 $invoice_product->product_id = $product_id[$cont];
                 $invoice_product->quantity = $quantity[$cont];
                 $invoice_product->price = $price[$cont];
-                $invoice_product->iva = $iva[$cont];
+                $invoice_product->inc = $inc[$cont];
                 $invoice_product->subtotal = $subtotal;
-                $invoice_product->ivasubt = $ivasub;
+                $invoice_product->incsubt = $incsub;
                 $invoice_product->save();
 
                 $branch_products = Branch_product::where('product_id', '=', $product_id[$cont])
@@ -414,12 +413,12 @@ class InvoiceController extends Controller
                 $kardex->save();
             } else {
                 $subtotal = $quantity[$cont] * $price[$cont];
-                $ivasub   = $subtotal * $iva[$cont]/100;
+                $incsub   = $subtotal * $inc[$cont]/100;
                 $invoiceProduct->quantity = $quantity[$cont];
                 $invoiceProduct->price = $price[$cont];
-                $invoiceProduct->iva = $iva[$cont];
+                $invoiceProduct->inc = $inc[$cont];
                 $invoiceProduct->subtotal = $subtotal;
-                $invoiceProduct->ivasubt = $ivasub;
+                $invoiceProduct->incsubt = $incsub;
                 $invoiceProduct->update();
 
                 $branch_products = Branch_product::where('product_id', '=', $product_id[$cont])
@@ -459,7 +458,7 @@ class InvoiceController extends Controller
         \session()->put('invoice', $invoices->id, 60 * 24 * 365);
         \session()->put('due_date', $invoices->due_date, 60 * 24 *365);
         \session()->put('total', $invoices->total, 60 * 24 *365);
-        \session()->put('total_iva', $invoices->total_iva, 60 * 24 *365);
+        \session()->put('total_inc', $invoices->total_inc, 60 * 24 *365);
         \session()->put('total_pay', $invoices->total_Pay, 60 * 24 *365);
         \session()->put('status', $invoices->status, 60 * 24 *365);
 

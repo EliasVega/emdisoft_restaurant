@@ -29,8 +29,8 @@
                     </div>
                     <div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
                         <div class="form-group">
-                            <label for="iva">IVA</label>
-                            <input type="number" name="iva" class="form-control" value="{{ $category->iva }}">
+                            <label for="inc">INC</label>
+                            <input type="number" name="inc" class="form-control" value="{{ $category->inc }}">
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">

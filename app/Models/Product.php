@@ -25,16 +25,8 @@ class Product extends Model
         return $this->belongsTo(Branch::class);
     }
 
-    public function ncpurchases(){
-        return $this->belongsToMany(Ncpurchase::class);
-    }
-
     public function purchases(){
         return $this->hasMany(Purchase::class);
-    }
-
-    public function ndpurchase(){
-        return $this->belongsToMany(Ndpurchase::class);
     }
 
     public function unit_measure(){
@@ -55,11 +47,6 @@ class Product extends Model
         return $this->belongsToMany(Ndinvoice::class);
     }
 
-    public function ncinvoices()
-    {
-        return $this->belongsToMany(Ncpurchase::class);
-    }
-
     public function kardex(){
         return $this->hasOne(Kardex::class);
     }
@@ -74,7 +61,8 @@ class Product extends Model
     public function branchProducts(){
         return $this->hasMany(Branch_product::class);
     }
-    public function ndpurchaseProduct(){
-        return $this->belongsTo(Ndpurchase_product::class);
+
+    public function menuProducts(){
+        return $this->belongsToMany(MenuProduct::class);
     }
 }

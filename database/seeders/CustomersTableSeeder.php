@@ -23,7 +23,7 @@ class CustomersTableSeeder extends Seeder
             0 =>
             array (
                 'id' => 1,
-                'name' => 'ELECTRICOS SANTANDER',
+                'name' => 'CLIENTE UNO',
                 'number' => '123456788',
                 'email' => 'elesander@gmail.com',
                 'document_id' => 6,
@@ -33,7 +33,7 @@ class CustomersTableSeeder extends Seeder
             1 =>
             array (
                 'id' => 2,
-                'name' => 'FERRETERIA SANTANDER',
+                'name' => 'CLIENTE DOS',
                 'number' => '123456787',
                 'email' => 'ferresander@gmail.com',
                 'document_id' => 6,
@@ -43,7 +43,7 @@ class CustomersTableSeeder extends Seeder
             2 =>
             array (
                 'id' => 3,
-                'name' => 'COLEGIO LA SALLE',
+                'name' => 'CLIENTE TRES',
                 'number' => '523456786',
                 'email' => 'colsalle@gmail.com',
                 'document_id' => 6,
@@ -53,7 +53,7 @@ class CustomersTableSeeder extends Seeder
             3 =>
             array (
                 'id' => 4,
-                'name' => 'AMERICANA DE COMPUTADORES',
+                'name' => 'CLIENTE CUATRO',
                 'number' => '723456785',
                 'email' => 'americomp@gmail.com',
                 'document_id' => 6,
@@ -61,7 +61,5 @@ class CustomersTableSeeder extends Seeder
                 'updated_at' => '2023-01-12 21:07:43',
             ),
         ));
-
-
     }
 }

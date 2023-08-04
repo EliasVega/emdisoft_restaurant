@@ -26,7 +26,7 @@ class StoreCategoryRequest extends FormRequest
         return [
             'name'        => 'required|max:45',
             'description' => 'required|max:255',
-            'iva'         => 'required',
+            'inc'         => 'required',
             'utility'     => 'required',
             'status'      => ''
         ];

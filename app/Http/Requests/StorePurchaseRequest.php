@@ -25,7 +25,7 @@ class StorepurchaseRequest extends FormRequest
     {
         return [
             'total'             => 'required|numeric',
-            'total_iva'         => 'required|numeric',
+            'total_inc'         => 'required|numeric',
             'total_pay'         => 'required|numeric',
             'pay'               => 'numeric',
             'balance'           => 'numeric',

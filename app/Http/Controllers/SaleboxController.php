@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Sale_box;
 use App\Http\Requests\StoreSaleboxRequest;
 use App\Http\Requests\UpdateSaleboxRequest;
-use App\Models\Advance;
 use App\Models\Branch;
 use App\Models\Cash_in;
 use App\Models\Cash_out;
@@ -13,19 +12,12 @@ use App\Models\Company;
 use App\Models\Expense;
 use App\Models\Verification_code;
 use App\Models\Invoice;
-use App\Models\Invoice_product;
 use App\Models\InvoiceMenu;
 use App\Models\Menu;
-use App\Models\Ncinvoice;
-use App\Models\Ncpurchase;
-use App\Models\Ndinvoice;
-use App\Models\Ndpurchase;
 use App\Models\Order;
 use App\Models\Pay_expense;
 use App\Models\Pay_invoice;
-use App\Models\Pay_order;
 use App\Models\Pay_purchase;
-use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Product_purchase;
 use App\Models\Purchase;
@@ -181,25 +173,25 @@ class SaleboxController extends Controller
                 $invoice_products = Invoice_product::from('invoice_products as ip')
                 ->join('invoices as inv', 'ip.invoice_id', 'inv.id')
                 ->join('products as pro', 'ip.product_id', 'pro.id')
-                ->select('pro.id', 'pro.name', 'ip.quantity', 'ip.ivasubt', 'ip.subtotal', 'ip.created_at')
+                ->select('pro.id', 'pro.name', 'ip.quantity', 'ip.incsubt', 'ip.subtotal', 'ip.created_at')
                 ->whereBetween('ip.created_at', [$from, $to])
                 ->where('inv.user_id', $sale_box->user_id)
                 ->where('ip.product_id', $product->id)
                 ->sum('quantity');
 
-                $ivai = Invoice_product::from('invoice_products as ip')
+                $inci = Invoice_product::from('invoice_products as ip')
                 ->join('invoices as inv', 'ip.invoice_id', 'inv.id')
                 ->join('products as pro', 'ip.product_id', 'pro.id')
-                ->select('pro.id', 'pro.name', 'ip.quantity', 'ip.ivasubt', 'ip.subtotal', 'ip.created_at')
+                ->select('pro.id', 'pro.name', 'ip.quantity', 'ip.incsubt', 'ip.subtotal', 'ip.created_at')
                 ->whereBetween('ip.created_at', [$from, $to])
                 ->where('inv.user_id', $sale_box->user_id)
                 ->where('ip.product_id', $product->id)
-                ->sum('ivasubt');
+                ->sum('incsubt');
 
                 if ($invoice_products) {
                     $produc[$cont] = Product::findOrFail($product->id);
                     $produc[$cont]->stock = $invoice_products;
-                    $produc[$cont]->price = $ivai;
+                    $produc[$cont]->price = $inci;
                     $cont++;
                 }
             }
@@ -211,25 +203,25 @@ class SaleboxController extends Controller
                 $product_purchases = Product_purchase::from('product_purchases as pp')
                 ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
                 ->join('products as pro', 'pp.product_id', 'pro.id')
-                ->select('pro.id', 'pro.name', 'pp.quantity', 'pp.ivasubt', 'pp.subtotal', 'pp.created_at')
+                ->select('pro.id', 'pro.name', 'pp.quantity', 'pp.incsubt', 'pp.subtotal', 'pp.created_at')
                 ->whereBetween('pp.created_at', [$from, $to])
                 ->where('pur.user_id', $sale_box->user_id)
                 ->where('pp.product_id', $product->id)
                 ->sum('quantity');
 
-                $ivap = Product_purchase::from('product_purchases as pp')
+                $incp = Product_purchase::from('product_purchases as pp')
                 ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
                 ->join('products as pro', 'pp.product_id', 'pro.id')
-                ->select('pro.id', 'pro.name', 'pp.quantity', 'pp.ivasubt', 'pp.subtotal', 'pp.created_at')
+                ->select('pro.id', 'pro.name', 'pp.quantity', 'pp.incsubt', 'pp.subtotal', 'pp.created_at')
                 ->whereBetween('pp.created_at', [$from, $to])
                 ->where('pur.user_id', $sale_box->user_id)
                 ->where('pp.product_id', $product->id)
-                ->sum('ivasubt');
+                ->sum('incsubt');
 
                 if ($product_purchases) {
                     $productpurc[$cont] = Product::findOrFail($product->id);
                     $productpurc[$cont]->stock = $product_purchases;
-                    $productpurc[$cont]->price = $ivap;
+                    $productpurc[$cont]->price = $incp;
                     $cont++;
                 }
             }
@@ -291,14 +283,14 @@ class SaleboxController extends Controller
             ->where('pp.product_id', $product->id)
             ->sum('quantity');
 
-            //total  de iva por producto
-            $ivaProduct = Product_purchase::from('product_purchases as pp')
+            //total  de inc por producto
+            $incProduct = Product_purchase::from('product_purchases as pp')
             ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
             ->join('products as pro', 'pp.product_id', 'pro.id')
             ->whereBetween('pp.created_at', [$from, $to])
             ->where('pur.user_id', $sale_box->user_id)
             ->where('pp.product_id', $product->id)
-            ->sum('ivasubt');
+            ->sum('incsubt');
             //subtotal por producto
             $subtotalProduct = Product_purchase::from('product_purchases as pp')
             ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
@@ -311,7 +303,7 @@ class SaleboxController extends Controller
             if ($product_purchase) {
                 $productPurchases[$key] = Product::findOrFail($product->id);
                 $productPurchases[$key]->stock = $product_purchase;
-                $productPurchases[$key]->price = $ivaProduct;
+                $productPurchases[$key]->price = $incProduct;
                 $productPurchases[$key]->salePrice = $subtotalProduct;
             }
         }
@@ -322,12 +314,12 @@ class SaleboxController extends Controller
         ->whereBetween('pp.created_at', [$from, $to])
         ->sum('subtotal');
 
-        //suma de total de iva de toda las compras
-        $ivaTotalPurchases = Product_purchase::from('product_purchases as pp')
+        //suma de total de inc de toda las compras
+        $incTotalPurchases = Product_purchase::from('product_purchases as pp')
         ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
         ->where('pur.user_id', $sale_box->user_id)
         ->whereBetween('pp.created_at', [$from, $to])
-        ->sum('ivasubt');
+        ->sum('incsubt');
 
         //seccion de detalle de productos Vendidos
         $invoiceMenus = [];//informacion de totales
@@ -343,14 +335,14 @@ class SaleboxController extends Controller
             ->where('im.menu_id', $menu->id)
             ->sum('quantity');
 
-            //total  de iva por producto
-            $ivaMenu = InvoiceMenu::from('invoice_menus as im')
+            //total  de inc por producto
+            $incMenu = InvoiceMenu::from('invoice_menus as im')
             ->join('invoices as inv', 'im.invoice_id', 'inv.id')
             ->join('menus as men', 'im.menu_id', 'men.id')
             ->whereBetween('im.created_at', [$from, $to])
             ->where('inv.user_id', $sale_box->user_id)
             ->where('im.menu_id', $menu->id)
-            ->sum('ivasubt');
+            ->sum('incsubt');
 
             //subtotal por
             $subtotalMenu = InvoiceMenu::from('invoice_menus as im')
@@ -364,7 +356,7 @@ class SaleboxController extends Controller
             if ($invoiceMenu) {
                 $invoiceMenus[$key] = Menu::findOrFail($menu->id);
                 $invoiceMenus[$key]->stock = $invoiceMenu;
-                $invoiceMenus[$key]->price = $ivaMenu;
+                $invoiceMenus[$key]->price = $incMenu;
                 $invoiceMenus[$key]->salePrice = $subtotalMenu;
             }
         }
@@ -374,12 +366,12 @@ class SaleboxController extends Controller
         ->where('inv.user_id', $sale_box->user_id)
         ->sum('subtotal');
 
-        //suma de total de iva de toda las compras
-        $ivaTotalInvoices = InvoiceMenu::from('invoice_menus as im')
+        //suma de total de inc de toda las compras
+        $incTotalInvoices = InvoiceMenu::from('invoice_menus as im')
         ->join('invoices as inv', 'im.invoice_id', 'inv.id')
         ->whereBetween('im.created_at', [$from, $to])
         ->where('inv.user_id', $sale_box->user_id)
-        ->sum('ivasubt');
+        ->sum('incsubt');
 
             $invoices = Invoice::where('user_id', $user->id)->whereBetween('created_at', [$from, $to])->get();
             $invbalance = Invoice::where('user_id', $user->id)->whereBetween('created_at', [$from, $to])->sum('balance');
@@ -494,14 +486,14 @@ class SaleboxController extends Controller
             ->where('pp.product_id', $product->id)
             ->sum('quantity');
 
-            //total  de iva por producto
-            $ivaProduct = Product_purchase::from('product_purchases as pp')
+            //total  de inc por producto
+            $incProduct = Product_purchase::from('product_purchases as pp')
             ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
             ->join('products as pro', 'pp.product_id', 'pro.id')
             ->whereBetween('pp.created_at', [$from, $to])
             ->where('pur.user_id', $sale_box->user_id)
             ->where('pp.product_id', $product->id)
-            ->sum('ivasubt');
+            ->sum('incsubt');
             //subtotal por producto
             $subtotalProduct = Product_purchase::from('product_purchases as pp')
             ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
@@ -514,7 +506,7 @@ class SaleboxController extends Controller
             if ($product_purchase) {
                 $productPurchases[$key] = Product::findOrFail($product->id);
                 $productPurchases[$key]->stock = $product_purchase;
-                $productPurchases[$key]->price = $ivaProduct;
+                $productPurchases[$key]->price = $incProduct;
                 $productPurchases[$key]->salePrice = $subtotalProduct;
             }
         }
@@ -525,12 +517,12 @@ class SaleboxController extends Controller
         ->whereBetween('pp.created_at', [$from, $to])
         ->sum('subtotal');
 
-        //suma de total de iva de toda las compras
-        $ivaTotalPurchases = Product_purchase::from('product_purchases as pp')
+        //suma de total de inc de toda las compras
+        $incTotalPurchases = Product_purchase::from('product_purchases as pp')
         ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
         ->where('pur.user_id', $sale_box->user_id)
         ->whereBetween('pp.created_at', [$from, $to])
-        ->sum('ivasubt');
+        ->sum('incsubt');
 
         //seccion de detalle de productos Vendidos
         $invoiceMenus = [];//informacion de totales
@@ -546,14 +538,14 @@ class SaleboxController extends Controller
             ->where('im.menu_id', $menu->id)
             ->sum('quantity');
 
-            //total  de iva por producto
-            $ivaMenu = InvoiceMenu::from('invoice_menus as im')
+            //total  de inc por producto
+            $incMenu = InvoiceMenu::from('invoice_menus as im')
             ->join('invoices as inv', 'im.invoice_id', 'inv.id')
             ->join('menus as men', 'im.menu_id', 'men.id')
             ->whereBetween('im.created_at', [$from, $to])
             ->where('inv.user_id', $sale_box->user_id)
             ->where('im.menu_id', $menu->id)
-            ->sum('ivasubt');
+            ->sum('incsubt');
 
             //subtotal por
             $subtotalMenu = InvoiceMenu::from('invoice_menus as im')
@@ -567,7 +559,7 @@ class SaleboxController extends Controller
             if ($invoiceMenu) {
                 $invoiceMenus[$key] = Menu::findOrFail($menu->id);
                 $invoiceMenus[$key]->stock = $invoiceMenu;
-                $invoiceMenus[$key]->price = $ivaMenu;
+                $invoiceMenus[$key]->price = $incMenu;
                 $invoiceMenus[$key]->salePrice = $subtotalMenu;
             }
         }
@@ -577,12 +569,12 @@ class SaleboxController extends Controller
         ->where('inv.user_id', $sale_box->user_id)
         ->sum('subtotal');
 
-        //suma de total de iva de toda las compras
-        $ivaTotalInvoices = InvoiceMenu::from('invoice_menus as im')
+        //suma de total de inc de toda las compras
+        $incTotalInvoices = InvoiceMenu::from('invoice_menus as im')
         ->join('invoices as inv', 'im.invoice_id', 'inv.id')
         ->whereBetween('im.created_at', [$from, $to])
         ->where('inv.user_id', $sale_box->user_id)
-        ->sum('ivasubt');
+        ->sum('incsubt');
         /*
         //seccion de detalle de productos Vendidos
         $invoiceProducts = [];//informacion de totales
@@ -597,14 +589,14 @@ class SaleboxController extends Controller
             ->where('ip.product_id', $product->id)
             ->sum('quantity');
 
-            //total  de iva por producto
-            $ivaProduct = Invoice_product::from('invoice_products as ip')
+            //total  de inc por producto
+            $incProduct = Invoice_product::from('invoice_products as ip')
             ->join('invoices as inv', 'ip.invoice_id', 'inv.id')
             ->join('products as pro', 'ip.product_id', 'pro.id')
             ->whereBetween('ip.created_at', [$from, $to])
             ->where('inv.user_id', $sale_box->user_id)
             ->where('ip.product_id', $product->id)
-            ->sum('ivasubt');
+            ->sum('incsubt');
             //subtotal por producto
             $subtotalProduct = Invoice_product::from('invoice_products as ip')
             ->join('invoices as inv', 'ip.invoice_id', 'inv.id')
@@ -617,7 +609,7 @@ class SaleboxController extends Controller
             if ($invoice_products) {
                 $invoiceProducts[$key] = Product::findOrFail($product->id);
                 $invoiceProducts[$key]->stock = $invoice_products;
-                $invoiceProducts[$key]->price = $ivaProduct;
+                $invoiceProducts[$key]->price = $incProduct;
                 $invoiceProducts[$key]->salePrice = $subtotalProduct;
             }
         }
@@ -628,12 +620,12 @@ class SaleboxController extends Controller
         ->where('inv.user_id', $sale_box->user_id)
         ->sum('subtotal');
 
-        //suma de total de iva de toda las compras
-        $ivaTotalInvoices = Invoice_product::from('invoice_products as ip')
+        //suma de total de inc de toda las compras
+        $incTotalInvoices = Invoice_product::from('invoice_products as ip')
         ->join('invoices as inv', 'ip.invoice_id', 'inv.id')
         ->whereBetween('ip.created_at', [$from, $to])
         ->where('inv.user_id', $sale_box->user_id)
-        ->sum('ivasubt');*/
+        ->sum('incsubt');*/
 
         $invoices = Invoice::where('user_id', $sale_box->user_id)->whereBetween('created_at', [$from, $to])->get();
         $invoice_balance = Invoice::where('user_id', $sale_box->user_id)->whereBetween('created_at', [$from, $to])->sum('balance');
@@ -686,10 +678,10 @@ class SaleboxController extends Controller
 
         return view('admin.sale_box.show_close', compact(
             'productPurchases',
-            'ivaTotalPurchases',
+            'incTotalPurchases',
             'sumSubtotalPurchases',
             'invoiceMenus',
-            'ivaTotalInvoices',
+            'incTotalInvoices',
             'sumSubtotalInvoices',
 
             'invoices',
@@ -742,25 +734,25 @@ class SaleboxController extends Controller
                 $invoice_products = Invoice_product::from('invoice_products as ip')
                 ->join('invoices as inv', 'ip.invoice_id', 'inv.id')
                 ->join('products as pro', 'ip.product_id', 'pro.id')
-                ->select('pro.id', 'pro.name', 'ip.quantity', 'ip.ivasubt', 'ip.subtotal', 'ip.created_at')
+                ->select('pro.id', 'pro.name', 'ip.quantity', 'ip.incsubt', 'ip.subtotal', 'ip.created_at')
                 ->whereBetween('ip.created_at', [$from, $to])
                 ->where('inv.user_id', $sale_box->user_id)
                 ->where('ip.product_id', $product->id)
                 ->sum('quantity');
 
-                $ivai = Invoice_product::from('invoice_products as ip')
+                $inci = Invoice_product::from('invoice_products as ip')
                 ->join('invoices as inv', 'ip.invoice_id', 'inv.id')
                 ->join('products as pro', 'ip.product_id', 'pro.id')
-                ->select('pro.id', 'pro.name', 'ip.quantity', 'ip.ivasubt', 'ip.subtotal', 'ip.created_at')
+                ->select('pro.id', 'pro.name', 'ip.quantity', 'ip.incsubt', 'ip.subtotal', 'ip.created_at')
                 ->whereBetween('ip.created_at', [$from, $to])
                 ->where('inv.user_id', $sale_box->user_id)
                 ->where('ip.product_id', $product->id)
-                ->sum('ivasubt');
+                ->sum('incsubt');
 
                 if ($invoice_products) {
                     $produc[$cont] = Product::findOrFail($product->id);
                     $produc[$cont]->stock = $invoice_products;
-                    $produc[$cont]->price = $ivai;
+                    $produc[$cont]->price = $inci;
                     $cont++;
                 }
             }
@@ -772,25 +764,25 @@ class SaleboxController extends Controller
                 $product_purchases = Product_purchase::from('product_purchases as pp')
                 ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
                 ->join('products as pro', 'pp.product_id', 'pro.id')
-                ->select('pro.id', 'pro.name', 'pp.quantity', 'pp.ivasubt', 'pp.subtotal', 'pp.created_at')
+                ->select('pro.id', 'pro.name', 'pp.quantity', 'pp.incsubt', 'pp.subtotal', 'pp.created_at')
                 ->whereBetween('pp.created_at', [$from, $to])
                 ->where('pur.user_id', $sale_box->user_id)
                 ->where('pp.product_id', $product->id)
                 ->sum('quantity');
 
-                $ivap = Product_purchase::from('product_purchases as pp')
+                $incp = Product_purchase::from('product_purchases as pp')
                 ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
                 ->join('products as pro', 'pp.product_id', 'pro.id')
-                ->select('pro.id', 'pro.name', 'pp.quantity', 'pp.ivasubt', 'pp.subtotal', 'pp.created_at')
+                ->select('pro.id', 'pro.name', 'pp.quantity', 'pp.incsubt', 'pp.subtotal', 'pp.created_at')
                 ->whereBetween('pp.created_at', [$from, $to])
                 ->where('pur.user_id', $sale_box->user_id)
                 ->where('pp.product_id', $product->id)
-                ->sum('ivasubt');
+                ->sum('incsubt');
 
                 if ($product_purchases) {
                     $productpurc[$cont] = Product::findOrFail($product->id);
                     $productpurc[$cont]->stock = $product_purchases;
-                    $productpurc[$cont]->price = $ivap;
+                    $productpurc[$cont]->price = $incp;
                     $cont++;
                 }
             }
@@ -868,14 +860,14 @@ class SaleboxController extends Controller
                 ->where('im.menu_id', $menu->id)
                 ->sum('quantity');
 
-                //total  de iva por producto
-                $ivaMenu = InvoiceMenu::from('invoice_menus as im')
+                //total  de inc por producto
+                $incMenu = InvoiceMenu::from('invoice_menus as im')
                 ->join('invoices as inv', 'im.invoice_id', 'inv.id')
                 ->join('menus as men', 'im.menu_id', 'men.id')
                 ->whereBetween('im.created_at', [$from, $to])
                 ->where('inv.user_id', $sale_box->user_id)
                 ->where('im.menu_id', $menu->id)
-                ->sum('ivasubt');
+                ->sum('incsubt');
 
                 //subtotal por
                 $subtotalMenu = InvoiceMenu::from('invoice_menus as im')
@@ -889,7 +881,7 @@ class SaleboxController extends Controller
                 if ($invoiceMenu) {
                     $invoiceMenus[$key] = Menu::findOrFail($menu->id);
                     $invoiceMenus[$key]->stock = $invoiceMenu;
-                    $invoiceMenus[$key]->price = $ivaMenu;
+                    $invoiceMenus[$key]->price = $incMenu;
                     $invoiceMenus[$key]->salePrice = $subtotalMenu;
                 }
             }
@@ -899,12 +891,12 @@ class SaleboxController extends Controller
             ->where('inv.user_id', $sale_box->user_id)
             ->sum('subtotal');
 
-            //suma de total de iva de toda las compras
-            $ivaTotalInvoices = InvoiceMenu::from('invoice_menus as im')
+            //suma de total de inc de toda las compras
+            $incTotalInvoices = InvoiceMenu::from('invoice_menus as im')
             ->join('invoices as inv', 'im.invoice_id', 'inv.id')
             ->whereBetween('im.created_at', [$from, $to])
             ->where('inv.user_id', $sale_box->user_id)
-            ->sum('ivasubt');
+            ->sum('incsubt');
 
             //seccion de detalle de productos en compra
             $productPurchases = [];//informacion de totales
@@ -920,14 +912,14 @@ class SaleboxController extends Controller
                 ->where('pp.product_id', $product->id)
                 ->sum('quantity');
 
-                //total  de iva por producto
-                $ivaProduct = Product_purchase::from('product_purchases as pp')
+                //total  de inc por producto
+                $incProduct = Product_purchase::from('product_purchases as pp')
                 ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
                 ->join('products as pro', 'pp.product_id', 'pro.id')
                 ->whereBetween('pp.created_at', [$from, $to])
                 ->where('pur.user_id', $sale_box->user_id)
                 ->where('pp.product_id', $product->id)
-                ->sum('ivasubt');
+                ->sum('incsubt');
                 //subtotal por producto
                 $subtotalProduct = Product_purchase::from('product_purchases as pp')
                 ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
@@ -940,7 +932,7 @@ class SaleboxController extends Controller
                 if ($product_purchase) {
                     $productPurchases[$key] = Product::findOrFail($product->id);
                     $productPurchases[$key]->stock = $product_purchase;
-                    $productPurchases[$key]->price = $ivaProduct;
+                    $productPurchases[$key]->price = $incProduct;
                     $productPurchases[$key]->salePrice = $subtotalProduct;
                 }
             }
@@ -951,12 +943,12 @@ class SaleboxController extends Controller
             ->whereBetween('pp.created_at', [$from, $to])
             ->sum('subtotal');
 
-            //suma de total de iva de toda las compras
-            $ivaTotalPurchases = Product_purchase::from('product_purchases as pp')
+            //suma de total de inc de toda las compras
+            $incTotalPurchases = Product_purchase::from('product_purchases as pp')
             ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
             ->where('pur.user_id', $sale_box->user_id)
             ->whereBetween('pp.created_at', [$from, $to])
-            ->sum('ivasubt');
+            ->sum('incsubt');
             //dd($productpurc);
             $invoices = Invoice::where('user_id', $user)->whereBetween('created_at', [$from, $to])->get();
             //$invTotalPay = Invoice::where('user_id', $user)->whereBetween('created_at', [$from, $to])->sum('total_pay');
@@ -1048,7 +1040,7 @@ class SaleboxController extends Controller
             'sum_cash_ins',
             'cashOuts',
             'sum_cash_outs',
-            'ivaProduct',
+            'incProduct',
             'subtotalProduct'
             ))->render();
 

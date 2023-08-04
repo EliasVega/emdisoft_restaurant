@@ -15,7 +15,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\DataTables;
 
@@ -95,7 +94,7 @@ class OrderController extends Controller
         $menu_id   = $request->menu_id;
         $quantity     = $request->quantity;
         $price        = $request->price;
-        $iva          = $request->iva;
+        $inc          = $request->inc;
         $pay          = $request->pay;
 
         //registro en la tabla Order
@@ -103,7 +102,7 @@ class OrderController extends Controller
         $order->user_id           = Auth::user()->id;
         $order->restaurant_table_id = $request->restaurant_table_id;
         $order->total             = $request->total;
-        $order->total_iva         = $request->total_iva;
+        $order->total_inc         = $request->total_inc;
         $order->total_pay         = $request->total_pay;
         $order->status = 'pendiente';
         $order->save();
@@ -120,16 +119,16 @@ class OrderController extends Controller
         while($cont < count($menu_id)){
             //registrando la tabla de orders y productos
             $subtotal = $quantity[$cont] * $price[$cont];
-            $ivasub   = $subtotal * $iva[$cont]/100;
+            $incsub   = $subtotal * $inc[$cont]/100;
 
             $menuOrder = new MenuOrder();
             $menuOrder->order_id   = $order->id;
             $menuOrder->menu_id = $menu_id[$cont];
             $menuOrder->quantity   = $quantity[$cont];
             $menuOrder->price      = $price[$cont];
-            $menuOrder->iva        = $iva[$cont];
+            $menuOrder->inc        = $inc[$cont];
             $menuOrder->subtotal   = $subtotal;
-            $menuOrder->ivasubt    = $ivasub;
+            $menuOrder->incsubt    = $incsub;
             $menuOrder->save();
 
             $cont++;
@@ -169,7 +168,7 @@ class OrderController extends Controller
         $menuOrders = MenuOrder::from('menu_orders as mo')
         ->join('menus as men', 'mo.menu_id', 'men.id')
         ->join('orders as ord', 'mo.order_id', 'ord.id')
-        ->select('mo.id', 'men.id as idM', 'men.name', 'mo.quantity', 'mo.price', 'mo.iva', 'mo.subtotal')
+        ->select('mo.id', 'men.id as idM', 'men.name', 'mo.quantity', 'mo.price', 'mo.inc', 'mo.subtotal')
         ->where('order_id', $order->id)
         ->get();
         return view('admin.order.edit', compact(
@@ -194,7 +193,7 @@ class OrderController extends Controller
         $menu_id = $request->menu_id;
         $quantity   = $request->quantity;
         $price      = $request->price;
-        $iva        = $request->iva;
+        $inc        = $request->inc;
         //llamado de todos los pagos y pago nuevo para la diferencia
         $date1 = Carbon::now()->toDateString();
         $date2 = Order::find($order->id)->created_at->toDateString();
@@ -211,7 +210,7 @@ class OrderController extends Controller
         $order->user_id           = Auth::user()->id;
         $order->restaurant_table_id = $request->restaurant_table_id;
         $order->total             = $request->total;
-        $order->total_iva         = $request->total_iva;
+        $order->total_inc         = $request->total_inc;
         $order->total_pay         = $request->total_pay;
         $order->update();
 
@@ -228,9 +227,9 @@ class OrderController extends Controller
 
             $menuOrder->quantity    = 0;
             $menuOrder->price       = 0;
-            $menuOrder->iva         = 0;
+            $menuOrder->inc         = 0;
             $menuOrder->subtotal    = 0;
-            $menuOrder->ivasubt     = 0;
+            $menuOrder->incsubt     = 0;
             $menuOrder->edition = false;
             $menuOrder->status = 'registrado';
             $menuOrder->update();
@@ -249,7 +248,7 @@ class OrderController extends Controller
 
 
             $subtotal = $quantity[$cont] * $price[$cont];
-            $ivasub = $subtotal * $iva[$cont]/100;
+            $incsub = $subtotal * $inc[$cont]/100;
             //Inicia proceso actualizacio order product si no existe
             if (is_null($menuOrders)) {
 
@@ -258,9 +257,9 @@ class OrderController extends Controller
                 $menuOrder->menu_id  = $menu_id[$cont];
                 $menuOrder->quantity    = $quantity[$cont];
                 $menuOrder->price       = $price[$cont];
-                $menuOrder->iva         = $iva[$cont];
+                $menuOrder->inc         = $inc[$cont];
                 $menuOrder->subtotal    = $subtotal;
-                $menuOrder->ivasubt     = $ivasub;
+                $menuOrder->incsubt     = $incsub;
                 $menuOrder->save();
             } else {
                 if ($quantity[$cont] > 0) {
@@ -271,16 +270,16 @@ class OrderController extends Controller
                         $menuOrder->menu_id  = $menu_id[$cont];
                         $menuOrder->quantity    = $quantity[$cont];
                         $menuOrder->price       = $price[$cont];
-                        $menuOrder->iva         = $iva[$cont];
+                        $menuOrder->inc         = $inc[$cont];
                         $menuOrder->subtotal    = $subtotal;
-                        $menuOrder->ivasubt     = $ivasub;
+                        $menuOrder->incsubt     = $incsub;
                         $menuOrder->save();
                     } else {
                         $menuOrder->quantity += $quantity[$cont];
                         $menuOrder->price = $price[$cont];
-                        $menuOrder->iva = $iva[$cont];
+                        $menuOrder->inc = $inc[$cont];
                         $menuOrder->subtotal = $subtotal;
-                        $menuOrder->ivasubt = $ivasub;
+                        $menuOrder->incsubt = $incsub;
                         $menuOrder->edition = true;
                         $menuOrder->update();
                     }
@@ -311,7 +310,7 @@ class OrderController extends Controller
     $orders = Order::findOrFail($id);
     \session()->put('order', $orders->id, 60 * 24 * 365);
     \session()->put('total', $orders->total, 60 * 24 *365);
-    \session()->put('total_iva', $orders->total_iva, 60 * 24 *365);
+    \session()->put('total_inc', $orders->total_inc, 60 * 24 *365);
     \session()->put('total_pay', $orders->total_pay, 60 * 24 *365);
     \session()->put('status', $orders->estado, 60 * 24 *365);
     return redirect('menuOrder/create');

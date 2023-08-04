@@ -29,7 +29,8 @@ class StoreKardexRequest extends FormRequest
             'operation'  => 'required',
             'number'     => 'required',
             'quantity'   => 'required',
-            'stock'      => 'required'
+            'stock'      => 'required',
+            'observation' => 'nullable|string|max:255'
         ];
     }
 }

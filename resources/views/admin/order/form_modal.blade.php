@@ -18,10 +18,10 @@
             <input type="text" name="menuModal" id="menuModal" class="form-control" placeholder="menuo" readonly>
         </div>
     </div>
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="ivamod">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="incmod">
         <div class="form-group">
-            <label for="ivaModal">iva</label>
-            <input type="text" name="ivaModal" id="ivaModal" class="form-control" placeholder="iva" readonly>
+            <label for="incModal">INC</label>
+            <input type="text" name="incModal" id="incModal" class="form-control" placeholder="inc" readonly>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

@@ -64,10 +64,10 @@
                         <th colspan="4" class="footder">TOTAL:</th>
                         <td class="footder"><strong>${{number_format($order->total,2)}}</strong></td>
                     </tr>
-                    @if ($order->total_iva > 0)
+                    @if ($order->total_inc > 0)
                         <tr>
-                            <th colspan="4" class="footder">TOTAL IVA:</th>
-                            <td class="footder"><strong>${{number_format($order->total_iva,2)}}</strong> </td>
+                            <th colspan="4" class="footder">TOTAL INC:</th>
+                            <td class="footder"><strong>${{number_format($order->total_inc,2)}}</strong> </td>
                         </tr>
 
                         <tr>

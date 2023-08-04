@@ -83,8 +83,8 @@
                     </tr>
 
                     <tr>
-                        <th colspan="2" class="footder">TOTAL IVA:</th>
-                        <td colspan="2" class="footder"><strong>${{number_format($invoice->total_iva,2)}}</strong> </td>
+                        <th colspan="2" class="footder">TOTAL INC:</th>
+                        <td colspan="2" class="footder"><strong>${{number_format($invoice->total_inc,2)}}</strong> </td>
                     </tr>
 
                     <tr>

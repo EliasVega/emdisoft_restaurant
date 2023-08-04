@@ -23,6 +23,7 @@
     var cont=0;
     var total = 0;
     var subtotal = [];
+    $("#save").hide();
 
     $("#product_id").change(productValue);
 
@@ -50,6 +51,7 @@
             totals();
             $('#materials').append(row);
             clear();
+            assess();
         } else {
             //alert("Rellene todos los campos del detalle de la venta");
             Swal.fire({
@@ -68,5 +70,14 @@
         $("#product_id").val("");
         $("#quantity").val("");
         $("#consumer_price").val("");
+    }
+
+    function assess(){
+
+        if(total>0){
+            $("#save").show();
+        } else{
+            $("#save").hide();
+        }
     }
 </script>

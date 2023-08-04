@@ -23,8 +23,8 @@ class CategoriesTableSeeder extends Seeder
             0 =>
             array (
                 'id' => 1,
-                'name' => 'Electricos',
-                'description' => 'Todo lo relacionado con insumos electricos',
+                'name' => 'Carnes',
+                'description' => 'Todo lo relacionado con Carnes',
                 'iva' => '19.00',
                 'utility' => '30.00',
                 'status' => 1,
@@ -34,8 +34,8 @@ class CategoriesTableSeeder extends Seeder
             1 =>
             array (
                 'id' => 2,
-                'name' => 'Ferreteria',
-                'description' => 'Todo lo relacionado con Herramientas de Ferreteria',
+                'name' => 'Carnes Frias',
+                'description' => 'Todo lo relacionado con Carnes frias',
                 'iva' => '19.00',
                 'utility' => '30.00',
                 'status' => 1,
@@ -45,8 +45,8 @@ class CategoriesTableSeeder extends Seeder
             2 =>
             array (
                 'id' => 3,
-                'name' => 'Computadores',
-                'description' => 'Todo lo relacionado con Computacion',
+                'name' => 'Legumbres',
+                'description' => 'Todo lo relacionado con Legumbres',
                 'iva' => '19.00',
                 'utility' => '30.00',
                 'status' => 1,
@@ -56,9 +56,9 @@ class CategoriesTableSeeder extends Seeder
             3 =>
             array (
                 'id' => 4,
-                'name' => 'tablet',
-                'description' => 'Todo lo relacionado con tablets',
-                'iva' => '19.00',
+                'name' => 'Bebidas',
+                'description' => 'Todo lo relacionado con Bebidas',
+                'iva' => '8.00',
                 'utility' => '30.00',
                 'status' => 1,
                 'created_at' => '2023-01-12 21:07:43',
@@ -67,9 +67,9 @@ class CategoriesTableSeeder extends Seeder
             4 =>
             array (
                 'id' => 5,
-                'name' => 'Servicios y Excentos',
-                'description' => 'Gastos de la empresa',
-                'iva' => '0.00',
+                'name' => 'Bar',
+                'description' => 'Bebidas Alcoholicas',
+                'iva' => '8.00',
                 'utility' => '0.00',
                 'status' => 1,
                 'created_at' => '2023-01-12 21:07:43',
@@ -80,7 +80,7 @@ class CategoriesTableSeeder extends Seeder
                 'id' => 6,
                 'name' => 'Materias Primas',
                 'description' => 'Materias Primas',
-                'iva' => '0.00',
+                'iva' => '8.00',
                 'utility' => '0.00',
                 'status' => 1,
                 'created_at' => '2023-01-12 21:07:43',

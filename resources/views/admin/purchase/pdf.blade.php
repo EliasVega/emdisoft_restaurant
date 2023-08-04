@@ -101,8 +101,8 @@
                             </tr>
 
                             <tr>
-                                <th colspan="3" class="footder">TOTAL IVA:</th>
-                                <td class="footder"><strong>${{number_format($purchase->total_iva,2)}}</strong> </td>
+                                <th colspan="3" class="footder">TOTAL INC:</th>
+                                <td class="footder"><strong>${{number_format($purchase->total_inc,2)}}</strong> </td>
                             </tr>
                             <tr>
                                 <th  colspan="3" class="footder">TOTAL PAGAR:</th>

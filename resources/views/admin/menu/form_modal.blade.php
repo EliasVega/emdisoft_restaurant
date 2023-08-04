@@ -6,22 +6,16 @@
             <input type="text" name="idModal" id="idModal"class="form-control" placeholder="id " readonly>
         </div>
     </div>
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="menuIdModal">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="productIdModal">
         <div class="form-group">
-            <label for="menu_idModal">id</label>
-            <input type="number" name="menu_idModal" id="menu_idModal"class="form-control" placeholder="menu_id " readonly>
+            <label for="product_idModal">id</label>
+            <input type="number" name="product_idModal" id="product_idModal"class="form-control" placeholder="product_id " readonly>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="form-group">
-            <label for="menuModal">Menu</label>
-            <input type="text" name="menuModal" id="menuModal" class="form-control" placeholder="Menu" readonly>
-        </div>
-    </div>
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="incmod">
-        <div class="form-group">
-            <label for="incModal">inc</label>
-            <input type="text" name="incModal" id="incModal" class="form-control" placeholder="inc" readonly>
+            <label for="productModal">Producto</label>
+            <input type="text" name="productModal" id="productModal" class="form-control" placeholder="Producto" readonly>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -33,8 +27,8 @@
 
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="form-group">
-            <label for="priceModal">Precio</label>
-            <input type="number" name="priceModal" id="priceModal" class="form-control" placeholder="precio">
+            <label for="consumer_priceModal">Precio</label>
+            <input type="number" name="consumer_priceModal" id="consumer_priceModal" class="form-control" placeholder="precio">
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="subtotalMod">

@@ -18,9 +18,9 @@ return new class extends Migration
 
             $table->decimal('quantity', 10, 2);
             $table->decimal('price', 11, 2);
-            $table->decimal('iva', 10, 2);
+            $table->decimal('inc', 10, 2);
             $table->decimal('subtotal', 11, 2);
-            $table->decimal('ivasubt', 11, 2);
+            $table->decimal('incsubt', 11, 2);
 
             $table->foreignId('invoice_id')->constrained()->onUpdate('cascade');
             $table->foreignId('menu_id')->constrained()->onUpdate('cascade');

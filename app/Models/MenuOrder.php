@@ -12,9 +12,9 @@ class MenuOrder extends Model
     protected $fillable = [
         'quantity',
         'price',
-        'iva',
+        'inc',
         'subtotal',
-        'ivasubt',
+        'incsubt',
         'edition',
         'order_id',
         'product_id'

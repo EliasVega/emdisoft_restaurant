@@ -16,11 +16,11 @@
             <label class="form-control-label" for="note">Nota</label>
             <input type="text" id="note" name="note" class="form-control" placeholder="Describe una nota">
         </div>
-    </div>
-    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12" id="addIva">
+    </divi
+    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12" id="addInc">
         <div class="form-group">
-            <label class="form-control-label" for="iva">Iva</label>
-            <input type="number" id="iva" name="iva" class="form-control" placeholder="Iva" disabled
+            <label class="form-control-label" for="inc">INC</label>
+            <input type="number" id="inc" name="inc" class="form-control" placeholder="inc" disabled
                 pattern="[0-9]{0,15}">
         </div>
     </div>
@@ -30,7 +30,7 @@
                 <select name="service_id" class="form-control selectpicker" id="service_id" data-live-search="true">
                     <option value="0" disabled selected>Seleccionar el Servicio</option>
                     @foreach($services as $service)
-                        <option value="{{ $service->id }}_{{ $service->category->iva }}">{{ $service->name }}</option>
+                        <option value="{{ $service->id }}_{{ $service->category->inc }}">{{ $service->name }}</option>
                     @endforeach
                 </select>
         </div>
@@ -71,7 +71,7 @@
                         <th>Producto</th>
                         <th>Cantidad</th>
                         <th>precio ($)</th>
-                        <th>iva (%)</th>
+                        <th>inc (%)</th>
                         <th>SubTotal ($)</th>
                     </tr>
                 </thead>
@@ -82,9 +82,9 @@
                             <input type="hidden" name="total" id="total"></td>
                     </tr>
                     <tr>
-                        <th colspan="5" class="footder">TOTAL IVA:</th>
-                        <td class="footder"><strong id="total_iva_html">$ 0.00</strong>
-                            <input type="hidden" name="total_iva" id="total_iva">
+                        <th colspan="5" class="footder">TOTAL INC:</th>
+                        <td class="footder"><strong id="total_inc_html">$ 0.00</strong>
+                            <input type="hidden" name="total_inc" id="total_inc">
                         </td>
                     </tr>
                     <tr>
