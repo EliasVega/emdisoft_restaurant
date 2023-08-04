@@ -9,10 +9,10 @@
 <a href="{{ route('order.show', $id) }}" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Ver Pedido" >
         <i class="far fa-eye"></i>
 </a>
-<a href="{{ route('show_pdf_order', $id) }}" class="btn btn-red" target="blanck" data-toggle="tooltip" data-placement="top" title="pdf Pedido" >
+<a href="{{ route('orderPdf', $id) }}" class="btn btn-red" target="blanck" data-toggle="tooltip" data-placement="top" title="pdf Pedido" >
     <i class="fas fa-file-pdf"></i>
 </a>
-<a href="{{ route('postOrder', $id) }}" class="btn btn-blank" target="blanck" data-toggle="tooltip" data-placement="top" title="post Pedido" >
+<a href="{{ route('orderPost', $id) }}" class="btn btn-blank" target="blanck" data-toggle="tooltip" data-placement="top" title="post Pedido" >
     <i class="fas fa-receipt"></i>
 </a>
 @if ($status == 'pendiente')

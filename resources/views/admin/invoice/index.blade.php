@@ -36,6 +36,14 @@
 <script type="text/javascript">
     $(document).ready(function ()
     {
+        window.onload = function() {
+            var invoice = "{{ $invoice ?? '' }}";
+            if (invoice != '') {
+                var imprimir = "{{ route('postInvoice', ['invoice' => ':invoice']) }}";
+                imprimir = imprimir.replace(':invoice', invoice);
+                window.open(imprimir, "_blank");
+            }
+        }
         $('#invoices').DataTable(
         {
             responsive: true,

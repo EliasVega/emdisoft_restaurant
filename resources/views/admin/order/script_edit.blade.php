@@ -238,7 +238,4 @@
             }
         });
     }
-    function imprimir() {
-        window.open('{{ route('orderPost') }}', '_blank');
-    };
 </script>

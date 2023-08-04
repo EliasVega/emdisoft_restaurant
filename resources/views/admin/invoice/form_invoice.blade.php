@@ -1,16 +1,3 @@
-<div class="box-body">
-    <label for="restaurant_table_id">Mesas</label>
-        <br>
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
-            @foreach($restaurantTables as $restaurantTable)
-            <div class="col-lg-2 col-md-2 col-sm-3 col-xs-12">
-            <label>
-                {!! Form::radio('restaurant_table_id', $restaurantTable->id, false, array('class' => 'name mr-3')) !!}
-                {{ $restaurantTable->name }}</label>
-            </div>
-            @endforeach
-        </div>
-</div>
 <div class="box-body row">
     <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12" id="addCustomer">
         <div class="form-group">

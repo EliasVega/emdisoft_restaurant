@@ -219,7 +219,4 @@
             payment();
         }
     }
-    function imprimir() {
-        window.open('{{ route('invoicePost') }}', '_blank');
-    };
 </script>

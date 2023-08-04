@@ -28,6 +28,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+        $order = session('order');
         $user = Auth::user();
         if (request()->ajax()) {
             if ($user->role_id == 1 || $user->role_id == 2) {
@@ -54,7 +55,7 @@ class OrderController extends Controller
         if ($branch->id == 1) {
             return redirect('branch')->with('warning', 'No puede realizar ventas desde Bodega');
         } else {*/
-            return view('admin.order.index');
+            return view('admin.order.index', compact('order'));
         //}
     }
 
@@ -90,57 +91,52 @@ class OrderController extends Controller
             Alert::success('Error','Esta mesa ya tiene una comanda abierta');
             return redirect('order');
         }
-        try{
-            DB::beginTransaction();
-            //Obteniendo variables
-            $menu_id   = $request->menu_id;
-            $quantity     = $request->quantity;
-            $price        = $request->price;
-            $iva          = $request->iva;
-            $pay          = $request->pay;
+        //Obteniendo variables
+        $menu_id   = $request->menu_id;
+        $quantity     = $request->quantity;
+        $price        = $request->price;
+        $iva          = $request->iva;
+        $pay          = $request->pay;
 
-            //registro en la tabla Order
-            $order                    = new Order();
-            $order->user_id           = Auth::user()->id;
-            $order->restaurant_table_id = $request->restaurant_table_id;
-            $order->total             = $request->total;
-            $order->total_iva         = $request->total_iva;
-            $order->total_pay         = $request->total_pay;
-            $order->status = 'pendiente';
-            $order->save();
+        //registro en la tabla Order
+        $order                    = new Order();
+        $order->user_id           = Auth::user()->id;
+        $order->restaurant_table_id = $request->restaurant_table_id;
+        $order->total             = $request->total;
+        $order->total_iva         = $request->total_iva;
+        $order->total_pay         = $request->total_pay;
+        $order->status = 'pendiente';
+        $order->save();
 
-            $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', '=', 'open')->first();
-            $sale_box->order += $order->total_pay;
-            $sale_box->in_total += $order->pay;
-            $sale_box->update();
+        $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', '=', 'open')->first();
+        $sale_box->order += $order->total_pay;
+        $sale_box->in_total += $order->pay;
+        $sale_box->update();
 
-            //si hay Abono registra abono
+        //si hay Abono registra abono
 
-            $cont = 0;
+        $cont = 0;
 
-            while($cont < count($menu_id)){
-                //registrando la tabla de orders y productos
-                $subtotal = $quantity[$cont] * $price[$cont];
-                $ivasub   = $subtotal * $iva[$cont]/100;
+        while($cont < count($menu_id)){
+            //registrando la tabla de orders y productos
+            $subtotal = $quantity[$cont] * $price[$cont];
+            $ivasub   = $subtotal * $iva[$cont]/100;
 
-                $menuOrder = new MenuOrder();
-                $menuOrder->order_id   = $order->id;
-                $menuOrder->menu_id = $menu_id[$cont];
-                $menuOrder->quantity   = $quantity[$cont];
-                $menuOrder->price      = $price[$cont];
-                $menuOrder->iva        = $iva[$cont];
-                $menuOrder->subtotal   = $subtotal;
-                $menuOrder->ivasubt    = $ivasub;
-                $menuOrder->save();
+            $menuOrder = new MenuOrder();
+            $menuOrder->order_id   = $order->id;
+            $menuOrder->menu_id = $menu_id[$cont];
+            $menuOrder->quantity   = $quantity[$cont];
+            $menuOrder->price      = $price[$cont];
+            $menuOrder->iva        = $iva[$cont];
+            $menuOrder->subtotal   = $subtotal;
+            $menuOrder->ivasubt    = $ivasub;
+            $menuOrder->save();
 
-                $cont++;
-            }
-
-            DB::commit();
+            $cont++;
         }
-        catch(Exception $e){
-            DB::rollback();
-        }
+        session(['order' => $order->id]);
+
+        toast('Comanda Registrada satisfactoriamente.','success');
         return redirect('order');
     }
 
@@ -194,110 +190,109 @@ class OrderController extends Controller
      */
     public function update(UpdateOrderRequest $request, Order $order)
     {
+        //llamado a variables
+        $menu_id = $request->menu_id;
+        $quantity   = $request->quantity;
+        $price      = $request->price;
+        $iva        = $request->iva;
+        //llamado de todos los pagos y pago nuevo para la diferencia
+        $date1 = Carbon::now()->toDateString();
+        $date2 = Order::find($order->id)->created_at->toDateString();
 
-        try{
-            DB::beginTransaction();
-            //llamado a variables
-            $menu_id = $request->menu_id;
-            $quantity   = $request->quantity;
-            $price      = $request->price;
-            $iva        = $request->iva;
-            //llamado de todos los pagos y pago nuevo para la diferencia
-            $date1 = Carbon::now()->toDateString();
-            $date2 = Order::find($order->id)->created_at->toDateString();
+        //actualizar la caja
+        if ($date1 == $date2) {
+            $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', 'open')->first();
+            $sale_box->order -= $order->total_pay;
+            $sale_box->out_total -= $order->total_pay;
+            $sale_box->update();
+        }
 
-            //actualizar la caja
-            if ($date1 == $date2) {
-                $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', 'open')->first();
-                $sale_box->order -= $order->total_pay;
-                $sale_box->out_total -= $order->total_pay;
-                $sale_box->update();
-            }
+        //registro en la tabla Order
+        $order->user_id           = Auth::user()->id;
+        $order->restaurant_table_id = $request->restaurant_table_id;
+        $order->total             = $request->total;
+        $order->total_iva         = $request->total_iva;
+        $order->total_pay         = $request->total_pay;
+        $order->update();
 
-            //registro en la tabla Order
-            $order->user_id           = Auth::user()->id;
-            $order->restaurant_table_id = $request->restaurant_table_id;
-            $order->total             = $request->total;
-            $order->total_iva         = $request->total_iva;
-            $order->total_pay         = $request->total_pay;
-            $order->update();
+        //actualizar la caja
+        if ($date1 == $date2) {
+            $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', 'open')->first();
+            $sale_box->order += $order->total_pay;
+            $sale_box->out_total += $order->pay;
+            $sale_box->update();
+        }
 
-            //actualizar la caja
-            if ($date1 == $date2) {
-                $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', 'open')->first();
-                $sale_box->order += $order->total_pay;
-                $sale_box->out_total += $order->pay;
-                $sale_box->update();
-            }
+        $menuOrders = MenuOrder::where('order_id', $order->id)->get();
+        foreach ($menuOrders as $key => $menuOrder) {
 
-            $menuOrders = MenuOrder::where('order_id', $order->id)->get();
-            foreach ($menuOrders as $key => $menuOrder) {
+            $menuOrder->quantity    = 0;
+            $menuOrder->price       = 0;
+            $menuOrder->iva         = 0;
+            $menuOrder->subtotal    = 0;
+            $menuOrder->ivasubt     = 0;
+            $menuOrder->edition = false;
+            $menuOrder->status = 'registrado';
+            $menuOrder->update();
 
-                $menuOrder->quantity    = 0;
-                $menuOrder->price       = 0;
-                $menuOrder->iva         = 0;
-                $menuOrder->subtotal    = 0;
-                $menuOrder->ivasubt     = 0;
-                $menuOrder->update();
+        }
 
-            }
+        //Toma el Request del array
 
-            //Toma el Request del array
+        $cont = 0;
+        $item = 0;
+        //Ingresa los productos que vienen en el array
+        while($cont < count($menu_id)){
 
-            $cont = 0;
-            //Ingresa los productos que vienen en el array
-            while($cont < count($menu_id)){
-
-                $menuOrder = MenuOrder::where('order_id', $order->id)
-                ->where('menu_id', $menu_id[$cont])->first();
+            $menuOrders = MenuOrder::where('order_id', $order->id)
+            ->where('menu_id', $menu_id[$cont])->where('edition', false)->first();
 
 
-                $subtotal = $quantity[$cont] * $price[$cont];
-                $ivasub = $subtotal * $iva[$cont]/100;
-                //Inicia proceso actualizacio order product si no existe
-                if (is_null($menuOrder)) {
+            $subtotal = $quantity[$cont] * $price[$cont];
+            $ivasub = $subtotal * $iva[$cont]/100;
+            //Inicia proceso actualizacio order product si no existe
+            if (is_null($menuOrders)) {
 
-                    $menuOrder = new MenuOrder();
-                    $menuOrder->order_id = $order->id;
-                    $menuOrder->menu_id  = $menu_id[$cont];
-                    $menuOrder->quantity    = $quantity[$cont];
-                    $menuOrder->price       = $price[$cont];
-                    $menuOrder->iva         = $iva[$cont];
-                    $menuOrder->subtotal    = $subtotal;
-                    $menuOrder->ivasubt     = $ivasub;
-                    $menuOrder->save();
-                } else {
-                    $sumOrder = $menuOrder->quantity;
-                    if ($quantity[$cont] > 0) {
-                        if ($sumOrder > 0) {
-                            $menuOrder = new MenuOrder();
-                            $menuOrder->order_id = $order->id;
-                            $menuOrder->menu_id  = $menu_id[$cont];
-                            $menuOrder->quantity    = $quantity[$cont];
-                            $menuOrder->price       = $price[$cont];
-                            $menuOrder->iva         = $iva[$cont];
-                            $menuOrder->subtotal    = $subtotal;
-                            $menuOrder->ivasubt     = $ivasub;
-                            $menuOrder->save();
-                        } else {
-                            $menuOrder->quantity += $quantity[$cont];
-                            $menuOrder->price = $price[$cont];
-                            $menuOrder->iva = $iva[$cont];
-                            $menuOrder->subtotal = $subtotal;
-                            $menuOrder->ivasubt = $ivasub;
-                            $menuOrder->update();
-                        }
+                $menuOrder = new MenuOrder();
+                $menuOrder->order_id = $order->id;
+                $menuOrder->menu_id  = $menu_id[$cont];
+                $menuOrder->quantity    = $quantity[$cont];
+                $menuOrder->price       = $price[$cont];
+                $menuOrder->iva         = $iva[$cont];
+                $menuOrder->subtotal    = $subtotal;
+                $menuOrder->ivasubt     = $ivasub;
+                $menuOrder->save();
+            } else {
+                if ($quantity[$cont] > 0) {
+                    $sumOrder = $menuOrders->quantity;
+                    if ($sumOrder > 0) {
+                        $menuOrder = new MenuOrder();
+                        $menuOrder->order_id = $order->id;
+                        $menuOrder->menu_id  = $menu_id[$cont];
+                        $menuOrder->quantity    = $quantity[$cont];
+                        $menuOrder->price       = $price[$cont];
+                        $menuOrder->iva         = $iva[$cont];
+                        $menuOrder->subtotal    = $subtotal;
+                        $menuOrder->ivasubt     = $ivasub;
+                        $menuOrder->save();
+                    } else {
+                        $menuOrder->quantity += $quantity[$cont];
+                        $menuOrder->price = $price[$cont];
+                        $menuOrder->iva = $iva[$cont];
+                        $menuOrder->subtotal = $subtotal;
+                        $menuOrder->ivasubt = $ivasub;
+                        $menuOrder->edition = true;
+                        $menuOrder->update();
                     }
                 }
-
-                $cont++;
             }
-            DB::commit();
+
+            $cont++;
         }
-        catch(Exception $e){
-            DB::rollback();
-        }
-        return redirect("order")->with('success', 'Orden de Pedido Editado Satisfactoriamente');
+        session(['order' => $order->id]);
+
+        toast('Comanda Editada satisfactoriamente.','success');
+        return redirect('order');
     }
 
     /**
@@ -322,7 +317,7 @@ class OrderController extends Controller
     return redirect('menuOrder/create');
     }
 
-    public function show_pdf_order(Request $request,$id)
+    public function orderPdf(Request $request,$id)
     {
         $order = Order::where('id', $id)->first();
         $menuOrders = MenuOrder::where('order_id', $id)->where('quantity', '>', 0)->get();
@@ -340,7 +335,7 @@ class OrderController extends Controller
         return $pdf->stream('vista-pdf', "$orderpdf.pdf");
     }
 
-    public function postOrder(Request $request, $id)
+    public function orderPost(Request $request, $id)
     {
         $order = Order::findOrFail($id);
         $menuOrders = MenuOrder::where('order_id', $id)->where('quantity', '>', 0)->get();
@@ -354,16 +349,14 @@ class OrderController extends Controller
         $pdf->setPaper (array(0,0,226.76,497.64), 'portrait');
 
         return $pdf->stream('vista-pdf', "$orderpdf.pdf");
-        //return $pdf->download("$invoicepdf.pdf");
+        //return $pdf->download("$orderpdf.pdf");
     }
 
-    public function orderPost(Request $request)
+    public function postOrder(Request $request)
     {
-        sleep(3);
-        $ordered = Order::latest()->first();
-        $ord = $ordered->id;
-        //$ord ++;
-        $order = Order::where('id', $ord)->first();
+        $orders = session('order');
+        $order = Order::findOrFail($orders);
+        session()->forget('order');
         $menuOrders = MenuOrder::where('order_id', $order->id)->where('quantity', '>', 0)->get();
         $company = Company::where('id', 1)->first();
 
@@ -375,7 +368,7 @@ class OrderController extends Controller
         $pdf->setPaper (array(0,0,226.76,497.64), 'portrait');
 
         return $pdf->stream('vista-pdf', "$orderpdf.pdf");
-        //return $pdf->download("$invoicepdf.pdf");
+        //return $pdf->download("$orderpdf.pdf");
     }
 
 

@@ -15,7 +15,7 @@ class MenuOrder extends Model
         'iva',
         'subtotal',
         'ivasubt',
-        'item',
+        'edition',
         'order_id',
         'product_id'
     ];

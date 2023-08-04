@@ -24,10 +24,13 @@
             <form action="{{route('invoice.store')}}" method="POST">
                 {{csrf_field()}}
                 <div class="row m-1">
-                    <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         @include('admin/invoice.form_invoice')
                     </div>
-                    <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                        @include('admin/invoice.form_table')
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
                         @include('admin/invoice.form_pay')
                     </div>
                 </div>

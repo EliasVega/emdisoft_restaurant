@@ -161,7 +161,6 @@ class ExpenseController extends Controller
         while($cont < count($service_id)){
             $subtotal = $quantity[$cont] * $price[$cont];
             $ivasub = $subtotal * $iva[$cont]/100;
-            $item = $cont + 1;
             $servid = $service_id[$cont];
 
             $expense_service = new Expense_service();
@@ -333,7 +332,6 @@ class ExpenseController extends Controller
             $expenseService->iva         = 0;
             $expenseService->subtotal    = 0;
             $expenseService->ivasubt     = 0;
-            $expenseService->item        = 0;
             $expenseService->update();
 
         }
@@ -341,7 +339,6 @@ class ExpenseController extends Controller
         //Toma el Request del array
 
         $cont = 0;
-        $item = 1;
         //Ingresa los productos que vienen en el array
         while($cont < count($service_id)){
 
@@ -351,7 +348,6 @@ class ExpenseController extends Controller
             if (is_null($expenseService)) {
                 $subtotal = $quantity[$cont] * $price[$cont];
                 $ivasub = $subtotal * $iva[$cont]/100;
-                $item = $cont + 1;
                 $expense_service = new Expense_service();
                 $expense_service->expense_id = $expense->id;
                 $expense_service->service_id  = $service_id[$cont];
@@ -361,7 +357,6 @@ class ExpenseController extends Controller
                 $expense_service->subtotal    = $subtotal;
                 $expense_service->ivasubt     = $ivasub;
                 $expense_service->save();
-                $item ++;
             } else {
                 if ($quantity[$cont] > 0) {
 
@@ -382,7 +377,6 @@ class ExpenseController extends Controller
                         $expenseService->subtotal    = $subtotal;
                         $expenseService->ivasubt     = $ivasub;
                         $expenseService->update();
-                        $item ++;
                     }
                 }
             }

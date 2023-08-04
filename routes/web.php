@@ -132,21 +132,21 @@ Route::get('expense/expensePost/{id}', [ExpenseController::class, 'expensePost']
 Route::get('pdfExpense', [ExpenseController::class, 'pdfExpense'])->name('pdfExpense');
 Route::get('postExpense', [ExpenseController::class, 'postExpense'])->name('postExpense');
 
-Route::get('invoice/show_pdf_invoice/{id}', [InvoiceController::class, 'show_pdf_invoice'])->name('show_pdf_invoice');
 Route::get('invoice/show_pay_invoice/{id}', [InvoiceController::class, 'show_pay_invoice'])->name('show_pay_invoice');
 Route::get('invoice/create/{id}', [InvoiceController::class, 'getMunicipalities']);
-Route::get('invoice/post/{id}', [InvoiceController::class, 'post'])->name('post');
-Route::get('invoicePdf', [InvoiceController::class, 'invoicePdf'])->name('invoicePdf');
-Route::get('invoicePost', [InvoiceController::class, 'invoicePost'])->name('invoicePost');
+Route::get('invoice/invoicePdf/{id}', [InvoiceController::class, 'invoicePdf'])->name('invoicePdf');
+Route::get('invoice/invoicePost/{id}', [InvoiceController::class, 'invoicePost'])->name('invoicePost');
+Route::get('pdfInvoice', [InvoiceController::class, 'pdfInvoice'])->name('pdfInvoice');
+Route::get('postInvoice', [InvoiceController::class, 'postInvoice'])->name('postInvoice');
 
 Route::get('menu/status/{id}', [MenuController::class, 'status'])->name('menuStatus');
 
 Route::get('order/show_invoicy/{id}', [orderController::class, 'show_invoicy'])->name('show_invoicy');
 Route::get('order/show_pdf_order/{id}', [orderController::class, 'show_pdf_order'])->name('show_pdf_order');
-Route::get('order/pdfOrder/{id}', [OrderController::class, 'pdfOrder'])->name('pdfOrder');
-Route::get('orderPdf', [OrderController::class, 'orderPdf'])->name('orderPdf');
-Route::get('order/postOrder/{id}', [OrderController::class, 'postOrder'])->name('postOrder');
-Route::get('orderPost', [OrderController::class, 'orderPost'])->name('orderPost');
+Route::get('order/orderPdf/{id}', [OrderController::class, 'orderPdf'])->name('orderPdf');
+Route::get('order/orderPost/{id}', [OrderController::class, 'orderPost'])->name('orderPost');
+Route::get('PdfOrder', [OrderController::class, 'pdfOrder'])->name('pdfOrder');
+Route::get('postOrder', [OrderController::class, 'postOrder'])->name('postOrder');
 Route::get('order/eliminar/{id}', [orderController::class, 'eliminar'])->name('eliminar');
 
 Route::get('pdf_pay_invoice/{id}', [PayinvoiceController::class, 'pdf_pay_invoice'])->name('pdf_pay_invoice');
@@ -162,11 +162,12 @@ Route::get('product/status/{id}', [ProductController::class, 'status'])->name('p
 
 Route::get('prosuc/crate/{id}', [ProductBranchController::class, 'getProducts']);
 
-Route::get('show_pdf_purchase/{id}', [PurchaseController::class, 'show_pdf_purchase'])->name('show_pdf_purchase');
+
 Route::get('show_pay_purchase/{id}', [PurchaseController::class, 'show_pay_purchase'])->name('show_pay_purchase');
-Route::get('post_purchase/{id}', [PurchaseController::class, 'post_purchase'])->name('post_purchase');
-Route::get('purchasePdf', [PurchaseController::class, 'purchasePdf'])->name('purchasePdf');
-Route::get('purchasePost', [PurchaseController::class, 'purchasePost'])->name('purchasePost');
+Route::get('purchase/purchasePdf/{id}', [PurchaseController::class, 'purchasePdf'])->name('purchasePdf');
+Route::get('purchase/purchasePost/{id}', [PurchaseController::class, 'purchasePost'])->name('purchasePost');
+Route::get('pdfPurchase', [PurchaseController::class, 'pdfPurchase'])->name('pdfPurchase');
+Route::get('postPurchase', [PurchaseController::class, 'postPurchase'])->name('postPurchase');
 Route::get('purchase/create/{id}', [PurchaseController::class, 'getMunicipalities']);
 Route::get('purchase/getPayment/{id}', [PurchaseController::class, 'getPayments'])->name('getPayment');
 

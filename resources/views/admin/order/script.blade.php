@@ -118,7 +118,4 @@
         $("#fila" + index).remove();
         assess();
     }
-    function imprimir() {
-        window.open('{{ route('orderPost') }}', '_blank');
-    };
 </script>
