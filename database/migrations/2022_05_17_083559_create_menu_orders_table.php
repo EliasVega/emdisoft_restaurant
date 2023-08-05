@@ -18,11 +18,11 @@ return new class extends Migration
 
             $table->decimal('quantity', 10,2);
             $table->decimal('price', 11,2);
-            $table->decimal('inc', 10,2);
+            $table->decimal('iva', 10,2);
             $table->decimal('subtotal', 11,2);
-            $table->decimal('incsubt', 11,2);
+            $table->decimal('ivasubt', 11,2);
             $table->boolean('edition')->default(true);
-            $table->enum('status', ['registrado', 'nuevo'])->default('nuevo');
+            $table->enum('status', ['registrado', 'nuevo', 'anulado'])->default('nuevo');
 
             $table->foreignId('order_id')->constrained()->onUpdate('cascade');
             $table->foreignId('menu_id')->constrained()->onUpdate('cascade');

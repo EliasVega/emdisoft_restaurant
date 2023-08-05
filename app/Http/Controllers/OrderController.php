@@ -11,7 +11,6 @@ use App\Models\Menu;
 use App\Models\MenuOrder;
 use App\Models\RestaurantTable;
 use App\Models\Sale_box;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -195,16 +194,12 @@ class OrderController extends Controller
         $price      = $request->price;
         $inc        = $request->inc;
         //llamado de todos los pagos y pago nuevo para la diferencia
-        $date1 = Carbon::now()->toDateString();
-        $date2 = Order::find($order->id)->created_at->toDateString();
 
         //actualizar la caja
-        if ($date1 == $date2) {
-            $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', 'open')->first();
-            $sale_box->order -= $order->total_pay;
-            $sale_box->out_total -= $order->total_pay;
-            $sale_box->update();
-        }
+        $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', 'open')->first();
+        $sale_box->order -= $order->total_pay;
+        $sale_box->out_total -= $order->total_pay;
+        $sale_box->update();
 
         //registro en la tabla Order
         $order->user_id           = Auth::user()->id;
@@ -215,12 +210,10 @@ class OrderController extends Controller
         $order->update();
 
         //actualizar la caja
-        if ($date1 == $date2) {
-            $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', 'open')->first();
-            $sale_box->order += $order->total_pay;
-            $sale_box->out_total += $order->pay;
-            $sale_box->update();
-        }
+        $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', 'open')->first();
+        $sale_box->order += $order->total_pay;
+        $sale_box->out_total += $order->pay;
+        $sale_box->update();
 
         $menuOrders = MenuOrder::where('order_id', $order->id)->get();
         foreach ($menuOrders as $key => $menuOrder) {
@@ -231,7 +224,9 @@ class OrderController extends Controller
             $menuOrder->subtotal    = 0;
             $menuOrder->incsubt     = 0;
             $menuOrder->edition = false;
-            $menuOrder->status = 'registrado';
+            if ($menuOrder->status != 'anulado') {
+                $menuOrder->status = 'registrado';
+            }
             $menuOrder->update();
 
         }
@@ -239,19 +234,16 @@ class OrderController extends Controller
         //Toma el Request del array
 
         $cont = 0;
-        $item = 0;
         //Ingresa los productos que vienen en el array
         while($cont < count($menu_id)){
 
             $menuOrders = MenuOrder::where('order_id', $order->id)
-            ->where('menu_id', $menu_id[$cont])->where('edition', false)->first();
-
+            ->where('menu_id', $menu_id[$cont])->where('edition', false)->get();
 
             $subtotal = $quantity[$cont] * $price[$cont];
             $incsub = $subtotal * $inc[$cont]/100;
             //Inicia proceso actualizacio order product si no existe
             if (is_null($menuOrders)) {
-
                 $menuOrder = new MenuOrder();
                 $menuOrder->order_id = $order->id;
                 $menuOrder->menu_id  = $menu_id[$cont];
@@ -263,7 +255,26 @@ class OrderController extends Controller
                 $menuOrder->save();
             } else {
                 if ($quantity[$cont] > 0) {
-                    $sumOrder = $menuOrders->quantity;
+                    //$sumOrder = $menuOrders->quantity;
+                    for ($i=0; $i < 1; $i++) {
+                        foreach ($menuOrders as $menuOrder) {
+                            if ($i == 0) {
+                                $i++;
+                                $menuOrder->quantity = $quantity[$cont];
+                                $menuOrder->price = $price[$cont];
+                                $menuOrder->inc = $inc[$cont];
+                                $menuOrder->subtotal = $subtotal;
+                                $menuOrder->incsubt = $incsub;
+                                $menuOrder->edition = true;
+                                if ($menuOrder->status == 'anulado') {
+                                    $menuOrder->status = 'nuevo';
+                                }
+                                $menuOrder->update();
+                            }
+                        }
+                    }
+
+                    /*
                     if ($sumOrder > 0) {
                         $menuOrder = new MenuOrder();
                         $menuOrder->order_id = $order->id;
@@ -282,11 +293,17 @@ class OrderController extends Controller
                         $menuOrder->incsubt = $incsub;
                         $menuOrder->edition = true;
                         $menuOrder->update();
-                    }
+                    }*/
                 }
             }
-
             $cont++;
+        }
+        $menuOrders = MenuOrder::where('order_id', $order->id)->get();
+        foreach ($menuOrders as $key => $menuOrder) {
+            if ($menuOrder->quantity == 0) {
+                $menuOrder->status = 'anulado';
+                $menuOrder->update();
+            }
         }
         session(['order' => $order->id]);
 

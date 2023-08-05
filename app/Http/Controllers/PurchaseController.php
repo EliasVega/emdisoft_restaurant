@@ -260,7 +260,7 @@ class PurchaseController extends Controller
         $banks = Bank::get();
         $cards = Card::get();
         $branches = Branch::get();
-        $products = Product::where('status', 'activo')->get();
+        $products = Product::where('status', 'active')->get();
         //$productPurchases = Product_purchase::where('purchase_id', $purchase->id)->get();
         $productPurchases = Product_purchase::from('product_purchases as pp')
         ->join('products as pro', 'pp.product_id', 'pro.id')
@@ -319,7 +319,7 @@ class PurchaseController extends Controller
         //Actualizando un registro de compras
         $purchase->user_id     = Auth::user()->id;
         $purchase->payment_form_id = $request->payment_form_id;
-        $purchase->payment_method_id = $request->payment_method_id;
+        $purchase->payment_method_id = $payment_method;
         $purchase->total       = $request->total;
         $purchase->total_inc    = $request->total_inc;
         $purchase->total_pay    = $request->total_pay;
@@ -382,10 +382,9 @@ class PurchaseController extends Controller
                 //metodo que registra el pago a compra y el methodo de pago
                 $pay_purchase_Payment_method = new Pay_purchase_payment_method();
                 $pay_purchase_Payment_method->pay_purchase_id = $pay_purchase->id;
-                $pay_purchase_Payment_method->payment_method_id = $request->payment_method_id;
+                $pay_purchase_Payment_method->payment_method_id = $payment_method;
                 $pay_purchase_Payment_method->bank_id = $request->bank_id;
                 $pay_purchase_Payment_method->card_id = $request->card_id;
-                $pay_purchase_Payment_method->payment_id = $request->payment_id;
                 $pay_purchase_Payment_method->payment = $pay;
                 $pay_purchase_Payment_method->transaction = $request->transaction;
                 $pay_purchase_Payment_method->save();
