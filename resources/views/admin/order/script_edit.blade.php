@@ -45,13 +45,14 @@
         quantity= $("#quantity").val();
         price= $("#sale_price").val();
         inc= $("#inc").val();
+        ed = 2;
         if(menu_id !="" && quantity!="" && quantity>0  && price!="" && inc!=""){
             subtotal[cont]= parseFloat(quantity) * parseFloat(price);
             total= total+subtotal[cont];
             inca= subtotal[cont]*inc/100;
             total_inc=total_inc+inca;
 
-            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]" value="'+menu_id+'">'+menu_id+'</td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="inc[]"  value="'+inc+'">'+inc+'</td><td>$'+subtotal[cont]+' </td></tr>';
+            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="ed[]" value="'+ed+'">'+ed+'</td><td><input type="hidden" name="id[]" value="'+menu_id+'">'+menu_id+'</td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="inc[]"  value="'+inc+'">'+inc+'</td><td>$'+subtotal[cont]+' </td></tr>';
 
             cont++;
 
@@ -131,6 +132,7 @@
                 quantity= value['quantity'];
                 price= value['price'];
                 inc= value['inc'];
+                ed = 1;
 
                 if(menu_id !="" && quantity!="" && quantity>0  && price!="" && price>0){
                     subtotal[cont]= parseFloat(quantity) * parseFloat(price);
@@ -138,7 +140,7 @@
                     inca= subtotal[cont]*inc/100;
                     total_inc=total_inc+inca;
 
-                    var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]" value="'+menu_id+'">'+menu_id+'</td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="inc[]"  value="'+inc+'">'+inc+'</td><td>$'+subtotal[cont]+' </td></tr>';
+                    var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="ed[]" value="'+ed+'">'+ed+'</td><td><input type="hidden" name="id[]" value="'+menu_id+'">'+menu_id+'</td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="inc[]"  value="'+inc+'">'+inc+'</td><td>$'+subtotal[cont]+' </td></tr>';
                     cont++;
 
                     totals();
@@ -203,6 +205,7 @@
         quantity = $("#quantityModal").val();
         price = $("#priceModal").val();
         inc = $("#incModal").val();
+        ed = 1;
 
         $('#priceModal').prop("readonly", false)
 
@@ -212,7 +215,7 @@
             inca= subtotal[cont]*inc/100;
             total_inc=total_inc+inca;
 
-            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]" value="'+menu_id+'">'+menu_id+'</td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="inc[]"  value="'+inc+'">'+inc+'</td><td>$'+subtotal[cont]+' </td></tr>';
+            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="ed[]" value="'+ed+'">'+ed+'</td><td><input type="hidden" name="id[]" value="'+menu_id+'">'+menu_id+'</td><td><input type="hidden" name="menu_id[]" value="'+menu_id+'">'+menu+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="inc[]"  value="'+inc+'">'+inc+'</td><td>$'+subtotal[cont]+' </td></tr>';
             cont++;
             deleterow(contedit);
             totals();

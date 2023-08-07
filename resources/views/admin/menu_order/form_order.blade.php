@@ -15,7 +15,7 @@
     <div class="col-lg-2 col-md-4 col-sm-4 col-xs-12 mt-3" id="addOrder">
         <div class="form-group">
             <label for="order">Orden de Pedido </label>
-            <input type="number" name="order" id="order" value="{{ $order->id }}" class="form-control">
+            <input type="number" name="order" id="order" value="{{ $order->id }}" class="form-control" readonly>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

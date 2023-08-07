@@ -193,6 +193,7 @@ class OrderController extends Controller
         $quantity   = $request->quantity;
         $price      = $request->price;
         $inc        = $request->inc;
+        $ed = $request->ed;
         //llamado de todos los pagos y pago nuevo para la diferencia
 
         //actualizar la caja
@@ -228,22 +229,19 @@ class OrderController extends Controller
                 $menuOrder->status = 'registrado';
             }
             $menuOrder->update();
-
         }
-
         //Toma el Request del array
 
         $cont = 0;
         //Ingresa los productos que vienen en el array
         while($cont < count($menu_id)){
 
-            $menuOrders = MenuOrder::where('order_id', $order->id)
-            ->where('menu_id', $menu_id[$cont])->where('edition', false)->get();
+            $menuOrder = MenuOrder::where('order_id', $order->id)->where('edition', false)->first();
 
             $subtotal = $quantity[$cont] * $price[$cont];
             $incsub = $subtotal * $inc[$cont]/100;
             //Inicia proceso actualizacio order product si no existe
-            if (is_null($menuOrders)) {
+            if (is_null($menuOrder)) {
                 $menuOrder = new MenuOrder();
                 $menuOrder->order_id = $order->id;
                 $menuOrder->menu_id  = $menu_id[$cont];
@@ -252,49 +250,29 @@ class OrderController extends Controller
                 $menuOrder->inc         = $inc[$cont];
                 $menuOrder->subtotal    = $subtotal;
                 $menuOrder->incsubt     = $incsub;
+                $menuOrder->edition = true;
+                if ($ed[$cont] == 1) {
+                    $menuOrder->status = 'registrado';
+                } else {
+                    $menuOrder->status = 'nuevo';
+                }
                 $menuOrder->save();
             } else {
-                if ($quantity[$cont] > 0) {
-                    //$sumOrder = $menuOrders->quantity;
-                    for ($i=0; $i < 1; $i++) {
-                        foreach ($menuOrders as $menuOrder) {
-                            if ($i == 0) {
-                                $i++;
-                                $menuOrder->quantity = $quantity[$cont];
-                                $menuOrder->price = $price[$cont];
-                                $menuOrder->inc = $inc[$cont];
-                                $menuOrder->subtotal = $subtotal;
-                                $menuOrder->incsubt = $incsub;
-                                $menuOrder->edition = true;
-                                if ($menuOrder->status == 'anulado') {
-                                    $menuOrder->status = 'nuevo';
-                                }
-                                $menuOrder->update();
-                            }
-                        }
-                    }
-
-                    /*
-                    if ($sumOrder > 0) {
-                        $menuOrder = new MenuOrder();
-                        $menuOrder->order_id = $order->id;
-                        $menuOrder->menu_id  = $menu_id[$cont];
-                        $menuOrder->quantity    = $quantity[$cont];
-                        $menuOrder->price       = $price[$cont];
-                        $menuOrder->inc         = $inc[$cont];
-                        $menuOrder->subtotal    = $subtotal;
-                        $menuOrder->incsubt     = $incsub;
-                        $menuOrder->save();
-                    } else {
-                        $menuOrder->quantity += $quantity[$cont];
-                        $menuOrder->price = $price[$cont];
-                        $menuOrder->inc = $inc[$cont];
-                        $menuOrder->subtotal = $subtotal;
-                        $menuOrder->incsubt = $incsub;
-                        $menuOrder->edition = true;
-                        $menuOrder->update();
-                    }*/
+                $menuOrder->order_id = $order->id;
+                $menuOrder->menu_id  = $menu_id[$cont];
+                $menuOrder->quantity    = $quantity[$cont];
+                $menuOrder->price       = $price[$cont];
+                $menuOrder->inc         = $inc[$cont];
+                $menuOrder->subtotal    = $subtotal;
+                $menuOrder->incsubt     = $incsub;
+                $menuOrder->edition = true;
+                if ($ed[$cont] == 1) {
+                    $menuOrder->status = 'registrado';
+                } else {
+                    $menuOrder->status = 'nuevo';
                 }
+                $menuOrder->update();
+
             }
             $cont++;
         }

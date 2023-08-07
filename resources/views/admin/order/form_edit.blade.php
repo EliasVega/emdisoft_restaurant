@@ -62,6 +62,7 @@
                     <tr>
                         <th>Eliminar</th>
                         <th>Editar</th>
+                        <th>ed</th>
                         <th>ID</th>
                         <th>Menu</th>
                         <th>Cantidad</th>
@@ -72,18 +73,18 @@
                 </thead>
                 <tfoot>
                     <tr>
-                        <th colspan="7" class="footder">TOTAL:</th>
+                        <th colspan="8" class="footder">TOTAL:</th>
                         <td class="footder"><strong id="total_html">$ 0.00</strong>
                             <input type="hidden" name="total" id="total"></td>
                     </tr>
                     <tr>
-                        <th colspan="7" class="footder">TOTAL INC:</th>
+                        <th colspan="8" class="footder">TOTAL INC:</th>
                         <td class="footder"><strong id="total_inc_html">$ 0.00</strong>
                             <input type="hidden" name="total_inc" id="total_inc">
                         </td>
                     </tr>
                     <tr>
-                        <th colspan="7" class="footder">TOTAL PAGAR:</th>
+                        <th colspan="8" class="footder">TOTAL PAGAR:</th>
                         <td class="footder"><strong id="total_pay_html">$ 0.00</strong>
                             <input type="hidden" name="total_pay" id="total_pay"></td>
                     </tr>
