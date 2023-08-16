@@ -17,8 +17,8 @@
                         <th>dv</th>
                         <th>Logo</th>
                         @if (Auth::user()->role_id == 1)
-                        <th>Ingresar</th>
-                        <th>Editar</th>
+                            <th>Ingresar</th>
+                            <th>Editar</th>
                         @endif
                     </tr>
                 </thead>

@@ -16,7 +16,7 @@ class RoleController extends Controller
     public function index()
     {
         if (request()->ajax()) {
-            $roles = Role::get();
+            $roles = Role::where('id', '!=', 1)->get();
 
             return datatables()
             ->of($roles)

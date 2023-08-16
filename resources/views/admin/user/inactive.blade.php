@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <h3>Listado de Usuarios  Inactivos
-                <a href="{{ route('user.index') }}" class="btn btn-limon"><i class="fas fa-undo-alt mr-2"></i>Regresar</a></h3>
+                <a href="{{ route('user.index') }}" class="btn btn-celeste"><i class="fas fa-undo-alt mr-2"></i>Regresar</a></h3>
         </div>
     </div>
     <div class="row">

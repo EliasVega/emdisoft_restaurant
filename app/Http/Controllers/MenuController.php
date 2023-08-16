@@ -11,6 +11,8 @@ use App\Models\MenuProduct;
 use App\Models\Product;
 use App\Models\Unit_measure;
 
+use function PHPUnit\Framework\isNull;
+
 class MenuController extends Controller
 {
     /**
@@ -70,6 +72,7 @@ class MenuController extends Controller
         $menu->name = $request->name;
         $menu->price = $request->total;
         $menu->sale_price = $request->price;
+        $menu->stock = 0;
 
         //Handle File Upload
         if($request->hasFile('image')){

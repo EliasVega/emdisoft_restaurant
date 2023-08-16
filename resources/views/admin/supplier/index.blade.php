@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <h4>Listado de Proveedores <a href="supplier/create"><button class="btn btn-celeste"><i class="fa fa-plus"></i> Agregar Proveedor</button></a>
-                <a href="{{ route('branch.index') }}" class="btn btn-redeco btn-sm ml-3"><i class="fas fa-undo-alt mr-2"></i>Inicio</a>
+                <a href="{{ route('branch.index') }}" class="btn btn-redeco ml-3"><i class="fas fa-undo-alt mr-2"></i>Inicio</a>
             </h4>
         </div>
     </div>

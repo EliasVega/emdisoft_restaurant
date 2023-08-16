@@ -8,7 +8,11 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <h3>Restaurante
-                    <a href="{{ route('product.index') }}" class="btn btn-celeste"><i class="fas fa-undo-alt mr-2"></i>Inventario General</a>
+                    @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                        <a href="{{ route('product.index') }}" class="btn btn-redeco"><i class="fas fa-undo-alt mr-2"></i>Materias Primas</a>
+                        <a href="{{ route('menu.index') }}" class="btn btn-redeco"><i class="fas fa-undo-alt mr-2"></i>Menu</a>
+                        <a href="{{ route('category.index') }}" class="btn btn-redeco"><i class="fas fa-undo-alt mr-2"></i>Categoria</a>
+                    @endif
                 </h3>
             </div>
         </div>
