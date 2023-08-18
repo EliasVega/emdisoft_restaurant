@@ -29,7 +29,7 @@ class UpdateOrderRequest extends FormRequest
             'totalPay'          => 'numeric',
             'status'            => 'in_array:pendiente,facturado,anulado',
             'user_id' => '',
-            'restaurant_table_id' => 'required|integer'
+            'restaurant_table_id' => ''
         ];
     }
 }

@@ -8,7 +8,10 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Branch_product;
 use App\Models\Category;
 use App\Models\Indicator;
+use App\Models\Kardex;
 use App\Models\Unit_measure;
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 
 class ProductController extends Controller
 {
@@ -17,17 +20,17 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (request()->ajax()) {
-            $products = Product::get();
+        if ($request->ajax()) {
+                $products = Product::get();
 
-            return datatables()
-            ->of($products)
+            return DataTables::of($products)
             ->addColumn('edit', 'admin/product/actions')
             ->rawcolumns(['edit'])
             ->toJson();
         }
+
         return view('admin.product.index');
     }
 
@@ -90,9 +93,8 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Product $product)
     {
-        $product = Product::findOrFail($id);
         $categories = Category::select('id', 'name')->get();
         $measures = Unit_measure::where('status', 'activo')->get();
 
@@ -106,9 +108,8 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateProductRequest $request, $id)
+    public function update(UpdateProductRequest $request, Product $product)
     {
-        $product = Product::findOrFail($id);
         $product->category_id = $request->category_id;
         $product->code = $request->code;
         $product->name = $request->name;
@@ -146,4 +147,6 @@ class ProductController extends Controller
 
         return redirect('product');
     }
+
+
 }

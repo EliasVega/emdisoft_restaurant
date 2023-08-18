@@ -9,7 +9,7 @@
                         <input class="form-check-input" type="radio" value="{{ $restaurantTable->id }}" name="restaurant_table_id" id="{{ $restaurantTable->id }}" checked>
 
                         <label class="form-check-label" for="{{ $restaurantTable->id }}">{{ $restaurantTable->name }}</label>
-                    @elseif ($restaurantTable->id == 1)
+                    @elseif ($restaurantTable->id == 2)
                         <input class="form-check-input" type="radio" value="{{ $restaurantTable->id }}" name="restaurant_table_id" id="{{   $restaurantTable->id }}" checked>
 
                         <label class="form-check-label" for="{{ $restaurantTable->id }}">{{ $restaurantTable->name }}</label>

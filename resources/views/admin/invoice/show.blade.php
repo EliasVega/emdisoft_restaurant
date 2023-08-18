@@ -54,6 +54,32 @@
                 <h6>{{ $invoice->user->name }}</h6>
             </div>
         </div>
+        @if ($invoice->order->restaurant_table_id == 1)
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="form-group">
+                    <label class="form-control-label" for="company">NOMBRE</label>
+                    <h6>{{ $invoice->order->homeOrder->name }}</h6>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="form-group">
+                    <label class="form-control-label" for="company">DIRECCION</label>
+                    <h6>{{ $invoice->order->homeOrder->address }}</h6>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="form-group">
+                    <label class="form-control-label" for="company">TELEFONO</label>
+                    <h6>{{ $invoice->order->homeOrder->phone }}</h6>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="form-group">
+                    <label class="form-control-label" for="company">DOMICILIARIO</label>
+                    <h6>{{ $invoice->order->homeOrder->domicialiary }}</h6>
+                </div>
+            </div>
+        @endif
     </div><br>
     <div class="box-body row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

@@ -127,19 +127,6 @@
                         </select>
                     </div>
                 </div>
-
-                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                    <div class="radio">
-                        <h4>Traslados</h4>
-
-                        <input type="radio" name="transfer" value="1" id="SI">
-                        <label for="transfer">Autorizado</label>
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <input type="radio" name="transfer" value="0" id="NO">
-                        <label for="transfer">No Autorizado</label>
-                    </div>
-                </div>
-
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-group">
                         <button class="btn btn-primary" type="submit">Guardar</button>

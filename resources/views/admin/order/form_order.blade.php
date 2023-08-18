@@ -1,4 +1,16 @@
 <div class="box-body row">
+    <div class="formulario">
+        <div class="checkbox">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 checkbox">
+                <input type="checkbox" name="service" value="0" id="checkbox1" checked>
+                <label for="checkbox1">En Mesa</label>
+
+                <input type="checkbox" name="service" value="1" id="checkbox2">
+                <label for="checkbox2">Domicilios</label>
+            </div>
+
+        </div>
+    </div>
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12" id="addSuggestedPrice">
         <div class="form-group">
             <label class="form-control-label" for="precio">P/sugerido</label>
@@ -28,18 +40,25 @@
             </select>
         </div>
     </div>
-    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12" id="addQuantity">
+    <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12" id="addQuantity">
         <div class="form-group">
             <label class="form-control-label" for="quantity">Cantidad</label>
             <input type="number" id="quantity" name="quantity" value=""
                 class="form-control" placeholder="Cantidad" pattern="[0-9]{0,15}">
         </div>
     </div>
-    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12" id="addPrice">
+    <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12" id="addPrice">
         <div class="form-group">
             <label class="form-control-label" for="sale_price">Precio</label>
             <input type="number" id="sale_price" name="sale_price" class="form-control"
                 placeholder="Precio de venta">
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="addObservation">
+        <div class="form-group">
+            <label class="form-control-label" for="observation">Observaciones</label>
+            <input type="text" id="observation" name="observation" class="form-control"
+                placeholder="Observaciones">
         </div>
     </div>
     <div class="col-lg-2 col-md-3 col-sm-2 col-xs-12" id="added">

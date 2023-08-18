@@ -19,12 +19,6 @@
     </div>
     <div class="col-12 col-md-6">
         <div class="form-group">
-            <label for="dv">DV</label>
-            <input type="text" name="dv" value="{{ old('dv') }}" class="form-control" placeholder="DV">
-        </div>
-    </div>
-    <div class="col-12 col-md-6">
-        <div class="form-group">
             <label for="document_id">T/Identificacion</label>
             <select name="document_id" class="form-control selectpicker" data-live-search="true" id="document_id" required>
                 <option value="{{ old('document_id') }}" disabled selected>Seleccionar.</option>

@@ -6,8 +6,10 @@
 <main class="main">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <h3>Materia Prima <a href="product/create"><button class="btn btn-celeste"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Producto</button></a>
+            <h3>Materia Prima
+                <a href="product/create"><button class="btn btn-celeste"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Producto</button></a>
                 <a href="{{ route('branch.index') }}" class="btn btn-gris"><i class="fas fa-undo-alt mr-2"></i>Regresar</a>
+                <a href="{{ route('kardex.index') }}" class="btn btn-limon"><i class="fas fa-undo-alt mr-2"></i>Kardex</a>
                 </h3>
         </div>
     </div>

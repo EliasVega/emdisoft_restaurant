@@ -13,7 +13,7 @@
         <!-- LOGGO -->
         <div class="center">
             <div id="logo">
-                <img src="{{asset($company->logo) }}" alt="{{ $company->name }}">
+                <img src="{{ asset($company->logo) }}" alt="{{ $company->name }}">
             </div>
         </div>
 
@@ -94,6 +94,22 @@
                 </tfoot>
             </table>
         </div>
+        @if ($invoice->order->restaurant_table_id == 1)
+
+            <div id="factura">
+                <p> PARA ENVIO A DOMICILIO A:</p>
+            </div>
+
+            <div id="factura">
+                <p> NOMBRE: <strong id="numfact">{{ $invoice->order->homeOrder->name }}</strong></p>
+            </div>
+            <div id="factura">
+                <p> DIRECCION: <strong id="numfact">{{ $invoice->order->homeOrder->address }}</strong></p>
+            </div>
+            <div id="factura">
+                <p> TELEFONO: <strong id="numfact">{{ $invoice->order->homeOrder->phone }}</strong></p>
+            </div>
+        @endif
         <br>
         <br>
         <footer>

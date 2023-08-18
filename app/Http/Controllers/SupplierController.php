@@ -5,13 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Supplier;
 use App\Http\Requests\StoreSupplierRequest;
 use App\Http\Requests\UpdateSupplierRequest;
-use App\Models\Department;
 use App\Models\Document;
-use App\Models\Liability;
-use App\Models\Municipality;
-use App\Models\Organization;
-use App\Models\Regime;
-use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\DataTables;
 
@@ -104,9 +98,8 @@ class SupplierController extends Controller
      * @param  \App\Models\Supplier  $supplier
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Supplier $supplier)
     {
-        $supplier = Supplier::findOrFail($id);
         $documents = Document::get();
         return view('admin.supplier.edit', compact('supplier', 'documents'));
     }
@@ -118,9 +111,8 @@ class SupplierController extends Controller
      * @param  \App\Models\Supplier  $supplier
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateSupplierRequest $request, $id)
+    public function update(UpdateSupplierRequest $request, Supplier $supplier)
     {
-        $supplier = Supplier::findOrFail($id);
         $supplier->document_id = $request->document_id;
         $supplier->name = $request->name;
         $supplier->number = $request->number;

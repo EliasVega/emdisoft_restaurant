@@ -103,7 +103,7 @@ class ExpenseController extends Controller
 
         $expense = new Expense();
         $expense->user_id     = Auth::user()->id;
-        $expense->branch_id   = $branch;
+        $expense->branch_id   = Auth::user()->branch_id;
         $expense->supplier_id = $request->supplier_id;
         $expense->payment_form_id = $request->payment_form_id;
         $expense->payment_method_id = $request->payment_method_id;

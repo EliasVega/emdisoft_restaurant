@@ -29,6 +29,7 @@ return new class extends Migration
             $table->foreignId('payment_form_id')->constrained()->onUpdate('cascade');
             $table->foreignId('payment_method_id')->constrained()->onUpdate('cascade');
             $table->foreignId('restaurant_table_id')->constrained();
+            $table->foreignId('order_id')->nullable()->constrained();
 
             $table->timestamps();
         });

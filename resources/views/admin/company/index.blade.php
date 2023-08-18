@@ -12,7 +12,7 @@
                         <th>Id</th>
                         <th>Departamento</th>
                         <th>Municipio</th>
-                        <th>comresa</th>
+                        <th>Nombre</th>
                         <th>NIT</th>
                         <th>dv</th>
                         <th>Logo</th>

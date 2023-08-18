@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('total',20,2);
             $table->decimal('total_inc',11,2);
             $table->decimal('total_pay',20,2);
+            $table->string('observation', 255)->nullable();
             $table->enum('status', ['pendiente', 'facturado', 'anulada'])->default('pendiente');
 
             $table->foreignId('user_id')->constrained()->onUpdate('cascade');

@@ -49,13 +49,13 @@ class UsersTableSeeder extends Seeder
             1 =>
             array (
                 'id' => 2,
-                'name' => 'Ecounts dos',
-                'number' => '91260183',
-                'address' => 'Carrera 33 # 98-27 Bucaramanga',
-                'phone' => '3168666468',
-                'email' => 'ecountsdos@gmail.com',
+                'name' => 'Rincon Socorrano',
+                'number' => '1095827596',
+                'address' => 'CR 24 19 45',
+                'phone' => '3008378625',
+                'email' => 'daniel.dn96@hotmail.com',
                 'email_verified_at' => NULL,
-                'password' => '$2y$10$vJbGCfozckE5G99BLeKEPukdScAKRItAzpyu3ipEo3pV.Pit0W/Qy',
+                'password' => bcrypt('1095827596'),//1095827596
                 'two_factor_secret' => NULL,
                 'two_factor_recovery_codes' => NULL,
                 'two_factor_confirmed_at' => NULL,
@@ -72,6 +72,7 @@ class UsersTableSeeder extends Seeder
                 'document_id' => 3,
                 'role_id' => 2,
             ),
+            /*
             2 =>
             array (
                 'id' => 3,
@@ -149,7 +150,7 @@ class UsersTableSeeder extends Seeder
                 'branch_id' => 1,
                 'document_id' => 3,
                 'role_id' => 5,
-            ),
+            ),*/
         ));
 
 

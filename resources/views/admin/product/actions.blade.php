@@ -8,4 +8,3 @@ data-placement="top" title="Editar"><i class="far fa-edit"></i></a>
     <a href="{{ route('productStatus', $id) }}" class="btn btn-danger" data-toggle="tooltip"
     data-placement="top" title="Activar"><i class="fas fa-icons"></i></a>
 @endif
-<a href="{{ route('kardex.index') }}" class="btn btn-limon"><i class="fas fa-undo-alt mr-2"></i>Kardex</a>

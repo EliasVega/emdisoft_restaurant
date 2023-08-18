@@ -7,10 +7,14 @@ use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Models\Company;
 use App\Models\Document;
+use App\Models\HomeOrder;
 use App\Models\Menu;
 use App\Models\MenuOrder;
+use App\Models\MenuProduct;
+use App\Models\Product;
 use App\Models\RestaurantTable;
 use App\Models\Sale_box;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -66,7 +70,7 @@ class OrderController extends Controller
     {
         $documents = Document::get();
         $menus = Menu::get();
-        $restaurantTables = RestaurantTable::get();
+        $restaurantTables = RestaurantTable::where('id', '!=', 1)->get();
         return view('admin.order.create', compact(
             'documents',
             'restaurantTables',
@@ -83,28 +87,90 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        $table = $request->restaurant_table_id;
-        $ordered = Order::where('restaurant_table_id', $table)->where('status', 'pendiente')->first();
-        if (isset($ordered)) {
-            Alert::success('Error','Esta mesa ya tiene una comanda abierta');
-            return redirect('order');
-        }
         //Obteniendo variables
+        $service = $request->service;
+        $table = $request->restaurant_table_id;
         $menu_id   = $request->menu_id;
         $quantity     = $request->quantity;
         $price        = $request->price;
         $inc          = $request->inc;
         $pay          = $request->pay;
+        $products[] = [];
+        $contproduct = 0;
+        for ($i=0; $i < count($menu_id); $i++) {
+            $menu = Menu::where('id', $menu_id[$i])->first();
+            $menuProducts = MenuProduct::where('menu_id', $menu->id)->get();
+
+            foreach ($menuProducts as $key => $menuProduct) {
+                $productId = $menuProduct->product_id;
+                $quantityMP = $menuProduct->quantity;
+                if ($products[0] != []) {
+                    $contsi = 0;
+                    foreach ($products as $key => $product) {
+                        if ($product[0] == $productId) {
+                            $product[1] += $quantityMP;
+                            $contsi++;
+                        }
+                    }
+                    if ($contsi == 0) {
+                        $product[$contproduct] = [$productId, $quantityMP, $menu->name];
+                            $contproduct++;
+                    }
+                } else {
+                    $products[$contproduct] = [$productId, $quantityMP, $menu->name];
+                    $contproduct++;
+
+                }
+            }
+        }
+        for ($i=0; $i < count($products); $i++) {
+            $idProduct = $products[$i][0];
+            $quantityProduct = $products[$i][1];
+            $nameMenu = $products[$i][2];
+            $product = Product::findOrFail($idProduct);
+            $stock = $product->stock;
+            $nameProduct = $product->name;
+            if ($quantityProduct > $stock) {
+                toast("$nameProduct" . ' ' . 'no es suficiente para' . ' ' . "$nameMenu",'warning');
+                //Alert::success('Error', "$nameProduct" . ' ' . 'no es suficiente para' . ' ' . "$nameMenu");
+                return redirect()->back();
+            }
+        }
+
+        if ($service == 0) {
+            $ordered = Order::where('restaurant_table_id', $table)->where('status', 'pendiente')->first();
+            if (isset($ordered)) {
+                Alert::success('Error', 'Esta mesa ya tiene una comanda abierta');
+                return redirect('order');
+            }
+        }
 
         //registro en la tabla Order
         $order                    = new Order();
         $order->user_id           = Auth::user()->id;
-        $order->restaurant_table_id = $request->restaurant_table_id;
+        if ($service == 0) {
+            $order->restaurant_table_id = $request->restaurant_table_id;
+        } else {
+            $order->restaurant_table_id = 1;
+        }
         $order->total             = $request->total;
         $order->total_inc         = $request->total_inc;
         $order->total_pay         = $request->total_pay;
         $order->status = 'pendiente';
         $order->save();
+
+        if ($service == 1) {
+            $date = Carbon::now();
+            $homeOrder = new HomeOrder();
+            $homeOrder->name = $request->name;
+            $homeOrder->address = $request->address;
+            $homeOrder->phone = $request->phone;
+            $homeOrder->domiciliary = null;
+            $homeOrder->time_receipt = $date->toTimeString();
+            $homeOrder->time_sent = null;
+            $homeOrder->order_id = $order->id;
+            $homeOrder->save();
+        }
 
         $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', '=', 'open')->first();
         $sale_box->order += $order->total_pay;
@@ -162,7 +228,7 @@ class OrderController extends Controller
     public function edit(Order $order)
     {
         $documents = Document::get();
-        $restaurantTables = RestaurantTable::get();
+        $restaurantTables = RestaurantTable::where('id', '!=', 1)->get();
         $menus = Menu::get();
         $menuOrders = MenuOrder::from('menu_orders as mo')
         ->join('menus as men', 'mo.menu_id', 'men.id')
@@ -170,12 +236,14 @@ class OrderController extends Controller
         ->select('mo.id', 'men.id as idM', 'men.name', 'mo.quantity', 'mo.price', 'mo.inc', 'mo.subtotal')
         ->where('order_id', $order->id)
         ->get();
+        $service = $order->restaurant_table_id;
         return view('admin.order.edit', compact(
             'order',
             'documents',
             'restaurantTables',
             'menus',
             'menuOrders',
+            'service'
         ));
     }
 
@@ -193,7 +261,50 @@ class OrderController extends Controller
         $quantity   = $request->quantity;
         $price      = $request->price;
         $inc        = $request->inc;
+        $service = $order->restaurant_table_id;
         $ed = $request->ed;
+
+        $products[] = [];
+        $contproduct = 0;
+        for ($i=0; $i < count($menu_id); $i++) {
+            $menu = Menu::where('id', $menu_id[$i])->first();
+            $menuProducts = MenuProduct::where('menu_id', $menu->id)->get();
+
+            foreach ($menuProducts as $key => $menuProduct) {
+                $productId = $menuProduct->product_id;
+                $quantityMP = $menuProduct->quantity;
+                if ($products[0] != []) {
+                    $contsi = 0;
+                    foreach ($products as $key => $product) {
+                        if ($product[0] == $productId) {
+                            $product[1] += $quantityMP;
+                            $contsi++;
+                        }
+                    }
+                    if ($contsi == 0) {
+                        $product[$contproduct] = [$productId, $quantityMP, $menu->name];
+                            $contproduct++;
+                    }
+                } else {
+                    $products[$contproduct] = [$productId, $quantityMP, $menu->name];
+                    $contproduct++;
+
+                }
+            }
+        }
+        for ($i=0; $i < count($products); $i++) {
+            $idProduct = $products[$i][0];
+            $quantityProduct = $products[$i][1];
+            $nameMenu = $products[$i][2];
+            $product = Product::findOrFail($idProduct);
+            $stock = $product->stock;
+            $nameProduct = $product->name;
+            if ($quantityProduct > $stock) {
+                toast("$nameProduct" . ' ' . 'no es suficiente para' . ' ' . "$nameMenu",'warning');
+                //Alert::success('Error', "$nameProduct" . ' ' . 'no es suficiente para' . ' ' . "$nameMenu");
+                return redirect()->back();
+            }
+        }
         //llamado de todos los pagos y pago nuevo para la diferencia
 
         //actualizar la caja
@@ -204,11 +315,19 @@ class OrderController extends Controller
 
         //registro en la tabla Order
         $order->user_id           = Auth::user()->id;
-        $order->restaurant_table_id = $request->restaurant_table_id;
+        $order->restaurant_table_id = $service;
         $order->total             = $request->total;
         $order->total_inc         = $request->total_inc;
         $order->total_pay         = $request->total_pay;
         $order->update();
+
+        if ($service == 1) {
+            $homeOrder = HomeOrder::where('order_id', $order->id)->first();
+            $homeOrder->name = $request->name;
+            $homeOrder->address = $request->address;
+            $homeOrder->phone = $request->phone;
+            $homeOrder->update();
+        }
 
         //actualizar la caja
         $sale_box = Sale_box::where('user_id', '=', $order->user_id)->where('status', 'open')->first();

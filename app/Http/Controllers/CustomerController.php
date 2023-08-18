@@ -5,10 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
-use App\Models\Department;
 use App\Models\Document;
-use App\Models\Municipality;
-use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
 class CustomerController extends Controller
@@ -92,7 +89,7 @@ class CustomerController extends Controller
     public function edit(Customer $customer)
     {
         $documents = Document::get();
-        return view('admin.customer.edit', compact('customer', 'departments', 'municipalities', 'documents', 'liabilities', 'organizations', 'regimes'));
+        return view('admin.customer.edit', compact('customer', 'documents'));
     }
 
     /**
@@ -102,13 +99,8 @@ class CustomerController extends Controller
      * @param  \App\Models\Customer  $customer
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCustomerRequest $request, $id)
+    public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        $cus = Customer::select('id', 'credit_limit', 'used', 'available')
-        ->where('id', '=', $id)
-        ->first();
-
-        $customer = Customer::findOrFAil($id);
         $customer->document_id = $request->document_id;
         $customer->name = $request->name;
         $customer->number = $request->number;

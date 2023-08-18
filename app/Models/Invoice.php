@@ -19,7 +19,8 @@ class Invoice extends Model
         'customer_id',
         'payment_form_id',
         'payment_method_id',
-        'restaurant_table_id'
+        'restaurant_table_id',
+        'order_id'
     ];
 
     public function user(){
@@ -74,5 +75,10 @@ class Invoice extends Model
     public function table()
     {
         return $this->belongsTo(RestaurantTable::class);
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 }

@@ -70,6 +70,12 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
+                                    <a href="{{ url('role') }}" class="nav-link">
+                                        <i class="far fa-dot-circle nav-icon"></i>
+                                        <p>Roles</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="{{ url('indicator') }}" class="nav-link">
                                         <i class="far fa-dot-circle nav-icon"></i>
                                         <p>Indicadores</p>
@@ -124,7 +130,7 @@
                             </p>
                             </a>
                             <ul class="nav nav-treeview">
-                            @if (Auth::user()->role_id == 1)
+                            @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
                                 <li class="nav-item">
                                     <a href="{{ url('company') }}" class="nav-link">
                                         <i class="far fa-dot-circle nav-icon"></i>
@@ -138,37 +144,39 @@
                                         <p>Sucursales</p>
                                     </a>
                                 </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item has-treeview">
-                            <a href="#" class="nav-link">
-                            <i class="far fa-circle nav-icon"></i>
-                            <p>
-                                Usuarios
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                            </a>
-                            <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="{{ url('user') }}" class="nav-link">
+                                    <a href="{{ url('restaurantTable') }}" class="nav-link">
                                         <i class="far fa-dot-circle nav-icon"></i>
-                                        <p>Usuarios</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ url('role') }}" class="nav-link">
-                                        <i class="far fa-dot-circle nav-icon"></i>
-                                        <p>Roles</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ url('verification_code') }}" class="nav-link">
-                                        <i class="far fa-dot-circle nav-icon"></i>
-                                        <p>Autorizaciones</p>
+                                        <p>Mesas</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
+                        @if (Auth::user()->role_id == 1 || Auth::user()->role_id == 2)
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>
+                                    Usuarios
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="{{ url('user') }}" class="nav-link">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Usuarios</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ url('verification_code') }}" class="nav-link">
+                                            <i class="far fa-dot-circle nav-icon"></i>
+                                            <p>Autorizaciones</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endif
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
@@ -203,7 +211,9 @@
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
+
                     <ul class="nav nav-treeview">
+                        @if (Auth::user()->role_id == 1)
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
@@ -213,15 +223,13 @@
                             </p>
                             </a>
                             <ul class="nav nav-treeview">
-                            @if (Auth::user()->role_id != 5)
+
                                 <li class="nav-item">
                                     <a href="{{ url('pay_purchase') }}" class="nav-link">
                                         <i class="far fa-dot-circle nav-icon"></i>
                                         <p>Abonos a compras</p>
                                     </a>
                                 </li>
-                            @endif
-                            @if (Auth::user()->role_id != 4)
                                 <li class="nav-item">
                                     <a href="{{ url('cash_out') }}" class="nav-link">
                                         <i class="far fa-dot-circle nav-icon"></i>
@@ -234,10 +242,11 @@
                                         <p>Entradas efectivo</p>
                                     </a>
                                 </li>
-                            @endif
+
                             </ul>
                         </li>
-                        @if (Auth::user()->role_id != 5)
+                    @endif
+                    @if (Auth::user()->role_id != 5)
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
@@ -267,9 +276,9 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ url('cash_receipt') }}" class="nav-link">
+                                    <a href="{{ url('expense') }}" class="nav-link">
                                         <i class="far fa-dot-circle nav-icon"></i>
-                                        <p>Recibos de caja</p>
+                                        <p>Gastos</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -280,7 +289,7 @@
                                 </li>
                             </ul>
                         </li>
-                        @endif
+                    @endif
                         @if (Auth::user()->role_id != 4)
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link">
@@ -297,13 +306,6 @@
                                         <p>Clientes</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="{{ url('restaurantTable') }}" class="nav-link">
-                                        <i class="far fa-dot-circle nav-icon"></i>
-                                        <p>Mesas</p>
-                                    </a>
-                                </li>
-
                                 <li class="nav-item">
                                     <a href="{{ url('invoice') }}" class="nav-link">
                                         <i class="far fa-dot-circle nav-icon"></i>
@@ -332,6 +334,17 @@
                             </ul>
                         </li>
                         @endif
+                    </ul>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>
+                           Inventarios
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
                         @if (Auth::user()->role_id != 5)
                         <li class="nav-item has-treeview">
                             <a href="#" class="nav-link">
@@ -363,6 +376,34 @@
                             </ul>
                         </li>
                         @endif
+                    </ul>
+                </li>
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>
+                           Tutoriales
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>
+                                Videos
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="https://www.youtube.com/watch?v=cIIG-T2x6wI" class="nav-link" target="_blank">
+                                        <i class="far fa-dot-circle nav-icon"></i>
+                                        <p>Funcionamiento</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
             </ul>

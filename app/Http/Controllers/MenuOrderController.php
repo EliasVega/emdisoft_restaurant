@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateMenuOrderRequest;
 use App\Models\Bank;
 use App\Models\Card;
 use App\Models\Customer;
+use App\Models\HomeOrder;
 use App\Models\Invoice;
 use App\Models\InvoiceMenu;
 use App\Models\Kardex;
@@ -20,6 +21,7 @@ use App\Models\Payment_form;
 use App\Models\Payment_method;
 use App\Models\Product;
 use App\Models\Sale_box;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +46,7 @@ class MenuOrderController extends Controller
     public function create(Request $request)
     {
         $order = Order::where('id', $request->session()->get('order'))->first();
-
+        $service = $order->restaurant_table_id;
         $menuOrders = MenuOrder::from('menu_orders as mo')
         ->join('menus as men', 'mo.menu_id', 'men.id')
         ->join('orders as ord', 'mo.order_id', 'ord.id')
@@ -67,7 +69,8 @@ class MenuOrderController extends Controller
             'payment_forms',
             'payment_methods',
             'banks',
-            'cards'
+            'cards',
+            'service'
         ));
     }
 
@@ -86,18 +89,28 @@ class MenuOrderController extends Controller
         $price      = $request->price;
         $inc        = $request->inc;
 
-        $invoice                    = new Invoice();
-        $invoice->user_id           = Auth::user()->id;
-        $invoice->branch_id         = Auth::user()->branch_id;
-        $invoice->customer_id       = $request->customer_id;
-        $invoice->payment_form_id   = $request->payment_form_id;
+        $service = $order->restaurant_table_id;
+        if ($service == 1) {
+            $date = Carbon::now();
+            $homeOrder = HomeOrder::where('order_id', $order->id)->first();
+            $homeOrder->domiciliary = $request->domiciliary;
+            $homeOrder->time_sent = $date->toTimeString();
+            $homeOrder->update();
+        }
+
+        $invoice = new Invoice();
+        $invoice->user_id = Auth::user()->id;
+        $invoice->branch_id = Auth::user()->branch_id;
+        $invoice->customer_id = $request->customer_id;
+        $invoice->payment_form_id = $request->payment_form_id;
         $invoice->payment_method_id = $request->payment_method_id;
         $invoice->restaurant_table_id = $order->restaurant_table_id;
-        $invoice->total             = $order->total;
-        $invoice->total_inc         = $order->total_inc;
-        $invoice->total_pay         = $order->total_pay;
-        $invoice->pay               = $order->total_pay;
-        $invoice->balance           = 0;
+        $invoice->order_id = $order->id;
+        $invoice->total = $order->total;
+        $invoice->total_inc = $order->total_inc;
+        $invoice->total_pay = $order->total_pay;
+        $invoice->pay = $order->total_pay;
+        $invoice->balance = 0;
         $invoice->save();
 
         $sale_box = Sale_box::where('user_id', '=', $invoice->user_id)->where('status', '=', 'open')->first();

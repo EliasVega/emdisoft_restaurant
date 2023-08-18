@@ -23,6 +23,7 @@
     $("#editIdmenu").hide();
     $("#editPercentageId").hide();
     $("#editPercentage").hide();
+    $("#addOrder").hide();
     $("#save").hide();
     //$("#addDocument").hide();
 

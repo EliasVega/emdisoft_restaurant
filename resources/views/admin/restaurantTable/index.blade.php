@@ -5,28 +5,14 @@
 @section('content')
 <div class="row">
     <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
-        <h3>Listado Mesas <a href="restaurantTable/create"><button class="btn btn-success"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Mesa</button></a>
-        <a href="{{ route('branch.index') }}" class="btn btn-limon"><i class="fas fa-undo-alt mr-2"></i>Regresar</a></h3>
+        <h3>Listado Mesas <a href="restaurantTable/create"><button class="btn btn-celeste"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Mesa</button></a>
+        <a href="{{ route('branch.index') }}" class="btn btn-redeco"><i class="fas fa-undo-alt mr-2"></i>Regresar</a></h3>
     </div>
 </div>
 <div class="row">
-    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-condensed table-hover" id="restaurantTables">
-                <thead>
-                    <tr class="bg-success">
-                        <th>Id</th>
-                        <th>Sucursal</th>
-                        <th>Mesa</th>
-                        <th>Opciones</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
-    <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered table-condensed table-hover" id="restaurants">
                 <thead>
                     <tr class="bg-success">
                         <th>Id</th>

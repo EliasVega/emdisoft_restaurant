@@ -32,7 +32,7 @@ class StoreUserRequest extends FormRequest
             'email'       => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password'    => ['required', 'string', 'min:6', 'confirmed'],
             'position'    => ['required', 'string', 'max:50'],
-            'transfer'    => 'required',
+            'transfer'    => '',
             'status'      => '',
             'company_id'  => '',
             'branch_id'   => 'required',

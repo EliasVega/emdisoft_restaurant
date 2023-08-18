@@ -92,7 +92,7 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         $user->position = $request->position;
-        $user->transfer = $request->transfer;
+        $user->transfer = 1;
         $user->status = 1;
         $user->save();
 
@@ -158,7 +158,6 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         $user->position = $request->position;
-        $user->transfer = $request->transfer;
         $user->status = 1;
         $user->update();
 

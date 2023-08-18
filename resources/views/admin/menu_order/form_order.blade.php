@@ -18,6 +18,15 @@
             <input type="number" name="order" id="order" value="{{ $order->id }}" class="form-control" readonly>
         </div>
     </div>
+    @if ($service == 1)
+        <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mt-3" id="addDomiciliary">
+            <div class="form-group">
+                <label class="form-control-label" for="domiciliary">Domiciliario</label>
+                <input type="text" id="domiciliary" name="domiciliary" value=""
+                    class="form-control" placeholder="Domiciliario">
+            </div>
+        </div>
+    @endif
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="table-responsive">
             <table id="details" class="table table-striped table-bordered table-condensed table-hover">

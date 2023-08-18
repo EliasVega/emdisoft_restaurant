@@ -16,7 +16,7 @@
             <label class="form-control-label" for="note">Nota</label>
             <input type="text" id="note" name="note" class="form-control" placeholder="Describe una nota">
         </div>
-    </divi
+    </div>
     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12" id="addInc">
         <div class="form-group">
             <label class="form-control-label" for="inc">INC</label>

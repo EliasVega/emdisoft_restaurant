@@ -18,7 +18,7 @@ class RestaurantTableController extends Controller
     {
         if (request()->ajax())
         {
-            $tables = RestaurantTable::get();
+            $tables = RestaurantTable::where('id', '!=', 1)->get();
             return DataTables()::of($tables)
             ->addIndexColumn()
             ->addColumn('branch', function (RestaurantTable $table) {

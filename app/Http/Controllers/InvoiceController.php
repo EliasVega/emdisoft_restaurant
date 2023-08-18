@@ -105,18 +105,19 @@ class InvoiceController extends Controller
         $price = $request->price;
         $inc = $request->inc;
 
-        $invoice                    = new Invoice();
-        $invoice->user_id           = Auth::user()->id;
-        $invoice->branch_id         = Auth::user()->branch_id;
-        $invoice->customer_id       = $request->customer_id;
-        $invoice->payment_form_id   = $request->payment_form_id;
+        $invoice = new Invoice();
+        $invoice->user_id = Auth::user()->id;
+        $invoice->branch_id = Auth::user()->branch_id;
+        $invoice->customer_id = $request->customer_id;
+        $invoice->payment_form_id = $request->payment_form_id;
         $invoice->payment_method_id = $request->payment_method_id;
         $invoice->restaurant_table_id = $request->restaurant_table_id;
-        $invoice->total             = $request->total;
-        $invoice->total_inc         = $request->total_inc;
-        $invoice->total_pay         = $request->total_pay;
-        $invoice->pay               = $request->total_pay;
-        $invoice->balance           = 0;
+        $invoice->order_id = null;
+        $invoice->total = $request->total;
+        $invoice->total_inc = $request->total_inc;
+        $invoice->total_pay = $request->total_pay;
+        $invoice->pay = $request->total_pay;
+        $invoice->balance = 0;
         $invoice->save();
 
         $sale_box = Sale_box::where('user_id', '=', $invoice->user_id)->where('status', '=', 'open')->first();

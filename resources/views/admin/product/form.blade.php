@@ -44,7 +44,7 @@
 
     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
         <div class="form-group">
-            <label for="price">Precio Unidad</label>
+            <label for="price">Precio producto unidad</label>
             <input type="text" name="price" value="{{ old('price', $product->price ?? '') }}" class="form-control" placeholder="Precio de Compra">
         </div>
     </div>

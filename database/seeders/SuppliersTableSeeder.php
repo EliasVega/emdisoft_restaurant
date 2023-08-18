@@ -24,12 +24,13 @@ class SuppliersTableSeeder extends Seeder
             array (
                 'id' => 1,
                 'name' => 'PROVEEDOR UNO',
-                'number' => '223456789-4',
-                'email' => 'nexans@gmail.com',
+                'number' => '223456789',
+                'email' => 'proveedoruno@gmail.com',
                 'document_id' => 6,
                 'created_at' => '2023-01-12 21:07:43',
                 'updated_at' => '2023-01-12 21:07:43',
             ),
+            /*
             1 =>
             array (
                 'id' => 2,
@@ -59,7 +60,7 @@ class SuppliersTableSeeder extends Seeder
                 'document_id' => 6,
                 'created_at' => '2023-01-12 21:07:43',
                 'updated_at' => '2023-01-12 21:07:43',
-            ),
+            ),*/
         ));
 
 

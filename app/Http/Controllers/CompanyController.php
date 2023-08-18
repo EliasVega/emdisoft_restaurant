@@ -23,9 +23,7 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        \Session::forget('branch');
-        \Session::forget('company');
-            $companies = company::where('id', '=', 1)->get();
+        $companies = Company::get();
         return view('admin.company.index', compact('companies'));
     }
 

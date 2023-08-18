@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
             <div class="form-group">
-                <label class="form-control-label" for="id">ORDEN DE PEDIDO #</label>
+                <label class="form-control-label" for="id">COMANDA #</label>
                 <h6>{{ $order->id }}</h6>
             </div>
         </div>
@@ -30,6 +30,32 @@
                 <h6>{{ $order->user->name }}</h6>
             </div>
         </div>
+        @if ($order->restaurant_table_id == 1)
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="form-group">
+                    <label class="form-control-label" for="company">NOMBRE</label>
+                    <h6>{{ $order->homeOrder->name }}</h6>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="form-group">
+                    <label class="form-control-label" for="company">DIRECCION</label>
+                    <h6>{{ $order->homeOrder->address }}</h6>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="form-group">
+                    <label class="form-control-label" for="company">TELEFONO</label>
+                    <h6>{{ $order->homeOrder->phone }}</h6>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+                <div class="form-group">
+                    <label class="form-control-label" for="company">DOMICILIARIO</label>
+                    <h6>{{ $order->homeOrder->domicialiary }}</h6>
+                </div>
+            </div>
+        @endif
     </div><br>
     <div class="box-body row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

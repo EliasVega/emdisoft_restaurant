@@ -20,20 +20,8 @@ class KardexController extends Controller
         if ($request->ajax()) {
             if (!empty($request->end)) {
                 $kardexes = Kardex::whereBetween('created_at', [$request->start, $request->end])->get();
-                /*$kardexes = Kardex::from('kardexes AS kar')
-                ->join('products as pro', 'kar.product_id', 'pro.id')
-                ->join('branches as bra', 'kar.branch_id', 'bra.id')
-                ->select('kar.id', 'kar.operation', 'kar.number', 'kar.quantity', 'kar.stock', 'kar.created_at', 'pro.id as idP', 'pro.name', 'bra.name as nameB')
-                ->whereBetween('kar.created_at', [$request->start, $request->end])
-                ->get();*/
             } else {
                 $kardexes = Kardex::get();
-                /*
-                $kardexes = Kardex::from('kardexes AS kar')
-                ->join('products as pro', 'kar.product_id', 'pro.id')
-                ->join('branches as bra', 'kar.branch_id', 'bra.id')
-                ->select('kar.id', 'kar.operation', 'kar.number', 'kar.quantity', 'kar.stock', 'kar.created_at', 'pro.id as idP', 'pro.name', 'bra.name as nameB')
-                ->get();*/
             }
             return DataTables::of($kardexes)
             ->addIndexColumn()
@@ -83,7 +71,7 @@ class KardexController extends Controller
      * @param  \App\Models\Kardex  $kardex
      * @return \Illuminate\Http\Response
      */
-    public function show(Kardex $kardex)
+    public function show(Request $request, $id)
     {
         //
     }

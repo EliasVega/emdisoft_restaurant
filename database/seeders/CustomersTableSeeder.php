@@ -25,11 +25,12 @@ class CustomersTableSeeder extends Seeder
                 'id' => 1,
                 'name' => 'CLIENTE UNO',
                 'number' => '123456788',
-                'email' => 'elesander@gmail.com',
+                'email' => 'clienteuno@gmail.com',
                 'document_id' => 6,
                 'created_at' => '2023-01-12 21:07:43',
                 'updated_at' => '2023-01-12 21:07:43',
             ),
+            /*
             1 =>
             array (
                 'id' => 2,
@@ -59,7 +60,7 @@ class CustomersTableSeeder extends Seeder
                 'document_id' => 6,
                 'created_at' => '2023-01-12 21:07:43',
                 'updated_at' => '2023-01-12 21:07:43',
-            ),
+            ),*/
         ));
     }
 }

@@ -24,6 +24,7 @@
     total_inc=0;
     //form invoice
     $("#addmenuId").hide();
+    $("#homeOrder").hide();
 
     $("#menu_id").change(menuValue);
 
@@ -118,4 +119,29 @@
         $("#fila" + index).remove();
         assess();
     }
+    $(document).ready(function(){
+        $("#checkbox1").click(function(){
+            $("#createTable").show();
+            $("#homeOrder").hide();
+        });
+    });
+
+    $(document).ready(function(){
+        $("#checkbox2").click(function(){
+            $("#homeOrder").show();
+            $("#createTable").hide();
+        });
+    });
+
+    $("input:checkbox").on('click', function() {
+        // in the handler, 'this' refers to the box clicked on
+        var $box = $(this);
+        if ($box.is(":checked")) {
+            var group = "input:checkbox[name='" + $box.attr("name") + "']";
+            $(group).prop("checked", false);
+            $box.prop("checked", true);
+        } else {
+            $box.prop("checked", false);
+        }
+    });
 </script>
