@@ -110,12 +110,13 @@ class RawMaterialController extends Controller
      */
     public function update(UpdateRawMaterialRequest $request, RawMaterial $rawMaterial)
     {
+
         $rawMaterial->category_id = $request->category_id;
         $rawMaterial->measure_unit_id = $request->measure_unit_id;
         $rawMaterial->code = $request->code;
         $rawMaterial->name = $request->name;
         $rawMaterial->price = $request->price;
-        $rawMaterial->sale_price = $request->sale_price;
+        $rawMaterial->price = $request->sale_price;
         $rawMaterial->type_product = $request->type_product;
         $rawMaterial->stock = $rawMaterial->stock;
         $rawMaterial->update();
