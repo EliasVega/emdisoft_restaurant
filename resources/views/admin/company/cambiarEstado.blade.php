@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-primary modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Cambiar Estado del Producto</h4>
+                <h4 class="modal-title">Cambiar Estado del La Compañia</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"></span>
                 </button>

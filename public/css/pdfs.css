@@ -28,27 +28,27 @@ body {
     margin: 0px auto;
 }
 
-.empresa {
+.company {
     float: left;
     width: 55%;
     margin: 0px auto;
 }
 
-.empresa p {
+.company p {
     display: block;
     width: 100%;
     margin: 0px auto;
 }
 
-#nombre {
+#companyName {
     font-weight: 600;
-    font-size: 2em;
+    font-size: 1.7em;
     margin: 0px auto;
     text-align: center;
 
 }
 
-#datos {
+#companyData {
     display: block;
     font-size: 0.75em;
     margin: 0px auto;
@@ -56,7 +56,7 @@ body {
     float: left;
 }
 
-#factura {
+#document {
     width: 25%;
     margin-top: 10px;
     float: right;
@@ -64,17 +64,17 @@ body {
     border-color: #c0c0c0;
     border-radius: 10px;
     text-align: center;
-    font-size: 0.6em;
+    font-size: 0.7em;
 }
 
-#detosfact {
+#documentData {
     width: 100%;
     margin: 0px auto;
     font-size: 1.5em;
     color: #000000;
 }
 
-#numfact {
+#documentNumber {
     width: 100%;
     margin: 0px auto;
     font-size: 1.8em;
@@ -87,20 +87,19 @@ body {
     background: #fff;
 }
 
-#tcliente {
+#thirdTitle {
     width: 100%;
     background: #fcfcfc;
     padding: 5px;
 }
 
-#titulo {
+#title {
     color: #000000;
     margin: 5px;
     padding: 5px;
-    font-size: 1.2em;
 }
 
-#cliente {
+#third {
     float: left;
     width: 45%;
     text-align: left;
@@ -109,40 +108,40 @@ body {
     margin-right: 0px;
 }
 
-#titc {
+#thirdHeader {
     float: left;
     width: 25%;
 }
-#titd {
+#thirdData {
     float: right;
-    width: 60%;
+    width: 70%;
 }
 
-#tc {
+#rowHeader {
     width: 100%;
     border-bottom: 1px solid #f0f0f0;
     border-left: 3px solid #f0f0f0;
 }
 
-#td {
+#rowData {
     width: 100%;
     border-bottom: 1px solid #f0f0f0;
     border-left: 3px solid #f0f0f0;
 }
 
-#fpago {
+#formPay {
     float: left;
-    width: 35%;
+    width: 45%;
     text-align: left;
     font-size: 0.9em;
     margin-top: 10px;
 }
 
-#tfpago {
+#formPayHeader {
     float: left;
     width: 31%;
 }
-#dfpago {
+#formPayData {
     float: right;
     width: 69%;
 }
@@ -159,55 +158,48 @@ body {
     margin-top: 10px;
 }
 
-.contenido {
+.contentDetail {
     width: 100%;
     background: #fff;
 }
 
-#ttabla {
+#ttable {
     width: 100%;
     /*background: #1208AF;*/
     padding: 5px;
 }
 
-#encabezadot {
-    /*color: #fff;*/
-    margin: 5px;
-    padding: 5px;
-    font-size: 1em;
-}
-
-.tabla {
+.table {
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;
     margin-bottom: 15px;
 }
-.tabla thead{
+.table thead{
     padding: 20px;
     background: #f0f0f0;
     /*border-bottom: 1px solid #c0c0c0;*/
 }
-.tabla thead tr th {
+.table thead tr th {
     text-align: left;
     border: 1px solid #c0c0c0;
     font-size: 0.8em;
     text-align: center;
 }
 
-.detalle {
+.detail {
     border-bottom: 2px solid #c0c0c0;
     border-left: 1px solid #c0c0c0;
     border-right: 1px solid #c0c0c0;
 }
 
-.tabla tbody tr td {
+.table tbody tr td {
     text-align: left;
     font-size: 0.9em;
     border-bottom: 1px solid #eff1f1;
     border-right: 1px solid #eff1f1;;
 }
-.tabla tbody tr .tdder {
+.table tbody tr .tdder {
     text-align: right;
     padding-right: 3px;
 }
@@ -221,12 +213,12 @@ body {
     font-size: 1.1em;
 }
 
-.tabla tfoot tr th {
+.table tfoot tr th {
     background: #feffff;
-    border: 1px solid #eff1f1;
+    border: 1px solid #fbfdfd;
 
 }
-.tabla tfoot tr td {
+.table tfoot tr td {
     background: #f9f9f9;
     border: 1px solid #c0c0c0;
 }
@@ -237,13 +229,15 @@ table tfoot tr th p{
 #ccent {
     text-align: center;
 }
-#uno {
+
+#description {
+    width: 50%;
+}
+
+#quantity {
     width: 7%;
 }
 
-#dos {
-    width: 50%;
-}
 
 footer {
     position: fixed;

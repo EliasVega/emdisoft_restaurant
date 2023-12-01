@@ -1,19 +1,19 @@
 @extends("layouts.admin")
 @section('titulo')
-    {{ config('app.name', 'Ecounts') }}
+    {{ config('app.name', 'EmdisoftPro') }}
 @endsection
 
 @section('content')
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <a href="{{ route('expense.index') }}" class="btn btn-bluR btn-sm ml-3"><i class="fas fa-undo-alt mr-2"></i>Regresar</a>
+        <a href="{{ route('branch.index') }}" class="btn btn-lightBlueGrad btn-sm"><i class="fas fa-undo-alt mr-2"></i>Regresar</a>
     </div>
     <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <strong class="titulo-show">ID</strong>: <p class="vista"><h2>{{ $branch->id }}</h2></p>
+            <strong class="titulo-show">ID</strong>: <p class="vista"><h4>{{ $branch->id }}</h4></p>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-            <strong class="titulo-show">SUCURSAL</strong>: <p class="vista"><h2>{{ $branch->name }}</h2></p>
+            <strong class="titulo-show">SUCURSAL</strong>: <p class="vista"><h4>{{ $branch->name }}</h4></p>
         </div>
     </div>
         <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -29,7 +29,7 @@
                     {{ $branch->company->name }}</p>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                <strong class="titulo-show mostrar">Nit</strong>: <p class="vista">{{ $branch->nit }}</p>
+                <strong class="titulo-show mostrar">Nit</strong>: <p class="vista">{{ $branch->company->nit }}</p>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                 <strong class="titulo-show">Direccion</strong>: <p class="vista">{{ $branch->address }}</p>

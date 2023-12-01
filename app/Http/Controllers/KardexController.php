@@ -10,6 +10,10 @@ use Yajra\DataTables\DataTables;
 
 class KardexController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('permission:kardex.index', ['only'=>['index']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -25,21 +29,39 @@ class KardexController extends Controller
             }
             return DataTables::of($kardexes)
             ->addIndexColumn()
-            ->addColumn('idP', function (Kardex $kardex) {
-                return $kardex->product->id;
-            })
-            ->addColumn('product', function (Kardex $kardex) {
-                return $kardex->product->name;
-            })
             ->addColumn('branch', function (Kardex $kardex) {
                 return $kardex->branch->name;
             })
-            ->editColumn('created_at', function(Kardex $kardex){
-                return $kardex->created_at->format('yy-m-d: h:m');
+            ->addColumn('operation', function (Kardex $kardex) {
+                if ($kardex->movement == 'purchase') {
+                    return $kardex->movement == 'purchase' ? 'Compra' : 'Compra';
+                } elseif ($kardex->movement == 'expense') {
+                    return $kardex->movement == 'expense' ? 'Gasto' : 'Gasto';
+                }elseif ($kardex->movement == 'ndpurchase') {
+                    return $kardex->movement == 'ndpurchase' ? 'ND compra' : 'ND compra';
+                } elseif ($kardex->movement == 'ncpurchase'){
+                    return $kardex->movement == 'ncpurchase' ? 'Nc compra' : 'Nc compra';
+                } elseif ($kardex->movement == 'invoice') {
+                    return $kardex->movement == 'invoice' ? 'Venta' : 'Venta';
+                }elseif ($kardex->movement == 'ndinvoice') {
+                    return $kardex->movement == 'ndinvoice' ? 'ND venta' : 'ND venta';
+                } elseif ($kardex->movement == 'ncinvoice'){
+                    return $kardex->movement == 'ncinvoice' ? 'Nc venta' : 'Nc venta';
+                }
             })
-            ->addColumn('btn', 'admin/jardex/actions')
-            ->rawColumns(['btn'])
-            ->make(true);
+
+            ->addColumn('product_id', function (Kardex $kardex) {
+                return $kardex->kardexable->id;
+            })
+            ->addColumn('product', function (Kardex $kardex) {
+                return $kardex->kardexable->name;
+            })
+            ->editColumn('created_at', function(Kardex $kardex){
+                return $kardex->created_at->format('Y-m-d');
+            })
+            ->addColumn('edit', 'admin/kardex/actions')
+            ->rawcolumns(['edit'])
+            ->toJson();
         }
         return view('admin.kardex.index');
     }
@@ -71,7 +93,7 @@ class KardexController extends Controller
      * @param  \App\Models\Kardex  $kardex
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show(Kardex $kardex)
     {
         //
     }
@@ -108,5 +130,53 @@ class KardexController extends Controller
     public function destroy(Kardex $kardex)
     {
         //
+    }
+
+    public function kardexRawMaterial(Request $request, $id)
+    {
+        //if ($request->ajax()) {
+            if (!empty($request->end)) {
+                $kardexes = Kardex::where('kardexable_id', $id)->whereBetween('created_at', [$request->start, $request->end])->get();
+            } else {
+                $kardexes = Kardex::where('kardexable_id', $id)->get();
+            }
+            return DataTables::of($kardexes)
+            ->addIndexColumn()
+            ->addColumn('branch', function (Kardex $kardex) {
+                return $kardex->branch->name;
+            })
+            ->addColumn('operation', function (Kardex $kardex) {
+                if ($kardex->movement == 'purchase') {
+                    return $kardex->movement == 'purchase' ? 'Compra' : 'Compra';
+                } elseif ($kardex->movement == 'expense') {
+                    return $kardex->movement == 'expense' ? 'Gasto' : 'Gasto';
+                }elseif ($kardex->movement == 'ndpurchase') {
+                    return $kardex->movement == 'ndpurchase' ? 'ND compra' : 'ND compra';
+                } elseif ($kardex->movement == 'ncpurchase'){
+                    return $kardex->movement == 'ncpurchase' ? 'Nc compra' : 'Nc compra';
+                } elseif ($kardex->movement == 'invoice') {
+                    return $kardex->movement == 'invoice' ? 'Venta' : 'Venta';
+                }elseif ($kardex->movement == 'ndinvoice') {
+                    return $kardex->movement == 'ndinvoice' ? 'ND venta' : 'ND venta';
+                } elseif ($kardex->movement == 'ncinvoice'){
+                    return $kardex->movement == 'ncinvoice' ? 'Nc venta' : 'Nc venta';
+                }
+            })
+
+            ->addColumn('product_id', function (Kardex $kardex) {
+                return $kardex->kardexable->id;
+            })
+            ->addColumn('product', function (Kardex $kardex) {
+                return $kardex->kardexable->name;
+            })
+            ->editColumn('created_at', function(Kardex $kardex){
+                return $kardex->created_at->format('yy-m-d');
+            })
+            ->addColumn('edit', 'admin/kardex/actions')
+            ->rawcolumns(['edit'])
+            ->toJson();
+        //}
+
+        return view('admin.rawMaterial.kardexRawMaterial');
     }
 }

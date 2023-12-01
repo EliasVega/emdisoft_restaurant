@@ -5,24 +5,36 @@ namespace App\Http\Controllers;
 use App\Models\Department;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class DepartmentController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('permission:department.index|department.create|department.show|department.edit|department.destroy', ['only'=>['index']]);
+        $this->middleware('permission:department.create', ['only'=>['create','store']]);
+        $this->middleware('permission:department.show', ['only'=>['show']]);
+        $this->middleware('permission:department.edit', ['only'=>['edit', 'update']]);
+        $this->middleware('permission:department.destroy', ['only'=>['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (request()->ajax())
-        {
+        if ($request->ajax()) {
             $departments = Department::get();
-            return DataTables()::of($departments)
-            ->addColumn('editar', 'admin/department/actions')
-            ->rawColumns(['editar'])
-            ->toJson();
+
+            return DataTables::of($departments)
+                ->addColumn('edit', 'admin/department/actions')
+                ->rawColumns(['edit'])
+                ->make(true);
         }
+
         return view('admin.department.index');
     }
 
@@ -44,11 +56,12 @@ class DepartmentController extends Controller
      */
     public function store(StoreDepartmentRequest $request)
     {
-        $department = new department;
+        $department = new Department;
         $department->name = $request->name;
         $department->dane_code = $request->dane_code;
         $department->iso_code = $request->iso_code;
         $department->save();
+
         return redirect('department');
     }
 
@@ -58,9 +71,8 @@ class DepartmentController extends Controller
      * @param  \App\Models\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function show($department)
+    public function show(Department $department)
     {
-        $department = department::findOrFail($department);
         return view("admin.department.show", compact('department'));
     }
 
@@ -70,9 +82,8 @@ class DepartmentController extends Controller
      * @param  \App\Models\Department  $department
      * @return \Illuminate\Http\Response
      */
-    public function edit($department)
+    public function edit(Department $department)
     {
-        $department = Department::findOrFail($department);
         return view("admin.department.edit", compact('department'));
     }
 
@@ -89,6 +100,7 @@ class DepartmentController extends Controller
         $department->dane_code = $request->dane_code;
         $department->iso_code = $request->iso_code;
         $department->update();
+
         return redirect('department');
     }
 
@@ -100,6 +112,8 @@ class DepartmentController extends Controller
      */
     public function destroy(Department $department)
     {
-        //
+        $department->delete();
+        toast('Departamento eliminado con éxito.','success');
+        return redirect('department');
     }
 }

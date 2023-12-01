@@ -2,20 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Card extends Model
 {
+    use HasFactory;
+
+    public $table = 'cards';
+
+    protected $primaryKey = 'id';
 
     public $timestamps = false;
 
-    protected $fillable = ['name'];
+    protected $fillable = [
+        'name'
+    ];
 
-    public function payInvoicePaymenMethod(){
-        return $this->BelongsToMany(PayinvoicePaymentmethod::class);
-    }
+    protected $guarded = [
+        'id'
+    ];
 
-    public function paymenmethodPayorder(){
-        return $this->BelongsToMany(PayinvoicePaymentmethod::class);
+    public function payPaymenMethod(){
+        return $this->BelongsToMany(PayPaymentMethod::class);
     }
 }

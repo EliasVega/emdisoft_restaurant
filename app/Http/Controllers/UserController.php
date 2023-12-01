@@ -3,16 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\Branch;
 use App\Models\Company;
-use App\Models\Document;
-use App\Models\Role;
+use App\Models\DocumentType;
+use App\Models\IdentificationType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\DB;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class UserController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('permission:user.index|user.create|user.show|user.edit|user.destroy|user.status|user.locked', ['only'=>['index']]);
+        $this->middleware('permission:user.create', ['only'=>['create','store']]);
+        $this->middleware('permission:user.show', ['only'=>['show']]);
+        $this->middleware('permission:user.edit', ['only'=>['edit', 'update']]);
+        $this->middleware('permission:user.destroy', ['only'=>['destroy']]);
+        $this->middleware('permission:user.status', ['only'=>['status']]);
+        $this->middleware('permission:user.locked', ['only'=>['inactive']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -21,15 +36,18 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $users = User::where('status', 'activo')->where('id', '!=', 1)->get();
+            $users = User::where('id', '!=', 1)->where('status', 'active')->get();
 
             return DataTables::of($users)
             ->addIndexColumn()
-            ->addColumn('document', function (User $user) {
-                return $user->document->initial;
+            ->addColumn('identificationType', function (User $user) {
+                return $user->identificationType->initial;
             })
+
             ->addColumn('role', function (User $user) {
-                return $user->role->name;
+                foreach ($user->getRoleNames() as $key => $rolName) {
+                    return $rolName;
+                }
             })
             ->addColumn('branch', function (User $user) {
                 return $user->branch->name;
@@ -40,22 +58,6 @@ class UserController extends Controller
         }
 
         return view('admin.user.index');
-        /*
-            $users = User::from('users AS use')
-            ->join('branches AS bra', 'use.branch_id', 'bra.id')
-            ->join('documents AS doc', 'use.document_id', 'doc.id')
-            ->join('roles AS rol', 'use.role_id', 'rol.id')
-            ->select('use.id', 'use.name', 'doc.initial', 'use.number', 'use.address', 'use.phone', 'use.email', 'use.position', 'rol.role', 'bra.name as nameB', 'use.status')
-            ->where('use.status', '=', 'activo')
-            ->get();
-
-            return datatables()
-            ->of($users)
-            ->addColumn('edit', 'admin/user/actions')
-            ->rawcolumns(['edit'])
-            ->toJson();
-        }
-        return view('admin.user.index');*/
     }
 
     /**
@@ -67,9 +69,10 @@ class UserController extends Controller
     {
         $companies = Company::select('id', 'name')->get();
         $branches = Branch::select('id', 'name')->get();
-        $documents = Document::get();
-        $roles = Role::where('id', '!=', 1)->get();
-        return view('admin.user.create', compact('companies', 'branches', 'documents', 'roles'));
+        $documentTypes = DocumentType::get();
+        $roles = Role::whereNotIn('name', ['superAdmin'])->pluck('name','name')->all();
+        $identificationTypes = IdentificationType::get();
+        return view('admin.user.create', compact('companies', 'documentTypes', 'branches', 'roles', 'identificationTypes'));
     }
 
     /**
@@ -83,8 +86,7 @@ class UserController extends Controller
         $user = new User();
         $user->company_id = 1;
         $user->branch_id = $request->branch_id;
-        $user->document_id = $request->document_id;
-        $user->role_id = $request->role_id;
+        $user->identification_type_id = $request->identification_type_id;
         $user->name = $request->name;
         $user->number = $request->number;
         $user->address = $request->address;
@@ -92,10 +94,13 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         $user->position = $request->position;
-        $user->transfer = 1;
-        $user->status = 1;
+        $user->transfer = $request->transfer;
+        $user->status = 'active';
         $user->save();
 
+        $user->assignRole($request->input('roles'));
+
+        Alert::success('Usuario','Creado Satisfactoriamente.');
         return redirect('user');
     }
 
@@ -105,20 +110,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
-        $user = User::findOrFail($id);
-
         return view('admin.user.show', compact('user'));
-    }
-
-    public function show_code($id)
-    {
-        $user = User::findOrFail($id);
-        \Session::put('user', $user->id, 60 * 24 * 365);
-        \Session::put('name', $user->name, 60 * 24 * 365);
-
-        return redirect('verification_code');
     }
 
     /**
@@ -127,14 +121,21 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
-        $user = User::findOrFail($id);
         $companies = Company::get();
         $branches = Branch::get();
-        $documents = Document::get();
-        $roles = Role::where('id', '!=', 1)->get();
-        return view('admin.user.edit', compact('user', 'companies', 'branches', 'documents', 'roles'));
+        $identificationTypes = IdentificationType::get();
+        $roles = Role::where('id', '!=', 1)->pluck('name','name')->all();
+        $userRole = $user->roles->pluck('name', 'name')->all();
+        return view('admin.user.edit', compact(
+            'user',
+            'companies',
+            'branches',
+            'identificationTypes',
+            'roles',
+            'userRole'
+        ));
     }
 
     /**
@@ -144,13 +145,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $user = User::findOrFail($id);
         $user->company_id = 1;
         $user->branch_id = $request->branch_id;
-        $user->document_id = $request->document_id;
-        $user->role_id = $request->role_id;
+        $user->identification_type_id = $request->identification_type_id;
         $user->name = $request->name;
         $user->number = $request->number;
         $user->address = $request->address;
@@ -158,10 +157,17 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->password = bcrypt($request->password);
         $user->position = $request->position;
-        $user->status = 1;
+        $user->transfer = $request->transfer;
+        $user->status = 'active';
         $user->update();
 
+        DB::table('model_has_roles')->where('model_id', $user->id)->delete();
+
+        $user->assignRole($request->input('roles'));
+
+        Alert::success('Usuario','Editado con exito.');
         return redirect('user');
+
     }
 
     /**
@@ -170,37 +176,45 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+        toast('Usuario Eliminado con Exito.','success');
+        return redirect('user');
+    }
+
+    public function logout(Request $request)
+    {
+        if(session()->has('user'))
+        {
+            $request->session()->forget('user');
+        }
+        return redirect('login');
     }
 
     public function status($id)
     {
         $user = User::findOrFail($id);
 
-        if ($user->status == 'activo') {
-            $user->status = 'inactivo';
+        if ($user->status == 'active') {
+            $user->status = 'inactive';
         } else {
-            $user->status = 'activo';
+            $user->status = 'active';
         }
         $user->update();
 
         return redirect('user');
     }
 
-    public function inactive()
+    public function inactive(Request $request)
     {
-        if (request()->ajax()) {
-            $users = User::where('status', 'inactivo')->where('id', '!=', 1)->get();
+        if ($request->ajax()) {
+            $users = User::where('status', 'inactive')->get();
 
             return DataTables::of($users)
             ->addIndexColumn()
-            ->addColumn('document', function (User $user) {
-                return $user->document->initial;
-            })
-            ->addColumn('role', function (User $user) {
-                return $user->role->role;
+            ->addColumn('identificationType', function (User $user) {
+                return $user->identificationType->initial;
             })
             ->addColumn('branch', function (User $user) {
                 return $user->branch->name;
@@ -211,32 +225,5 @@ class UserController extends Controller
         }
 
         return view('admin.user.inactive');
-        /*
-        if (request()->ajax()) {
-            $users = User::get();
-            $users = User::from('users AS use')
-            ->join('branches AS bra', 'use.branch_id', 'bra.id')
-            ->join('documents AS doc', 'use.document_id', 'doc.id')
-            ->join('roles AS rol', 'use.role_id', 'rol.id')
-            ->select('use.id', 'use.name', 'doc.initial', 'use.number', 'use.address', 'use.phone', 'use.email', 'use.position', 'rol.role', 'bra.name as nameB', 'use.status')
-            ->where('use.status', '=', 'inactivo')
-            ->get();
-
-            return datatables()
-            ->of($users)
-            ->addColumn('btn', 'admin/user/active')
-            ->rawcolumns(['btn'])
-            ->toJson();
-        }
-        return view('admin.user.inactive');*/
-    }
-
-    public function logout(Request $request)
-    {
-        if(session()->has('user'))
-        {
-            $request->session()->forget('user');
-        }
-        return redirect('login');
     }
 }

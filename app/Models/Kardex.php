@@ -2,26 +2,41 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Kardex extends Model
 {
+    use HasFactory;
+
+    use HasFactory;
+
+    public $table = 'kardexes';
+
+    protected $primaryKey = 'id';
+
+    public $timestamps = true;
 
     protected $fillable = [
-        'product_id',
         'branch_id',
-        'operation',
-        'number',
+        'voucher_type_id',
+        'document',
         'quantity',
         'stock',
-        'observation'
+        'movement'
     ];
 
-    public function product(){
-        return $this->belongsTo(Product::class);
+    public function kardexable()
+    {
+        return $this->morphTo();
     }
 
     public function branch(){
         return $this->belongsTo(Branch::class);
+    }
+
+    public function voucherType()
+    {
+        return $this->belongsTo(VoucherType::class);
     }
 }

@@ -1,76 +1,104 @@
 @extends("layouts.admin")
 @section('titulo')
-    {{ config('app.name', 'Ecounts') }}
+{{ config('app.name', 'EmdisoftPro') }}
 @endsection
 @section('content')
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <h3>Listado de Bancos <a href="bank/create"><button class="btn btn-success"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar banco</button></a>
-            <a href="{{ route('company.index') }}" class="btn btn-limon"><i class="fas fa-undo-alt mr-2"></i>Regresar</a></h3>
-    </div>
-</div>
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered table-condensed table-hover" id="bank">
-                <thead>
-                    <tr class="bg-success">
-                        <th>Id</th>
-                        <th>Banco</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-            </table>
+<main class="main">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h5>Bancos
+                @can('bank.create')
+                    <a href="bank/create" class="btn btn-greenGrad btn-sm"><i class="fa fa-plus"></i>Agregar Banco</a>
+                @endcan
+                @can('bank.index')
+                    <a href="{{ route('bank.index') }}" class="btn btn-lightBlueGrad btn-sm"><i class="fas fa-undo-alt mr-2"></i>Regresar</a>
+                @endcan
+                @can('company.index')
+                    <a href="{{ route('company.index') }}" class="btn btn-blueGrad btn-sm"><i class="fas fa-undo-alt mr-2"></i>Inicio</a>
+                @endcan
+            </h5>
         </div>
     </div>
-</div>
-@endsection
-@section('scripts')
-<script>
-    $(document).ready(function()
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-condensed table-hover" id="banks">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    @push('scripts')
+<script type="text/javascript">
+$(document).ready(function ()
     {
-        $('#bank').DataTable({
-            responsive: true,
-            autoWidth: false,
-        processing: true,
-        serverSider: true,
-        ajax: '{{ route('bank.index') }}',
-        columns: [
-        {data: 'id'},
-        {data: 'name'},
-        {data: 'editar'},
-        ],
-        dom: 'Bfrtilp',
-
-        buttons: [
-            'excel', 'pdf',
-        ],
-        "language":
+        $('#banks').DataTable(
         {
-            "processing": "Cargando...",
-            "lengthMenu": "Mostrar _MENU_ registros",
-            "zeroRecords": "No se encontraron resultados",
-            "emptyTable": "Ningún dato disponible en esta tabla",
-            "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-            "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-            "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
-            "search": "Buscar:",
-            "loadingRecords": "Cargando...",
-            "paginate": {
-                "next": "Siguiente",
-                "previous": "Anterior",
+            info: true,
+            paging: true,
+            ordering: true,
+            searching: true,
+            responsive: true,
+            autoWidth: true,
+            processing: true,
+            serverSide: true,
+            language: {
+                url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
             },
-
-            "buttons": {
-                "copy": "Copiar",
-                "print": "Imprimir"
-            }
-        },
+            ajax: '{{ route('bank.index') }}',
+            columns:
+            [
+                {data: 'id'},
+                {data: 'name'},
+                {data: 'edit'},
+            ],
+            dom: 'Blfrtip',
+            lengthMenu: [
+                [10, 20, 50, 100, 500, -1], [10, 20, 50, 100, 500, 'Todos']
+            ],
+            buttons: [
+                {
+                    extend: 'copy',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5 ]
+                    }
+                },
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5 ]
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    extend: 'pdfHtml5',
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5 ]
+                    }
+                },
+                {
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5 ]
+                    }
+                },
+            ],
+        });
     });
-
-});
 </script>
+@endpush
+</main>
 @endsection
+
+
 
 
 

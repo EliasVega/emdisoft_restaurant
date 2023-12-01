@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Municipality extends Model
 {
+    use HasFactory;
 
     public $table = 'municipalities';
 
@@ -30,13 +32,23 @@ class Municipality extends Model
         return $this->hasMany(Branch::class);
     }
 
-    public function suppliers()
+    public function providers()
     {
-        return $this->hasMany(Supplier::class);
+        return $this->hasMany(Provider::class);
     }
 
     public function customers()
     {
         return $this->hasMany(Customer::class);
+    }
+
+    public function employees()
+    {
+        return $this->hasMany(Employee::class);
+    }
+
+    public function postalCodes()
+    {
+        return $this->hasMany(PostalCode::class);
     }
 }

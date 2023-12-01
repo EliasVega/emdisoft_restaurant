@@ -1,15 +1,54 @@
 @extends("layouts.admin")
 @section('titulo')
-{{ config('app.name', 'Ecounts') }}
+{{ config('app.name', 'EmdisoftPro') }}
 @endsection
 @section('content')
 <main class="main">
     <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
-            <h5>Listado de Compras</h5>
-                <a href="purchase/create" class="btn btn-celeste btn-sm"><i class="fa fa-plus mr-2"></i> Agregar Compra</a>
-                <a href="{{ route('branch.index') }}" class="btn btn-redeco btn-sm ml-3"><i class="fas fa-undo-alt mr-2"></i>Inicio</a>
-                <a href="{{ route('supplier.index') }}" class="btn btn-gris btn-sm"><i class="fas fa-undo-alt mr-2"></i>Proveedores</a>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h5>Listado de Compras
+                @can('purchase.create')
+                    <a href="purchase/create" class="btn btn-greenGrad btn-sm m-2"><i class="fa fa-plus mr-2"></i> Compra Productos</a>
+                @endcan
+                @if ($indicator->raw_material == 'on')
+                    @can('purchase.create')
+                        <a href="createRawmaterial" class="btn btn-orangeGrad btn-sm m-2"><i class="fa fa-plus mr-2"></i> Compra Materia Prima</a>
+                    @endcan
+                @endif
+                @if ($indicator->raw_material == 'on')
+                    @can('expense.create')
+                        <a href="expense/create" class="btn btn-lightBlueGrad btn-sm m-2"><i class="fa fa-plus mr-2"></i> Gastos</a>
+                    @endcan
+                @endif
+                @can('branch.index')
+                    <a href="{{ route('branch.index') }}" class="btn btn-blueGrad btn-sm"><i class="fas fa-undo-alt mr-2"></i>Inicio</a>
+                @endcan
+            </h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            @can('provider.index')
+                <a href="{{ route('provider.index') }}" class="btn btn-blueGrad btn-sm m-2"><i class="fas fa-undo-alt mr-2"></i>Proveedores</a>
+            @endcan
+            @can('ncpurchase.index')
+                <a href="{{ route('ncpurchase.index') }}" class="btn btn-blueGrad btn-sm m-2"><i class="fas fa-undo-alt mr-2"></i>N.C.</a>
+            @endcan
+            @can('ndpurchase.index')
+                <a href="{{ route('ndpurchase.index') }}" class="btn btn-blueGrad btn-sm m-2"><i class="fas fa-undo-alt mr-2"></i>N.D.</a>
+            @endcan
+            @can('pay.index')
+                <a href="{{ route('pay.index') }}" class="btn btn-blueGrad btn-sm m-2"><i class="fas fa-undo-alt mr-2"></i>Abonos</a>
+            @endcan
+            @can('advance.index')
+                <a href="{{ route('advance.index') }}" class="btn btn-blueGrad btn-sm m-2"><i class="fas fa-undo-alt mr-2"></i>Ant a Proveedores</a>
+            @endcan
+            @can('purchaseOrder.index')
+                <a href="{{ route('purchaseOrder.index') }}" class="btn btn-blueGrad btn-sm m-2"><i class="fas fa-undo-alt mr-2"></i>Orden Compra</a>
+            @endcan
+            @can('branchProduct.index')
+                <a href="{{ route('branchProduct.index') }}" class="btn btn-blueGrad btn-sm m-2"><i class="fas fa-undo-alt mr-2"></i>Productos Sucursal</a>
+            @endcan
         </div>
     </div>
     <div class="row">
@@ -17,12 +56,17 @@
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-condensed table-hover" id="purchases">
                     <thead>
-                        <tr class="bg-info">
+                        <tr class="trdatacolor">
                             <th>Id</th>
                             <th>Proveedor</th>
+                            <th>#Fac_Compra</th>
                             <th>Valor</th>
+                            <th>Abonos</th>
+                            <th>Retenciones</th>
                             <th>Saldo</th>
+                            <th>Total + NC - ND</th>
                             <th>Fecha</th>
+                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -31,83 +75,96 @@
         </div>
     </div>
     @push('scripts')
-<script type="text/javascript">
-    $(document).ready(function ()
-    {
-        window.onload = function() {
-            var purchase = "{{ $purchase ?? '' }}";
-            if (purchase != '') {
-                var imprimir = "{{ route('postPurchase', ['purchase' => ':purchase']) }}";
-                imprimir = imprimir.replace(':purchase', purchase);
-                window.open(imprimir, "_blank");
-            }
-        }
-        $('#purchases').DataTable(
-        {
-            responsive: true,
-            autoWidth: false,
-            processing: true,
-            serverSide: true,
-            ajax: '{{ route('purchase.index') }}',
-            order: [[ 0, "desc" ]],
-            columns:
-            [
-                {data: 'id'},
-                {data: 'supplier'},
-                {data: 'total_pay', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
-                {data: 'balance', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
-                {data: 'created_at'},
-                {data: 'btn'},
-            ],
-            dom: '<"pull-left"B><"pull-right"f>rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
-            buttons:
-            [
-                'copy', 'csv', 'excel', 'print',
-                {
-                    extend: 'pdfHtml5',
-                    orientation: 'landscape',
-                    pageSize: 'LEGAL'
-                }
-            ],
-            lengthMenu:
-            [
-                [
-                    10, 25, 50, -1
-                ],
-                [
-                    '10 rows', '25 rows', '50 rows', 'Show all'
-                ]
-            ],
-            "language":
+        <script type="text/javascript">
+            $(document).ready(function ()
             {
-                "processing": "Cargando...",
-                "lengthMenu": "Mostrar _MENU_ registros",
-                "zeroRecords": "No se encontraron resultados",
-                "emptyTable": "Ningún dato disponible en esta tabla",
-                "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
-                "search": "Buscar:",
-                "loadingRecords": "Cargando...",
-                "paginate":
-                {
-                    "next": "Siguiente",
-                    "previous": "Anterior",
-                },
+                var typeDocument = "{{ $typeDocument ?? '' }}";
+                if (typeDocument == 'document') {
+                    function print(){
+                        var purchase = "{{ $purchase ?? '' }}";
+                        if (purchase != '') {
+                            var imprimir = "{{ route('pdfPurchase', ['purchase' => ':purchase']) }}";
+                            imprimir = imprimir.replace(':purchase', purchase);
+                            window.open(imprimir, "_blank");
+                        }
+                    }
+                } else {
+                    function print(){
+                        var purchase = "{{ $purchase ?? '' }}";
+                        if (purchase != '') {
+                            var imprimir = "{{ route('posPurchase', ['purchase' => ':purchase']) }}";
+                            imprimir = imprimir.replace(':purchase', purchase);
+                            window.open(imprimir, "_blank");
+                        }
+                    }
+                }
 
-                "buttons":
+                print();
+                $('#purchases').DataTable(
                 {
-                    "copy": "Copiar",
-                    "print": "Imprimir"
-                },
-            }
-        });
-    });
-</script>
-@endpush
+                    info: true,
+                    paging: true,
+                    ordering: true,
+                    searching: true,
+                    responsive: true,
+                    autoWidth: true,
+                    processing: true,
+                    serverSide: true,
+                    language: {
+                        url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+                    },
+                    ajax: '{{ route('purchase.index') }}',
+                    order: [[0, "desc"]],
+                    columns:
+                    [
+                        {data: 'id'},
+                        {data: 'provider'},
+                        {data: 'document'},
+                        {data: 'total_pay', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
+                        {data: 'pay', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
+                        {data: 'retention', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
+                        {data: 'balance', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
+                        {data: 'grand_total', className: 'dt-body-right', render: $.fn.dataTable.render.number( '.', ',', 2, '$')},
+                        {data: 'created_at'},
+                        {data: 'status'},
+                        {data: 'btn'},
+                    ],
+                    dom: 'Blfrtip',
+                    lengthMenu: [
+                        [10, 20, 50, 100, 500, -1], [10, 20, 50, 100, 500, 'Todos']
+                    ],
+                    buttons: [
+                        {
+                            extend: 'copy',
+                            exportOptions: {
+                                columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+                            }
+                        },
+                        {
+                            extend: 'excel',
+                            exportOptions: {
+                                columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+                            }
+                        },
+                        {
+                            extend: 'pdf',
+                            extend: 'pdfHtml5',
+                            orientation: 'landscape',
+                            pageSize: 'LEGAL',
+                            exportOptions: {
+                                columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            exportOptions: {
+                                columns: [ 0, 1, 2, 3, 4, 5, 6, 7 ]
+                            }
+                        },
+                    ],
+                });
+            });
+        </script>
+    @endpush
 </main>
 @endsection
-
-
-
-

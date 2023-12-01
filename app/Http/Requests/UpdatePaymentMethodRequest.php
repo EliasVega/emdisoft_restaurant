@@ -19,13 +19,14 @@ class UpdatePaymentMethodRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
         return [
-            'code' => 'required',
-            'name' => 'required|max:100'
+            'code' => 'required|string|max:3',
+            'name' => 'required|string|max:100',
+            'status' => 'required|in:active,inactive'
         ];
     }
 }

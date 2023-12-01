@@ -128,6 +128,11 @@ class BanksTableSeeder extends Seeder
             21 =>
             array (
                 'id' => 22,
+                'name' => 'Baocolombia',
+            ),
+            22 =>
+            array (
+                'id' => 23,
                 'name' => 'otro',
             ),
         ));

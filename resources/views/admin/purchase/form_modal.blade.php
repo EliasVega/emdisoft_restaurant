@@ -18,10 +18,10 @@
             <input type="text" name="productModal" id="productModal" class="form-control" placeholder="Producto" readonly>
         </div>
     </div>
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="incmod">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="taxmod">
         <div class="form-group">
-            <label for="incModal">inc</label>
-            <input type="text" name="incModal" id="incModal" class="form-control" placeholder="inc" readonly>
+            <label for="taxModal">tax</label>
+            <input type="text" name="taxModal" id="taxModal" class="form-control" placeholder="tax" readonly>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

@@ -8,14 +8,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                {!!Form::open(array('url'=>'invoice', 'method'=>'Post', 'autocomplete'=>'off'))!!}
+                {!!Form::open(array('url'=>'Invoice', 'method'=>'Post', 'autocomplete'=>'off'))!!}
                 {!!Form::token()!!}
-                    @include('admin/invoice.form_modal')
+                    @include('admin/Invoice.form_modal')
                 {!!Form::close()!!}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="updateInvoice">Guardar</button>
+                <button type="button" class="btn btn-lightBlueGrad" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-blueGrad" id="updatePurchase">Guardar</button>
             </div>
         </div>
     </div>

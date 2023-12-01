@@ -2,20 +2,41 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
+    use HasFactory;
+
+    public $table = 'customers';
+
+    protected $primaryKey = 'id';
+
+    public $timestamps = true;
 
     protected $fillable = [
-
         'name',
-        'number',
+        'identification',
+        'dv',
+        'address',
+        'phone',
         'email',
-        'document_id',
+        'merchant_registration',
+        'credit_limit',
+        'used',
+        'available',
+        'department_id',
+        'municipality_id',
+        'identification_type_id',
+        'liability_id',
+        'organization_id',
+        'regime_id'
     ];
 
-
+    protected $guarded = [
+        'id'
+    ];
 
     public function department()
     {
@@ -27,8 +48,9 @@ class Customer extends Model
         return $this->belongsTo(Municipality::class);
     }
 
-    public function document(){
-        return $this->belongsTo(Document::class);
+    public function identificationType()
+    {
+        return $this->belongsTo(IdentificationType::class);
     }
 
     public function liability()
@@ -41,36 +63,23 @@ class Customer extends Model
         return $this->belongsTo(Organization::class);
     }
 
-    public function tax()
-    {
-        return $this->belongsTo(Tax::class);
-    }
-
     public function regime()
     {
         return $this->belongsTo(Regime::class);
     }
 
-    public function invoice(){
-        return $this->hasMany(Invoice::class);
-    }
-
-    public function ndinvoice()
+    public function advances()
     {
-        return $this->hasMany(Ndinvoice::class);
+        return $this->morphMany(Advance::class, 'advanceable');
     }
 
-    public function ncinvoices()
+    public function ndInvoices()
     {
-        return $this->hasMany(Ncinvoice::class);
+        return $this->hasMany(Ndinvoice::class,);
     }
 
-    public function orders()
+    public function ncInvoices()
     {
-        return $this->hasMany(Order::class);
-    }
-
-    public function advances(){
-        return $this->hasMany(Customer::class);
+        return $this->hasMany(Ncinvoice::class,);
     }
 }

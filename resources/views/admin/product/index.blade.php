@@ -1,30 +1,44 @@
+
 @extends("layouts.admin")
 @section('titulo')
-{{ config('app.name', 'Ecounts') }}
+{{ config('app.name', 'EmdisoftPro') }}
 @endsection
 @section('content')
 <main class="main">
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <h3>Materia Prima
-                <a href="product/create"><button class="btn btn-celeste"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Producto</button></a>
-                <a href="{{ route('branch.index') }}" class="btn btn-gris"><i class="fas fa-undo-alt mr-2"></i>Regresar</a>
-                <a href="{{ route('kardex.index') }}" class="btn btn-limon"><i class="fas fa-undo-alt mr-2"></i>Kardex</a>
-                </h3>
+            <h5>Productos
+                @can('product.create')
+                    <a href="product/create" class="btn btn-greenGrad btn-sm"><i class="fa fa-plus"></i> Agregar Producto</a>
+                @endcan
+                @can('branch.index')
+                    <a href="{{ route('branch.index') }}" class="btn btn-blueGrad btn-sm"><i class="fas fa-undo-alt mr-2"></i>Inicio</a>
+                @endcan
+                @can('branchProduct.index')
+                    <a href="{{ route('branchProduct.index') }}" class="btn btn-blueGrad btn-sm"><i class="fas fa-undo-alt mr-2"></i>Producto Sucursal</a>
+                @endcan
+                @can('kardex.index')
+                    <a href="{{ route('kardex.index') }}" class="btn btn-greenGrad btn-sm"><i class="fas fa-undo-alt mr-2"></i>Kardex</a>
+                @endcan
+            </h5>
         </div>
     </div>
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-condensed table-hover" id="products">
-                    <thead>
-                        <tr class="bg-info">
+                    <thead class="trdatacolor">
+                        <tr>
                             <th>Id</th>
+                            <th>Imagen</th>
+                            <th>Tipo</th>
+                            <th>Categoria</th>
                             <th>Codigo</th>
                             <th>Nombre</th>
+                            <th>Prcio</th>
                             <th>Precio_Venta</th>
+                            <th>% IVA</th>
                             <th>stock</th>
-                            <th>Estado</th>
                             <th>Editar</th>
                         </tr>
                     </thead>
@@ -34,75 +48,83 @@
     </div>
     @push('scripts')
 <script type="text/javascript">
-    $(document).ready(function ()
+$(document).ready(function ()
     {
         $('#products').DataTable(
         {
+            info: true,
+            paging: true,
+            ordering: true,
+            searching: true,
             responsive: true,
-            autoWidth: false,
+            autoWidth: true,
             processing: true,
             serverSide: true,
-            info: true,
-            stateSave: true,
+            language: {
+                url: "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
+            },
             ajax: '{{ route('product.index') }}',
+            order: [[0, "desc"]],
             columns:
             [
-                {data: 'id'},
-                {data: 'code'},
-                {data: 'name'},
-                {data: 'price'},
-                {data: 'stock'},
-                {data: 'status'},
-                {data: 'edit'},
+                { data: 'id'},
+                {data: 'image',
+                    'sortable': false,
+                    'searchable': false,
+                    'render': function (image) {
+                    if (!image) {
+                        return 'N/A';
+                    } else {
+                        var img = image;
+                        return '<img src="' + img + '" height="50px" width="50px" />';
+                    }
+                }},
+                { data: 'type_product'},
+                { data: 'category'},
+                { data: 'code'},
+                { data: 'name'},
+                { data: 'price'},
+                { data: 'sale_price'},
+                { data: 'tax_rate'},
+                { data: 'stock'},
+                { data: 'edit'},
             ],
-            dom: '<"pull-left"B><"pull-right"f>rt<"row"<"col-sm-4"l><"col-sm-4"i><"col-sm-4"p>>',
-            buttons:
-            [
-                'copy', 'csv', 'excel', 'print',
+            dom: 'Bfltip',
+            lengthMenu: [
+                [10, 20, 50, 100, 500, -1], [10, 20, 50, 100, 500, 'Todos']
+            ],
+            buttons: [
                 {
+                    extend: 'copy',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5 ]
+                    }
+                },
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5 ]
+                    }
+                },
+                {
+                    extend: 'pdf',
                     extend: 'pdfHtml5',
                     orientation: 'landscape',
-                    pageSize: 'LEGAL'
-                }
-            ],
-            lengthMenu:
-            [
-                [
-                    10, 25, 50, -1
-                ],
-                [
-                    '10 rows', '25 rows', '50 rows', 'Show all'
-                ]
-            ],
-            "language":
-            {
-                "processing": "Cargando...",
-                "lengthMenu": "Mostrar _MENU_ registros",
-                "zeroRecords": "No se encontraron resultados",
-                "emptyTable": "Ningún dato disponible en esta tabla",
-                "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-                "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                "infoFiltered": "(Filtrado de un total de _MAX_ registros)",
-                "search": "Buscar:",
-                "loadingRecords": "Cargando...",
-                "paginate":
-                {
-                    "next": "Siguiente",
-                    "previous": "Anterior",
+                    pageSize: 'LEGAL',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5 ]
+                    }
                 },
-
-                "buttons":
                 {
-                    "copy": "Copiar",
-                    "print": "Imprimir"
+                    extend: 'print',
+                    exportOptions: {
+                        columns: [ 0, 1, 2, 3, 4, 5 ]
+                    }
                 },
-            }
+            ],
         });
     });
 </script>
 @endpush
 </main>
 @endsection
-
-
-

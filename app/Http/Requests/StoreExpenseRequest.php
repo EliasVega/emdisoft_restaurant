@@ -8,8 +8,10 @@ class StoreExpenseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     *
+     * @return bool
      */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
@@ -17,20 +19,24 @@ class StoreExpenseRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     * @return array<string, mixed>
      */
-    public function rules(): array
+    public function rules()
     {
         return [
-            'total'             => 'required|numeric',
-            'total_inc'         => 'required|numeric',
-            'total_pay'         => 'required|numeric',
-            'note'              => 'nullable|string|max:255',
-            'user_id'           => '',
-            'branch_id'         => 'integer',
-            'supplier_id'       => 'required|integer',
-            'payment_form_id'   => 'required|integer',
-            'payment_method_id' => 'required|integer'
+            'document' => 'string|max:20',
+            'generation_date'=> '',
+            'total' => 'required|numeric',
+            'total_tax' => '',
+            'total_pay' => '',
+            'pay' => '',
+            'balance' => 'numeric',
+            'grand_total' => 'numeric',
+            'branch_id' => 'integer',
+            'provider_id' => '',
+            'payment_form_id' => 'required|integer',
+            'payment_method_id' => 'required',
+            'voucher_type_id' => 'integer'
         ];
     }
 }

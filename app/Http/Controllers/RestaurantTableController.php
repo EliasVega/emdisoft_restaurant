@@ -6,104 +6,98 @@ use App\Models\RestaurantTable;
 use App\Http\Requests\StoreRestaurantTableRequest;
 use App\Http\Requests\UpdateRestaurantTableRequest;
 use App\Models\Branch;
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 
 class RestaurantTableController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('permission:restaurantTable.index|restaurantTable.create|restaurantTable.show|restaurantTable.edit|restaurantTable.destroy', ['only'=>['index']]);
+        $this->middleware('permission:restaurantTable.create', ['only'=>['create','store']]);
+        $this->middleware('permission:restaurantTable.show', ['only'=>['show']]);
+        $this->middleware('permission:restaurantTable.edit', ['only'=>['edit', 'update']]);
+        $this->middleware('permission:restaurantTable.destroy', ['only'=>['destroy']]);
+    }
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (request()->ajax())
-        {
-            $tables = RestaurantTable::where('id', '!=', 1)->get();
-            return DataTables()::of($tables)
+        if ($request->ajax()) {
+            $restaurantTables = RestaurantTable::get();
+
+            return DataTables::of($restaurantTables)
             ->addIndexColumn()
-            ->addColumn('branch', function (RestaurantTable $table) {
-                return $table->branch->name;
+            ->addColumn('branch', function (RestaurantTable $restaurantTable) {
+                return $restaurantTable->branch->name;
             })
-            ->addColumn('editar', 'admin/restaurantTable/actions')
-            ->rawColumns(['editar'])
-            ->toJson();
+            ->addColumn('edit', 'admin/restaurantTable/actions')
+            ->rawColumns(['edit'])
+            ->make(true);
         }
+
         return view('admin.restaurantTable.index');
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        $branches = Branch::get();
-        return view("admin.restaurantTable.create", compact('branches'));
+        $branchs = Branch::get();
+        return view('admin.restaurantTable.create', compact('branchs'));
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreRestaurantTableRequest  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(StoreRestaurantTableRequest $request)
     {
-        $table = new RestaurantTable();
-        $table->branch_id = $request->branch_id;
-        $table->name = $request->name;
-        $table->save();
+        $restaurantTable = new RestaurantTable();
+        $restaurantTable->name = $request->name;
+        $restaurantTable->branch_id = $request->branch_id;
+        $restaurantTable->save();
+
         return redirect('restaurantTable');
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\RestaurantTable  $restaurantTable
-     * @return \Illuminate\Http\Response
      */
     public function show(RestaurantTable $restaurantTable)
     {
-        return view("admin.restaurantTable.show", compact('restaurantTable'));
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\RestaurantTable  $restaurantTable
-     * @return \Illuminate\Http\Response
      */
     public function edit(RestaurantTable $restaurantTable)
     {
-        $branches = Branch::get();
-
-        return view("admin.restaurantTable.edit", compact('restaurantTable', 'branches'));
+        $branchs = Branch::get();
+        return view('admin.restaurantTable.edit', compact('restaurantTable', 'branchs'));
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateRestaurantTableRequest  $request
-     * @param  \App\Models\RestaurantTable  $restaurantTable
-     * @return \Illuminate\Http\Response
      */
     public function update(UpdateRestaurantTableRequest $request, RestaurantTable $restaurantTable)
     {
-        $restaurantTable->branch_id = $request->branch_id;
         $restaurantTable->name = $request->name;
+        $restaurantTable->branch_id = $request->branch_id;
         $restaurantTable->update();
+
         return redirect('restaurantTable');
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\RestaurantTable  $restaurantTable
-     * @return \Illuminate\Http\Response
      */
     public function destroy(RestaurantTable $restaurantTable)
     {
-        //
+        $restaurantTable->delete();
+        toast('Impuesto Eliminado con Exito.','success');
+        return redirect("restaurantTable");
     }
 }

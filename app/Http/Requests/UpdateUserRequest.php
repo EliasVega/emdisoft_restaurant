@@ -29,15 +29,15 @@ class UpdateUserRequest extends FormRequest
             'number'      => ['required', 'string', 'max:20'],
             'address'     => ['required', 'string', 'max:100'],
             'phone'       => ['required', 'string', 'max:20'],
-            'email'       => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email'       => 'required|email|unique:users,email,'.$this->user->id,'|max:100',
+            //'password' => 'same:confirm-password',
             'password'    => ['required', 'string', 'min:6', 'confirmed'],
             'position'    => ['required', 'string', 'max:50'],
-            'transfer'    => '',
-            'status'      => '',
-            'company_id'  => '',
-            'branch_id'   => 'required',
-            'document_id' => 'required',
-            'role_id'     => 'required'
+            'transfer'    => 'required',
+            'status'       => 'in:active,inactive',
+            'branch_id'   => 'required|integer',
+            'identification_type_id' => 'required|integer',
+            'roles'       => 'required'
         ];
     }
 }

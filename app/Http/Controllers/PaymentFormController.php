@@ -2,29 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Payment_form;
+use App\Models\PaymentForm;
 use App\Http\Requests\StorePaymentFormRequest;
 use App\Http\Requests\UpdatePaymentFormRequest;
+use Illuminate\Http\Request;
 
 class PaymentFormController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('permission:paymentForm.index|paymentForm.create|paymentForm.show|paymentForm.edit|paymentForm.destroy', ['only'=>['index']]);
+        $this->middleware('permission:paymentForm.create', ['only'=>['create','store']]);
+        $this->middleware('permission:paymentForm.show', ['only'=>['show']]);
+        $this->middleware('permission:paymentForm.edit', ['only'=>['edit', 'update']]);
+        $this->middleware('permission:paymentForm.destroy', ['only'=>['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (request()->ajax()) {
-            $payment_forms = Payment_form::get();
+        if ($request->ajax()) {
+            $paymentForms = PaymentForm::get();
 
             return datatables()
-            ->of($payment_forms)
-            ->addColumn('edit', 'admin/payment_form/actions')
+            ->of($paymentForms)
+            ->addColumn('edit', 'admin/paymentForm/actions')
             ->rawcolumns(['edit'])
             ->toJson();
         }
-        return view('admin.payment_form.index');
+        return view('admin.paymentForm.index');
     }
 
     /**
@@ -34,7 +43,7 @@ class PaymentFormController extends Controller
      */
     public function create()
     {
-        return view('admin.payment_form.create');
+        return view('admin.paymentForm.create');
     }
 
     /**
@@ -45,10 +54,10 @@ class PaymentFormController extends Controller
      */
     public function store(StorePaymentFormRequest $request)
     {
-        $payment_form = new Payment_form();
-        $payment_form->name = $request->name;
-        $payment_form->save();
-        return redirect('payment_form');
+        $paymentForm = new PaymentForm();
+        $paymentForm->name = $request->name;
+        $paymentForm->save();
+        return redirect('paymentForm');
     }
 
     /**
@@ -57,9 +66,9 @@ class PaymentFormController extends Controller
      * @param  \App\Models\PaymentForm  $paymentForm
      * @return \Illuminate\Http\Response
      */
-    public function show(Payment_form $payment_form)
+    public function show(PaymentForm $paymentForm)
     {
-        //
+        return view('admin.paymentForm.show', compact('paymentForm'));
     }
 
     /**
@@ -68,10 +77,9 @@ class PaymentFormController extends Controller
      * @param  \App\Models\PaymentForm  $paymentForm
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(PaymentForm $paymentForm)
     {
-        $paymentForm = Payment_form::findOrFail($id);
-        return view('admin.payment_form.edit', compact('payment_form'));
+        return view('admin.paymentForm.edit', compact('paymentForm'));
     }
 
     /**
@@ -81,12 +89,11 @@ class PaymentFormController extends Controller
      * @param  \App\Models\PaymentForm  $paymentForm
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePaymentFormRequest $request, $id)
+    public function update(UpdatePaymentFormRequest $request, PaymentForm $paymentForm)
     {
-        $payment_form = Payment_form::findOrFail($id);
-        $payment_form->name = $request->name;
-        $payment_form->update();
-        return redirect('payment_form');
+        $paymentForm->name = $request->name;
+        $paymentForm->update();
+        return redirect('paymentForm');
     }
 
     /**
@@ -95,8 +102,10 @@ class PaymentFormController extends Controller
      * @param  \App\Models\PaymentForm  $paymentForm
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Payment_form $paymentForm)
+    public function destroy(PaymentForm $paymentForm)
     {
-        //
+        $paymentForm->delete();
+        toast('Forma de pago eliminada con éxito.','success');
+        return redirect('paymentForm');
     }
 }

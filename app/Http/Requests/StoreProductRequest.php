@@ -19,19 +19,22 @@ class StoreProductRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
         return [
-
-            'code'            => 'required|max:20',
-            'name'            => 'required|max:100',
-            'price'           => '',
+            'code'            => 'required|string|max:20',
+            'name'            => 'required|string|max:100',
+            'price'           => 'required|numeric',
+            'sale_price'      => '',
             'stock'           => '',
-            'status'          => '',
-            'category_id'     => 'required',
-            'unit_measure_id' => 'required'
+            'type_product'    => 'required|in:product,service,consumer',
+            'status'          => 'in:active,inactive',
+            'image'           => 'image|mimes:jpeg,png|max:1000',
+            'imageName'       => '',
+            'category_id'     => 'required|integer',
+            'measure_unit_id' => 'required|integer'
         ];
     }
 }

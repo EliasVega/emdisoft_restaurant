@@ -10,23 +10,31 @@ use Illuminate\Http\Request;
 
 class MunicipalityController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('permission:municipality.index|municipality.create|municipality.show|municipality.edit|municipality.destroy', ['only'=>['index']]);
+        $this->middleware('permission:municipality.create', ['only'=>['create','store']]);
+        $this->middleware('permission:municipality.show', ['only'=>['show']]);
+        $this->middleware('permission:municipality.edit', ['only'=>['edit', 'update']]);
+        $this->middleware('permission:municipality.destroy', ['only'=>['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (request()->ajax())
-        {
+        if ($request->ajax()) {
+
             $municipalities = Municipality::get();
             return DataTables()::of($municipalities)
             ->addIndexColumn()
             ->addColumn('department', function (Municipality $municipality) {
                 return $municipality->department->name;
             })
-            ->addColumn('editar', 'admin/municipality/actions')
-            ->rawColumns(['editar'])
+            ->addColumn('edit', 'admin/municipality/actions')
+            ->rawColumns(['edit'])
             ->toJson();
         }
         return view('admin.municipality.index');
@@ -56,6 +64,7 @@ class MunicipalityController extends Controller
         $municipality->code = $request->code;
         $municipality->name = $request->name;
         $municipality->save();
+
         return redirect('municipality');
     }
 
@@ -78,7 +87,7 @@ class MunicipalityController extends Controller
      */
     public function edit(Municipality $municipality)
     {
-        $departments = Department::get();
+        $departments = department::get();
 
         return view("admin.municipality.edit", compact('municipality', 'departments'));
     }
@@ -107,16 +116,8 @@ class MunicipalityController extends Controller
      */
     public function destroy(Municipality $municipality)
     {
-        //
-    }
-
-    public function getDepartment(Request $request, $id)
-    {
-        if($request)
-        {
-            $departments = Department::where('country_id', '=', $id)->get();
-
-            return response()->json($departments);
-        }
+        $municipality->delete();
+        toast('Municipio eliminado con éxito.','success');
+        return redirect('municipality');
     }
 }

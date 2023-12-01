@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -17,6 +18,7 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -36,8 +38,7 @@ class User extends Authenticatable
         'status',
         'company_id',
         'branch_id',
-        'document_id',
-        'role_id',
+        'identification_type_id'
     ];
 
     /**
@@ -80,19 +81,28 @@ class User extends Authenticatable
         return $this->belongsTo(Branch::class);
     }
 
-    public function role()
+    public function identificationType()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(IdentificationType::class);
     }
 
-    public function document()
-    {
-        return $this->belongsTo(Document::class);
+    public function VerificationCode(){
+        return $this->hasOne(Verification_code::class);
     }
 
     public function transfer()
     {
         return $this->hasMany(Transfer::class);
+    }
+
+    public function pays()
+    {
+        return $this->hasMany(pay::class);
+    }
+
+    public function advances()
+    {
+        return $this->hasMany(Advance::class);
     }
 
     public function purchases(){
@@ -109,7 +119,7 @@ class User extends Authenticatable
 
     public function ncinvoices(){
         return $this->hasMany(Ncinvoice::class);
-    }
+    }/*
 
     public function ndinvoices(){
         return $this->hasMany(Ndinvoice::class);
@@ -125,25 +135,19 @@ class User extends Authenticatable
 
     public function payorders(){
         return $this->hasMany(Payorder::class);
+    }*/
+
+
+
+    public function cashOutflows(){
+        return $this->hasMany(CashOutflow::class);
     }
 
-    public function VerificationCode(){
-        return $this->hasOne(Verification_code::class);
+    public function cashInflows(){
+        return $this->hasMany(CashInflow::class);
     }
 
-    public function cashOuts(){
-        return $this->hasMany(Cash_out::class);
-    }
-
-    public function cashIns(){
-        return $this->hasMany(Cash_in::class);
-    }
-
-    public function saleBoxes(){
-        return $this->hasMany(Sale_box::class);
-    }
-
-    public function prePurchase(){
-        return $this->hasMany(PrePurchase::class);
+    public function cashRegisters(){
+        return $this->hasMany(CashRegister::class);
     }
 }

@@ -32,12 +32,11 @@ class StoreUserRequest extends FormRequest
             'email'       => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password'    => ['required', 'string', 'min:6', 'confirmed'],
             'position'    => ['required', 'string', 'max:50'],
-            'transfer'    => '',
-            'status'      => '',
-            'company_id'  => '',
-            'branch_id'   => 'required',
-            'document_id' => 'required',
-            'role_id'     => 'required',
+            'transfer'    => 'required',
+            'status'       => 'in:active,inactive',
+            'branch_id'   => 'required|integer',
+            'identification_type_id' => 'required|integer',
+            'roles'       => 'required',
         ];
     }
 }

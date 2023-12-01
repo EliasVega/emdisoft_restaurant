@@ -2,13 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Branch extends Model
 {
+    use HasFactory;
+
+    public $table = 'branches';
+
+    protected $primaryKey = 'id';
+
+    public $timestamps = true;
 
     protected $fillable = [
-
         'name',
         'address',
         'phone',
@@ -19,6 +26,16 @@ class Branch extends Model
         'municipality_id',
         'company_id',
     ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function employees()
+    {
+        return $this->hasMany(Employee::class);
+    }
 
     public function department()
     {
@@ -35,9 +52,28 @@ class Branch extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function users()
+    public function kardexes()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(Kardex::class);
+    }
+
+    public function transfers()
+    {
+        return $this->hasMany(Kardex::class);
+    }
+
+    public function branchproducts(){
+        return $this->hasMany(BranchProduct::class);
+    }
+
+    public function pays()
+    {
+        return $this->hasMany(pay::class);
+    }
+
+    public function advances()
+    {
+        return $this->hasMany(Advance::class);
     }
 
     public function products()
@@ -45,55 +81,38 @@ class Branch extends Model
         return $this->hasMany(Product::class);
     }
 
-    public function invoices(){
-        return $this->hasMany(Invoice::class);
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class);
     }
 
-    public function purchases(){
-        return $this->hasMany(Invoice::class);
-    }
-
-    public function ncpurchases(){
+    public function ncPurchases()
+    {
         return $this->hasMany(Ncpurchase::class);
     }
 
-    public function ncinvoices(){
-        return $this->hasMany(Ncinvoice::class);
-    }
-
-    public function ndpurchases(){
+    public function ndPurchases()
+    {
         return $this->hasMany(Ndpurchase::class);
     }
 
-    public function ndinvoices(){
+    public function ncInvoices()
+    {
+        return $this->hasMany(NcInvoices::class);
+    }
+
+    public function ndInvoices()
+    {
         return $this->hasMany(Ndinvoice::class);
     }
 
-    public function orders(){
-        return $this->hasMany(Order::class);
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
     }
 
-    public function payorders(){
-        return $this->hasMany(Payorder::class);
-    }
-
-    public function cashIns(){
-        return $this->belongsTo(Cash_in::class);
-    }
-
-    public function cashOuts(){
-        return $this->hasMany(Cash_out::class);
-    }
-
-    public function prePurchase(){
-        return $this->hasMany(PrePurchase::class);
-    }
-
-    public function kardexes(){
-        return $this->hasMany(Kardex::class);
-    }
-
-    public function restaurantTable(){
+    public function restaurantTables()
+    {
         return $this->hasMany(RestaurantTable::class);
     }
 }

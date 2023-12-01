@@ -5,57 +5,111 @@ namespace App\Http\Controllers;
 use App\Models\Purchase;
 use App\Http\Requests\StorePurchaseRequest;
 use App\Http\Requests\UpdatePurchaseRequest;
+use App\Models\Advance;
 use App\Models\Bank;
 use App\Models\Branch;
-use App\Models\Branch_product;
+use App\Models\BranchProduct;
+use App\Models\BranchRawmaterial;
 use App\Models\Card;
+use App\Models\CashRegister;
 use App\Models\Company;
-use App\Models\Document;
-use App\Models\Kardex;
+use App\Models\CompanyTax;
+use App\Models\Discrepancy;
+use App\Models\DocumentType;
+use App\Models\Environment;
+use App\Models\GenerationType;
+use App\Models\Indicator;
 use App\Models\Municipality;
-use App\Models\Pay_purchase;
-use App\Models\Pay_purchase_payment_method;
-use App\Models\Payment_form;
-use App\Models\Payment_method;
+use App\Models\Ncpurchase;
+use App\Models\Ndpurchase;
+use App\Models\PaymentForm;
+use App\Models\PaymentMethod;
+use App\Models\Percentage;
 use App\Models\Product;
-use App\Models\Product_purchase;
-use App\Models\Sale_box;
-use App\Models\Supplier;
+use App\Models\ProductPurchase;
+use App\Models\Provider;
+use App\Models\PurchaseRawmaterial;
+use App\Models\RawMaterial;
+use App\Models\Resolution;
+use App\Models\SupportDocumentResponse;
+use App\Models\Tax;
+use App\Models\VoucherType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\DataTables;
+use App\Traits\InventoryPurchases;
+use App\Traits\KardexCreate;
+use App\Traits\Taxes;
+use App\Traits\RawMaterialPurchases;
 
 class PurchaseController extends Controller
 {
+    use InventoryPurchases, KardexCreate, Taxes, RawMaterialPurchases;
+    function __construct()
+    {
+        $this->middleware('permission:purchase.index|purchase.create|purchase.show|purchase.edit', ['only'=>['index']]);
+        $this->middleware('permission:purchase.create', ['only'=>['create','store', 'createRawmaterial']]);
+        $this->middleware('permission:purchase.show', ['only'=>['show']]);
+        $this->middleware('permission:purchase.edit', ['only'=>['edit','update']]);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $purchase = session('purchase');
-        $user = Auth::user();
-        if (request()->ajax()) {
-            //Muestra todas las compras de la empresa
-            if ($user->role_id == 1 || $user->role_id == 2) {
+        $indicator = Indicator::findOrFail(1);
+        $typeDocument = '';
+        if ($indicator->pos == 'off') {
+            $typeDocument = 'document';
+        } else {
+            $typeDocument = 'pos';
+        }
 
-                //Consulta para mostrar Purchase a administradores y superadmin
+        if ($request->ajax()) {
+            $users = Auth::user();
+            $user = $users->Roles[0]->name;
+            if ($user == 'superAdmin' ||$user == 'admin') {
+                //Muestra todas las compras de la empresa
                 $purchases = Purchase::get();
             } else {
-                //Consulta para mostrar Purchase a roles 3 -4 -5
-                $purchases = Purchase::where('branch_id', 1)->where('user_id', $user->id)->get();
+                //Muestra todas las compras de la empresa por usuario
+                $purchases = Purchase::where('user_id', $users->id)->get();
             }
-
             return DataTables::of($purchases)
             ->addIndexColumn()
-            ->addColumn('supplier', function (Purchase $purchase) {
-                return $purchase->supplier->name;
+            ->addColumn('provider', function (Purchase $purchase) {
+                return $purchase->third->name;
             })
             ->addColumn('branch', function (Purchase $purchase) {
                 return $purchase->branch->name;
+            })
+            ->addColumn('retention', function (Purchase $purchase) {
+                return $purchase->retention;
+            })
+            ->addColumn('status', function (Purchase $purchase) {
+                if ($purchase->status == 'purchase') {
+                    return $purchase->status == 'purchase' ? 'F. Compra' : 'Compra';
+                } elseif ($purchase->status == 'support_document') {
+                    return $purchase->status == 'support_document' ? 'Documento Soporte' : 'Documento Soporte';
+                }elseif ($purchase->status == 'debit_note') {
+                    return $purchase->status == 'debit_note' ? 'Nota Debito' : 'Nota Debito';
+                } elseif ($purchase->status == 'credit_note'){
+                    return $purchase->status == 'credit_note' ? 'Nota Credito' : 'Nota Credito';
+                }  elseif ($purchase->status == 'complete'){
+                    return $purchase->status == 'complete' ? 'NC - ND' : 'NC - ND';
+                } elseif ($purchase->status == 'adjustment_note'){
+                    return $purchase->status == 'adjustment_note' ? 'Nota de Ajuste': 'Nota de Ajuste';
+                }
+            })
+            ->addColumn('role', function (Purchase $purchase) {
+                return $purchase->user->roles[0]->name;
             })
             ->editColumn('created_at', function(Purchase $purchase){
                 return $purchase->created_at->format('yy-m-d: h:m');
@@ -64,7 +118,7 @@ class PurchaseController extends Controller
             ->rawColumns(['btn'])
             ->make(true);
         }
-        return view('admin.purchase.index', compact('purchase'));
+        return view('admin.purchase.index', compact('purchase', 'indicator', 'typeDocument'));
     }
 
     /**
@@ -74,602 +128,1266 @@ class PurchaseController extends Controller
      */
     public function create()
     {
-        $documents = Document::get();
-        $suppliers = Supplier::get();
-        $payment_forms = Payment_form::get();
-        $payment_methods = Payment_method::get();
+        $indicator = Indicator::findOrFail(1);
+        $cashRegister = CashRegister::select('id')
+        ->where('user_id', '=', Auth::user()->id)
+        ->where('status', '=', 'open')
+        ->first();
+        if ($indicator->pos == 'on') {
+            if(is_null($cashRegister)){
+                toast('Debes tener una caja Abierta para realizar Compras.','danger');
+                return redirect("branch");
+            }
+        }
+        $providers = Provider::get();
+        $documentTypes = DocumentType::where('prefix', 'DSE')->get();
+        $resolutions = Resolution::where('document_type_id', 11)->where('status', 'active')->get();
+        $generationTypes = GenerationType::get();
+        $paymentForms = PaymentForm::get();
+        $paymentMethods = PaymentMethod::get();
         $banks = Bank::get();
         $cards = Card::get();
         $branchs = Branch::get();
-        $products = Product::where('status', 'active')->get();
+        $percentages = Percentage::where('status', 'active')->get();
+        $advances = Advance::where('status', '!=', 'aplicado')->get();
+        $date = Carbon::now();
+        $products = Product::where('status', 'active')->where('type_product', 'product')->get();
+        $companyTaxes = CompanyTax::from('company_taxes', 'ct')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->join('percentages as per', 'ct.percentage_id', 'per.id')
+        ->select('ct.id', 'ct.name', 'tt.id as ttId', 'tt.type_tax', 'per.percentage', 'per.base')
+        ->where('tt.type_tax', 'retention')->get();
+        $typeProduct = 1;
+        $countBranchs = count($branchs);
         return view('admin.purchase.create',
         compact(
-            'suppliers',
-            'products',
-            'documents',
-            'suppliers',
-            'payment_forms',
-            'payment_methods',
+            'indicator',
+            'providers',
+            'documentTypes',
+            'resolutions',
+            'generationTypes',
+            'paymentForms',
+            'paymentMethods',
             'banks',
             'cards',
             'branchs',
-            'products'
+            'percentages',
+            'advances',
+            'products',
+            'date',
+            'companyTaxes',
+            'typeProduct',
+            'countBranchs'
         ));
     }
+
+    public function createRawmaterial()
+    {
+        $indicator = Indicator::findOrFail(1);
+        $cashRegister = CashRegister::select('id')
+        ->where('user_id', '=', current_user()->id)
+        ->where('status', '=', 'open')
+        ->first();
+        if ($indicator->pos == 'on') {
+            if(is_null($cashRegister)){
+                toast('Debes tener una caja Abierta para realizar Compras.','danger');
+                return redirect("branch");
+            }
+        }
+        $providers = Provider::get();
+        $documentTypes = DocumentType::where('prefix', 'DSE')->get();
+        $resolutions = Resolution::where('document_type_id', 11)->where('status', 'active')->get();
+        $generationTypes = GenerationType::get();
+        $paymentForms = PaymentForm::get();
+        $paymentMethods = PaymentMethod::get();
+        $banks = Bank::get();
+        $cards = Card::get();
+        $branchs = Branch::get();
+        $percentages = Percentage::where('status', 'active')->get();
+        $advances = Advance::where('status', '!=', 'aplicado')->get();
+        $date = Carbon::now();
+        $products = RawMaterial::where('status', 'active')->get();
+        $companyTaxes = CompanyTax::from('company_taxes', 'ct')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->join('percentages as per', 'ct.percentage_id', 'per.id')
+        ->select('ct.id', 'ct.name', 'tt.id as ttId', 'tt.type_tax', 'per.percentage', 'per.base')
+        ->where('tt.type_tax', 'retention')->get();
+        $typeProduct = 2;
+        $countBranchs = count($branchs);
+        return view('admin.purchase.create',
+        compact(
+            'indicator',
+            'providers',
+            'documentTypes',
+            'resolutions',
+            'generationTypes',
+            'paymentForms',
+            'paymentMethods',
+            'banks',
+            'cards',
+            'branchs',
+            'percentages',
+            'advances',
+            'products',
+            'date',
+            'companyTaxes',
+            'typeProduct',
+            'countBranchs'
+        ));
+    }
+
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StorepurchaseRequest  $request
+     * @param  \App\Http\Requests\StorePurchaseRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(StorePurchaseRequest $request)
     {
-        //llamado a variables
-        $product_id = $request->product_id;
-        $quantity   = $request->quantity;
-        $price      = $request->price;
-        $inc        = $request->inc;
-        $pay        = $request->pay;
+        //dd($request->all());
+        $resolution = $request->resolution_id;
+        $company = Company::findOrFail(current_user()->company_id);
+        $environment = Environment::where('id', 16)->first();
+        $indicator = Indicator::findOrFail(1);
+        $cashRegister = CashRegister::where('user_id', '=', current_user()->id)->where('status', '=', 'open')->first();
 
+        //Variables del request
+        $product_id = $request->id;
+        $quantity = $request->quantity;
+        $price = $request->price;
+        $tax_rate = $request->tax_rate;
+        $branch = $request->branch_id[0];//variable de la sucursal de destino
+        $total_pay = $request->total_pay;
+        $totalpay = $request->totalpay;
+        $retention = 0;
+        //variables del request
+        $quantityBag = 0;
+        if ($request->total_retention != null) {
+            $retention = $request->total_retention;
+        }
+
+        $documentType = $request->document_type_id;
+        $typeDocument = 'purchase';
+        $voucherType = '';
+        if ($documentType == 11) {
+            $voucherType = 12;
+        } else {
+            $voucherType = 7;
+            $resolution = 1;
+        }
+        $resolutions = Resolution::findOrFail($resolution);
+        $service = '';
+        $errorMessages = '';
+        $store = false;
+        if ($documentType == 11 && $indicator->dian == 'on') {
+            $data = supportDocumentSend($request);
+            $requestResponse = sendDocuments($company, $environment, $data);
+            $store = $requestResponse['store'];
+            $service = $requestResponse['response'];
+            $errorMessages = $requestResponse['errorMessages'];
+        } else {
+            $store = true;
+        }
         //Crea un registro de compras
-        $purchase = new Purchase();
-        $purchase->user_id     = Auth::user()->id;
-        $purchase->branch_id   = 1;
-        $purchase->supplier_id = $request->supplier_id;
-        $purchase->payment_form_id = $request->payment_form_id;
-        $purchase->payment_method_id = $request->payment_method_id;
-        $purchase->total       = $request->total;
-        $purchase->total_inc    = $request->total_inc;
-        $purchase->total_pay    = $request->total_pay;
-        $purchase->pay         = $request->total_pay;
-        $purchase->balance     = 0;
-        $purchase->save();
 
-        $sale_box = Sale_box::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
+        if ($store == true) {
 
-        $sale_box->purchase += $purchase->total_pay;
-        $sale_box->out_total += $purchase->pay;
-        $sale_box->update();
-        //inicio proceso si hay pagos
-        if($pay > 0){
-
-            //si no hay pago anticipado se crea un pago a compra
-            $pay_purchase                   = new Pay_purchase();
-            $pay_purchase->pay              = $pay;
-            $pay_purchase->balance_purchase = $purchase->balance;
-            $pay_purchase->user_id          = $purchase->user_id;
-            $pay_purchase->branch_id        = $purchase->branch_id;
-            $pay_purchase->purchase_id      = $purchase->id;
-            $pay_purchase->save();
-            //metodo que registra el pago a compra y el methodo de pago
-            $pay_purchase_Payment_method                     = new Pay_purchase_payment_method();
-            $pay_purchase_Payment_method->pay_purchase_id    = $pay_purchase->id;
-            $pay_purchase_Payment_method->payment_method_id  = $request->payment_method_id;
-            $pay_purchase_Payment_method->bank_id            = $request->bank_id;
-            $pay_purchase_Payment_method->card_id            = $request->card_id;
-            $pay_purchase_Payment_method->transaction        = $request->transaction;
-            $pay_purchase_Payment_method->payment            = $pay;
-            $pay_purchase_Payment_method->save();
-
-            $mp = $request->payment_method_id;
-
-            $sale_box = Sale_box::where('user_id', '=', $purchase->user_id)->where('status', 'open')->first();
-            if($mp == 10){
-                $sale_box->out_purchase_cash += $pay;
-                $sale_box->departure  += $pay;
-            }
-            $sale_box->out_purchase += $pay;
-            $sale_box->update();
-        }
-
-        //Toma el Request del array
-
-        $cont = 0;
-        //Ingresa los productos que vienen en el array
-        while($cont < count($product_id)){
-
-            $product_purchase = new Product_purchase();
-            $product_purchase->purchase_id = $purchase->id;
-            $product_purchase->product_id  = $product_id[$cont];
-            $product_purchase->quantity    = $quantity[$cont];
-            $product_purchase->price       = $price[$cont];
-            $product_purchase->inc         = $inc[$cont];
-            $product_purchase->subtotal    = $quantity[$cont] * $price[$cont];
-            $product_purchase->incsubt     =($quantity[$cont] * $price[$cont] * $inc[$cont])/100;
-            $product_purchase->save();
-            //selecciona el producto que viene del array
-            $products = Product::where('id', $product_purchase->product_id)->first();
-
-            //$id = $products->id;
-            //$utility = $products->category->utility;
-            $priceProd = $products->price;
-            $stockardex = $products->stock;
-            //$priceSale = $priceProd + ($priceProd * $utility / 100);
-            $priceProduct = (($stockardex * $priceProd) + ($quantity[$cont] * $price[$cont])) / ($stockardex + $quantity[$cont]);
-            //Cambia el valor de venta del producto
-            //$product = Product::findOrFail($id);
-            $products->stock += $quantity[$cont]; //reempazando triguer
-            $products->price = $priceProduct;
-            //$products->sale_price = $priceSale;
-            $products->update();
-
-            //selecciona el producto de la sucursal que sea el mismo del array
-            $branch_products = Branch_product::where('product_id', '=', $product_purchase->product_id)
-            ->where('branch_id', '=', 1)
-            ->first();
-
-            if (isset($branch_products)) {
-                $id = $branch_products->id;
-                $stock = $branch_products->stock + $product_purchase->quantity;
-                $branch_product = Branch_product::findOrFail($id);
-                $branch_product->stock = $stock;
-                $branch_product->update();
+            $purchase = new Purchase();
+            $purchase->user_id = current_user()->id;
+            $purchase->branch_id = current_user()->branch_id;
+            $purchase->provider_id = $request->provider_id;
+            $purchase->payment_form_id = $request->payment_form_id;
+            $purchase->payment_method_id = $request->payment_method_id[0];
+            $purchase->resolution_id = $resolution;
+            $purchase->generation_type_id = $request->generation_type_id;
+            $purchase->document_type_id = $documentType;
+            $purchase->document = $resolutions->prefix . '-' . $resolutions->consecutive;
+            if ($documentType == 11) {
+                $voucherTypes = VoucherType::findOrFail(12);
+                $purchase->invoice_code = $voucherTypes->code . '-' . $voucherTypes->consecutive;
+                $purchase->voucher_type_id = 12;
+                $purchase->status = 'support_document';
+                $voucherTypes->consecutive += 1;
+                $voucherTypes->update();
             } else {
-                //metodo para crear el producto en la sucursal y asignar stock
-                $branch_product = new Branch_product();
-                $branch_product->branch_id = 1;
-                $branch_product->product_id = $product_purchase->product_id;
-                $branch_product->stock = $product_purchase->quantity;
-                $branch_product->order_product = 0;
-                $branch_product->save();
+                $voucherTypes = VoucherType::findOrFail(7);
+                $purchase->invoice_code = $request->invoice_code;
+                $purchase->voucher_type_id = 7;
+                $purchase->status = 'purchase';
+                $voucherTypes->consecutive += 1;
+                $voucherTypes->update();
+                $resolutions->consecutive += 1;
+                $resolutions->update();
+            }
+            $purchase->generation_date = $request->generation_date;
+            $purchase->due_date = $request->due_date;
+            $purchase->retention = $retention;
+            $purchase->total = $request->total;
+            $purchase->total_tax = $request->total_tax;
+            $purchase->total_pay = $total_pay;
+
+            if ($totalpay > 0) {
+                $purchase->pay = $totalpay;
+            } else {
+                $purchase->pay = 0;
+            }
+            $purchase->balance = $total_pay - $totalpay;
+            $purchase->grand_total = $total_pay - $retention;
+            $purchase->start_date = $request->start_date;
+            $purchase->save();
+
+            $voucher = VoucherType::findOrFail(19);
+            $voucher->consecutive = $purchase->id;
+            $voucher->update();
+
+            if ($indicator->pos == 'on') {
+                //actualizar la caja
+                    $cashRegister->purchase += $total_pay;
+                    //$cashRegister->out_total += $totalpay;
+                    $cashRegister->update();
+            }
+            $document = $purchase;
+            if ($request->typeProduct == 1) {
+                for ($i=0; $i < count($product_id); $i++) {
+                    $id = $product_id[$i];
+                    //Metodo para registrar la relacion entre producto y compra
+                    $productPurchase = new ProductPurchase();
+                    $productPurchase->purchase_id = $purchase->id;
+                    $productPurchase->product_id = $id;
+                    $productPurchase->quantity = $quantity[$i];
+                    $productPurchase->price = $price[$i];
+                    $productPurchase->tax_rate = $tax_rate[$i];
+                    $productPurchase->subtotal = $quantity[$i] * $price[$i];
+                    $productPurchase->tax_subtotal =($quantity[$i] * $price[$i] * $tax_rate[$i])/100;
+                    $productPurchase->save();
+
+                    //selecciona el producto que viene del array
+                    $product = Product::findOrFail($id);
+                    //selecciona el producto de la sucursal que sea el mismo del array
+                    $branchProducts = BranchProduct::where('product_id', '=', $id)
+                    ->where('branch_id', '=', $branch)
+                    ->first();
+
+                    $quantityLocal = $quantity[$i];
+                    $priceLocal = $price[$i];
+                    $this->inventoryPurchases($product, $branchProducts, $quantityLocal, $priceLocal, $branch);//trait para actualizar inventario
+                    $this->kardexCreate($product, $branch, $voucherType, $document, $quantityLocal, $typeDocument);//trait crear Kardex
+
+                }
+            } else {
+                for ($i=0; $i < count($product_id); $i++) {
+                    $id = $product_id[$i];
+                    //Metodo para registrar la relacion entre producto y compra
+                    $purchaseRawmaterial = new PurchaseRawmaterial();
+                    $purchaseRawmaterial->purchase_id = $purchase->id;
+                    $purchaseRawmaterial->raw_material_id = $id;
+                    $purchaseRawmaterial->quantity = $quantity[$i];
+                    $purchaseRawmaterial->price = $price[$i];
+                    $purchaseRawmaterial->tax_rate = $tax_rate[$i];
+                    $purchaseRawmaterial->subtotal = $quantity[$i] * $price[$i];
+                    $purchaseRawmaterial->tax_subtotal =($quantity[$i] * $price[$i] * $tax_rate[$i])/100;
+                    $purchaseRawmaterial->save();
+
+                    //selecciona el producto que viene del array
+                    $rawMaterial = RawMaterial::findOrFail($id);
+                    //selecciona el producto de la sucursal que sea el mismo del array
+                    $branchRawmaterials = BranchRawmaterial::where('raw_material_id', '=', $id)
+                    ->where('branch_id', '=', $branch)
+                    ->first();
+                    $product = $rawMaterial;
+                    $quantityLocal = $quantity[$i];
+                    $priceLocal = $price[$i];
+                    $this->rawMaterialPurchases($rawMaterial, $branchRawmaterials, $quantityLocal, $priceLocal, $branch);//trait para actualizar inventario
+                    $this->kardexCreate($product, $branch, $voucherType, $document, $quantityLocal, $typeDocument);//trait crear Kardex
+
+                }
+                $purchase->type_product = 'raw_material';
+                $purchase->update();
             }
 
-            //Actualiza la tabla del Kardex
-            $kardex = new Kardex();
-            $kardex->product_id = $product_id[$cont];
-            $kardex->branch_id = 1;
-            $kardex->operation = 'compra';
-            $kardex->number = $purchase->id;
-            $kardex->quantity = $quantity[$cont];
-            $kardex->stock = $products->stock;
-            $kardex->save();
+            //Ingresa los productos que vienen en el array
 
 
-            $cont++;
+            $taxes = $this->getTaxesLine($request);//selecciona el impuesto que tiene la categoria IVA o INC
+            //TaxesGlobals($document, $quantityBag, $typeDocument);
+            taxesLines($document, $taxes, $typeDocument);
+            retentions($request, $document, $typeDocument);
+
+
+            if ($totalpay > 0) {
+                pays($request, $document, $typeDocument);
+            }
+            if ($documentType == 11 && $indicator->dian == 'on') {
+                $valid = $service['ResponseDian']['Envelope']['Body']['SendBillSyncResponse']
+                    ['SendBillSyncResult']['IsValid'];
+                $code = $service['ResponseDian']['Envelope']['Body']['SendBillSyncResponse']
+                    ['SendBillSyncResult']['StatusCode'];
+                $description = $service['ResponseDian']['Envelope']['Body']['SendBillSyncResponse']
+                    ['SendBillSyncResult']['StatusDescription'];
+                $statusMessage = $service['ResponseDian']['Envelope']['Body']['SendBillSyncResponse']
+                    ['SendBillSyncResult']['StatusMessage'];
+
+                $supportDocumentResponse = new SupportDocumentResponse();
+                $supportDocumentResponse->document = $purchase->document;
+                $supportDocumentResponse->message = $service['message'];
+                $supportDocumentResponse->valid = $valid;
+                $supportDocumentResponse->code = $code;
+                $supportDocumentResponse->description = $description;
+                $supportDocumentResponse->status_message = $statusMessage;
+                $supportDocumentResponse->cuds = $service['cuds'];
+                $supportDocumentResponse->purchase_id = $purchase->id;
+                $supportDocumentResponse->save();
+
+                $environmentPdf = Environment::where('code', 'PDF')->first();
+
+                $pdf = file_get_contents($environmentPdf->url . $company->nit ."/DSS-" . $resolutions->prefix .
+                $resolutions->consecutive .".pdf");
+                Storage::disk('public')->put('files/graphical_representations/support_documents/' .
+                $resolutions->prefix . $resolutions->consecutive . '.pdf', $pdf);
+
+                $resolutions->consecutive += 1;
+                $resolutions->update();
+            }
+
+            session()->forget('purchase');
+            session(['purchase' => $purchase->id]);
+            toast('Compra Registrada satisfactoriamente.','success');
+            return redirect('purchase');
         }
-        session(['purchase' => $purchase->id]);
-
-        toast('Compra Registrada satisfactoriamente.','success');
+        toast($errorMessages,'danger');
         return redirect('purchase');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\purchase  $purchase
+     * @param  \App\Models\Purchase  $purchase
      * @return \Illuminate\Http\Response
      */
     public function show(Purchase $purchase)
     {
-        $product_purchases = Product_purchase::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
-        return view('admin.purchase.show', compact('purchase', 'product_purchases'));
+        $voucher = VoucherType::findOrFail(19);
+        $debitNotes = Ndpurchase::where('purchase_id', $purchase->id)->first();
+        $creditNotes = Ncpurchase::where('purchase_id', $purchase->id)->first();
+        $retentions = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->select('tax.tax_value', 'ct.name')
+        ->where('tax.type', 'purchase')
+        ->where('tax.taxable_id', $purchase->id)
+        ->where('tt.type_tax', 'retention')->get();
+        $retentionsum = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->select('tax.tax_value', 'ct.name')
+        ->where('tax.type', 'purchase')
+        ->where('tax.taxable_id', $purchase->id)
+        ->where('tt.type_tax', 'retention')->sum('tax_value');
+
+        //$retention = 0;
+        $debitNote = 0;
+        $creditNote = 0;
+        $retentionnd = 0;
+        $retentionnc = 0;
+        if ($debitNotes != null) {
+            $debitNote = $debitNotes->total_pay;
+            $retnd = Tax::from('taxes as tax')
+            ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+            ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+            ->select('tax.tax_value', 'ct.name')
+            ->where('tax.type', 'ndpurchase')
+            ->where('tax.taxable_id', $debitNotes->id)
+            ->where('tt.type_tax', 'retention')
+            ->sum('tax_value');
+            //$retnd = Retention::where('type', 'ndpurchase')->where('retentionable_id', $debitNotes->id)->first();
+            if ($retnd) {
+                $retentionnd = $retnd;
+            } else {
+                $retentionnd = 0;
+            }
+        }
+        if ($creditNotes != null) {
+            $creditNote = $creditNotes->total_pay;
+            //$retnc = Retention::where('type', 'ncpurchase')->where('retentionable_id', $creditNotes->id)->first();
+            $retnc = Tax::from('taxes as tax')
+            ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+            ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+            ->select('tax.tax_value', 'ct.name')
+            ->where('tax.type', 'ncpurchase')
+            ->where('tax.taxable_id', $creditNotes->id)
+            ->where('tt.type_tax', 'retention')
+            ->sum('tax_value');
+
+            if ($retnc) {
+                $retentionnc = $retnc;
+            } else {
+                $retentionnc = 0;
+            }
+        }
+
+
+        $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
+        return view('admin.purchase.show', compact(
+            'purchase',
+            'debitNotes',
+            'creditNotes',
+            'debitNote',
+            'creditNote',
+            'retentionnd',
+            'retentionnc',
+            'retentions',
+            'retentionsum',
+            'productPurchases',
+        ));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\purchase  $purchase
+     * @param  \App\Models\Purchase  $purchase
      * @return \Illuminate\Http\Response
      */
     public function edit(Purchase $purchase)
     {
-        $documents = Document::get();
-        $suppliers = Supplier::get();
-        $payment_forms = Payment_form::get();
-        $payment_methods = Payment_method::get();
+        /*
+        $retention = Retention::where('type', 'purchase')->where('retentionable_id', $purchase->id)->first();
+        $providers = Provider::get();
+        $documentTypes = DocumentType::where('prefix', 'dse')->get();
+        $resolutions = Resolution::get();
+        $generationTypes = GenerationType::get();
+        $paymentForms = PaymentForm::get();
+        $paymentMethods = PaymentMethod::get();
         $banks = Bank::get();
         $cards = Card::get();
-        $branches = Branch::get();
+        $branchs = Branch::get();
+        $percentages = Percentage::where('status', 'active')->get();
+        $advances = Advance::where('status', '!=', 'aplicado')->get();
         $products = Product::where('status', 'active')->get();
-        //$productPurchases = Product_purchase::where('purchase_id', $purchase->id)->get();
-        $productPurchases = Product_purchase::from('product_purchases as pp')
+        $date = Carbon::now();
+        $productPurchases = ProductPurchase::from('product_purchases as pp')
         ->join('products as pro', 'pp.product_id', 'pro.id')
-        ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
-        ->select('pp.id', 'pro.id as idP', 'pro.name', 'pro.stock', 'pp.quantity', 'pp.price', 'pp.inc', 'pp.subtotal')
+        ->select('pp.id', 'pro.id as idP', 'pro.name', 'pro.stock', 'pp.quantity', 'pp.price', 'pp.tax_rate', 'pp.subtotal')
         ->where('purchase_id', $purchase->id)
         ->get();
+        $payPurchases = Pay::where('type', 'purchase')->where('payable_id', $purchase->id)->sum('pay');
         return view('admin.purchase.edit',
         compact(
             'purchase',
-            'documents',
-            'suppliers',
-            'payment_forms',
-            'payment_methods',
+            'retention',
+            'providers',
+            'documentTypes',
+            'resolutions',
+            'generationTypes',
+            'paymentForms',
+            'paymentMethods',
             'banks',
             'cards',
-            'branches',
+            'branchs',
+            'percentages',
+            'advances',
             'products',
-            'productPurchases'
-        ));
+            'date',
+            'productPurchases',
+            'payPurchases'
+        ));*/
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdatepurchaseRequest  $request
-     * @param  \App\Models\purchase  $purchase
+     * @param  \App\Http\Requests\UpdatePurchaseRequest  $request
+     * @param  \App\Models\Purchase  $purchase
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatepurchaseRequest $request, purchase $purchase)
+    public function update(UpdatePurchaseRequest $request, Purchase $purchase)
     {
-        //llamado a variables
-        $product_id = $request->product_id;
-        $quantity   = $request->quantity;
-        $price      = $request->price;
-        $inc        = $request->inc;
-        $pay        = $request->pay;
+        /*
+            $indicator = Indicator::findOrFail(1);
+            $user = Auth::user();
 
-        $total_pay = $request->total_pay;
-        $payment_method = $request->payment_method_id;
+            //Variables del request
+            $product_id = $request->product_id;
+            $quantity   = $request->quantity;
+            $price      = $request->price;
+            $tax_rate        = $request->tax_rate;
+            $branch     = $request->branch_id;
+            $totalpay = $request->totalpay;
+            $total_pay = $request->total_pay;
 
-        //llamado de todos los pagos y pago nuevo para la diferencia
-        $payOld = Pay_purchase::where('purchase_id', $purchase->id)->sum('pay');
-        $payNew = $pay;
-        $payTotal = $payNew + $payOld;
-        $date1 = Carbon::now()->toDateString();
-        $date2 = Purchase::find($purchase->id)->created_at->toDateString();
+            //variables del request
+            $paymentMethod = $request->payment_method_id;
+            $bank = $request->bank_id;
+            $card = $request->card_id;
+            $advance_id = $request->advance_id;
+            $payment = $request->pay;
+            $transaction = $request->transaction;
+            $advance = $request->advance;
+            $percentage = $request->percentageold;
 
-        //actualizar la caja
-        if ($date1 == $date2) {
-            $sale_box = Sale_box::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
-            $sale_box->purchase -= $purchase->total_pay;
-            $sale_box->update();
-        }
+            //llamado de todos los pagos y pago nuevo para la diferencia
+            $payOld = Pay::where('type', 'purchase')->where('payable_id', $purchase->id)->sum('pay');
+            $payNew = $totalpay;
+            $payTotal = $payNew + $payOld;
+            $retention = Retention::where('type', 'purchase')->where('retentionable_id', $purchase->id)->first();
+            $date1 = Carbon::now()->toDateString();
+            $date2 = Purchase::find($purchase->id)->created_at->toDateString();
 
-        //Actualizando un registro de compras
-        $purchase->user_id     = Auth::user()->id;
-        $purchase->payment_form_id = $request->payment_form_id;
-        $purchase->payment_method_id = $payment_method;
-        $purchase->total       = $request->total;
-        $purchase->total_inc    = $request->total_inc;
-        $purchase->total_pay    = $request->total_pay;
-        $purchase->pay = $request->total_pay;
-        $purchase->balance = 0;
-        $purchase->update();
+            if ($payOld > $total_pay) {
 
-        //actualizar la caja
-        if ($date1 == $date2) {
-            $sale_box = Sale_box::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
-            $sale_box->purchase += $purchase->total_pay;
-            //$sale_box->out_total += $purchase->total_pay;
-            $sale_box->update();
-        }
-        //inicio proceso si hay pagos
-        if($pay > 0){
-            $sale_box = Sale_box::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
-            $payPurchase = Pay_purchase::where('purchase_id', $purchase->id)->first();
-            if (isset($payPurchase)) {
-                $payPurchase->pay = $pay;
-                $payPurchase->balance_purchase = 0;
-                $payPurchase->update();
+                $voucherTypes = VoucherType::findOrFail(18);
+                //Metodo para crear un nuevo advance
+                $advance = new Advance();
+                $advance->user_id = Auth::user()->id;
+                $advance->branch_id = Auth::user()->branch_id;
+                $advance->voucher_type_id = 18;
+                $advance->document = $voucherTypes->code . '-' . $voucherTypes->consecutive;
+                $advance->origin = 'Compra' . '-' . $purchase->document;
+                $advance->destination = null;
+                $advance->pay = $payOld - $total_pay;
+                $advance->balance = $payOld - $total_pay;;
+                $advance->note = 'Anticipo generado por edicion de factura' . '-' . $purchase->document;
+                $advance->status = 'pending';
+                $provider = Provider::findOrFail($request->provider_id);
+                $advance->type_third = 'provider';
+                $provider->advances()->save($advance);
 
-                $payPurchase_paymentMethod = Pay_purchase_payment_method::where('pay_purchase_id', $payPurchase->id)->first();
-
-
-                $mp = $payPurchase_paymentMethod->payment_method_id;
-                //metodo para actualizar la caja
-                if($mp == 10){
-                    $sale_box->out_purchase_cash -= $payPurchase_paymentMethod->payment;
-                    $sale_box->departure -= $payPurchase_paymentMethod->payment;
-                }
-                $sale_box->out_purchase -= $payPurchase_paymentMethod->payment;
-                $sale_box->out_total -= $payPurchase_paymentMethod->payment;
-                $sale_box->update();
-
-                $payPurchase_paymentMethod->payment = $pay;
-                $payPurchase_paymentMethod->payment_method_id = $payment_method;
-                $payPurchase_paymentMethod->update();
-
-                $mp = $payment_method;
-                //metodo para actualizar la caja
-                if($mp == 10){
-                    $sale_box->out_purchase_cash += $payPurchase_paymentMethod->payment;
-                    $sale_box->departure += $payPurchase_paymentMethod->payment;
-                }
-                $sale_box->out_purchase += $payPurchase_paymentMethod->payment;
-                $sale_box->out_total += $payPurchase_paymentMethod->payment;
-                $sale_box->update();
-            } else {
-                //si no hay pago anticipado se crea un pago a compra
-                $pay_purchase = new Pay_purchase();
-                $pay_purchase->pay = $pay;
-                $pay_purchase->balance_purchase = $purchase->balance - $pay;
-                $pay_purchase->user_id = $purchase->user_id;
-                $pay_purchase->branch_id = $purchase->branch_id;
-                $pay_purchase->purchase_id = $purchase->id;
-                $pay_purchase->save();
-
-                //metodo que registra el pago a compra y el methodo de pago
-                $pay_purchase_Payment_method = new Pay_purchase_payment_method();
-                $pay_purchase_Payment_method->pay_purchase_id = $pay_purchase->id;
-                $pay_purchase_Payment_method->payment_method_id = $payment_method;
-                $pay_purchase_Payment_method->bank_id = $request->bank_id;
-                $pay_purchase_Payment_method->card_id = $request->card_id;
-                $pay_purchase_Payment_method->payment = $pay;
-                $pay_purchase_Payment_method->transaction = $request->transaction;
-                $pay_purchase_Payment_method->save();
-
-                $mp = $request->payment_method_id;
-                //metodo para actualizar la caja
-                $sale_box = Sale_box::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
-                if($mp == 10){
-                    $sale_box->out_purchase_cash += $pay;
-                    $sale_box->departure += $pay;
-                }
-                $sale_box->out_purchase += $pay;
-                $sale_box->out_total += $pay;
-                $sale_box->update();
             }
-        }
 
-        $productPurchases = Product_purchase::where('purchase_id', $purchase->id)->get();
-        foreach ($productPurchases as $key => $productPurchase) {
-            //selecciona el producto que viene del array
-            $products = Product::where('id', $productPurchase->product_id)->first();
-            //$product = Product::findOrFail($id);
-            $products->stock -= $productPurchase->quantity;
-            $products->update();
-
-            //selecciona el producto de la sucursal que sea el mismo del array
-            $branch_products = Branch_product::where('product_id', '=', $productPurchase->product_id)
-            ->where('branch_id', 1)
-            ->first();
-            $branch_products->stock -= $productPurchase->quantity;
-            $branch_products->update();
-            //Actualiza la tabla del Kardex
-            $kardex = Kardex::where('operation', 'compra')->where('number', $purchase->id)->first();
-            $kardex->quantity -= $productPurchase->quantity;
-            $kardex->stock -= $productPurchase->quantity;
-            $kardex->save();
-            //$product_purchase->purchase_id = $purchase->id;
-            //$product_purchase->product_id  = $product_id[$cont];
-            $productPurchase->quantity    = 0;
-            $productPurchase->price       = 0;
-            $productPurchase->inc         = 0;
-            $productPurchase->subtotal    = 0;
-            $productPurchase->incsubt     = 0;
-            $productPurchase->update();
-
-        }
-
-        //Toma el Request del array
-
-        $cont = 0;
-        //Ingresa los productos que vienen en el array
-        while($cont < count($product_id)){
-            $productPurchase = Product_purchase::where('purchase_id', $purchase->id)
-            ->where('product_id', $product_id[$cont])->first();
-            $subtotal = $quantity[$cont] * $price[$cont];
-            $incsub   = $subtotal * $inc[$cont]/100;
-            //Inicia proceso actualizacio product purchase si no existe
-            if (is_null($productPurchase)) {
-                $product_purchase = new Product_purchase();
-                $product_purchase->purchase_id = $purchase->id;
-                $product_purchase->product_id = $product_id[$cont];
-                $product_purchase->quantity = $quantity[$cont];
-                $product_purchase->price = $price[$cont];
-                $product_purchase->inc = $inc[$cont];
-                $product_purchase->subtotal = $subtotal;
-                $product_purchase->incsubt = $incsub;
-                $product_purchase->save();
-                //selecciona el producto que viene del array
-                $products = Product::where('id', $product_purchase->product_id)->first();
-
-                //$id = $products->id;
-                //$utility = $products->category->utility;
-                //$priceProduct = $products->price;
-                //$stockardex = $products->stock;
-                //$priceSale = $priceProduct + ($priceProduct * $utility / 100);
-                //Cambia el valor de venta del producto
-                //$product = Product::findOrFail($id);
-                $products->stock += $quantity[$cont];
-                $products->update();
-
-                //selecciona el producto de la sucursal que sea el mismo del array
-                $branch_products = Branch_product::where('product_id', '=', $product_purchase->product_id)
-                ->where('branch_id', 1)
-                ->first();
-
-                if (isset($branch_products)) {
-                    $branch_product = Branch_product::findOrFail($branch_products->id);
-                    $branch_product->stock += $quantity[$cont];
-                    $branch_product->update();
-                } else {
-                    //metodo para crear el producto en la sucursal y asignar stock
-                    $branch_product = new Branch_product();
-                    $branch_product->branch_id = 1;
-                    $branch_product->product_id = $product_purchase->product_id;
-                    $branch_product->stock = $product_purchase->quantity;
-                    $branch_product->order_product = 0;
-                    $branch_product->save();
+            if ($indicator->pos == 'on') {
+                //actualizar la caja
+                if ($date1 == $date2) {
+                    $cashRegister = CashRegister::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
+                    $cashRegister->purchase -= $purchase->total_pay;
+                    $cashRegister->update();
                 }
-                    //Actualiza la tabla del Kardex
-                $kardex = new Kardex();
-                $kardex->product_id = $product_id[$cont];
-                $kardex->branch_id = $purchase->branch_id;
-                $kardex->operation = 'compra';
-                $kardex->number = $purchase->id;
-                $kardex->quantity = $quantity[$cont];
-                $kardex->stock += $quantity[$cont];
-                $kardex->observation = 'movimiento por compra';
-                $kardex->save();
+            }
+
+            //Actualizando un registro de compras
+
+            $purchase->provider_id = $request->provider_id;
+            $purchase->payment_form_id = $request->payment_form_id;
+            $purchase->payment_method_id = $request->payment_method_id[0];
+            $purchase->generation_date = $request->generation_date;
+            $purchase->due_date = $request->due_date;
+            $purchase->total = $request->total;
+            $purchase->total_tax = $request->total_tax;
+            $purchase->total_pay = $total_pay;
+            $purchase->status = 'active';
+            if ($payTotal <= $total_pay) {
+                $purchase->pay = $payTotal;
+                $purchase->balance = $total_pay - $payTotal - $retention;
             } else {
-                if ($quantity[$cont] > 0) {
+                $purchase->pay = $total_pay;
+                $purchase->balance = 0;
+            }
+            $purchase->grand_total = $total_pay;
+            $purchase->start_date = $request->start_date;
+            $purchase->update();
 
-                    $subtotal = $quantity[$cont] * $price[$cont];
-                    $incsub = $subtotal * $inc[$cont]/100;
-                    $productPurchase->quantity = $quantity[$cont];
-                    $productPurchase->price = $price[$cont];
-                    $productPurchase->inc = $inc[$cont];
-                    $productPurchase->subtotal = $subtotal;
-                    $productPurchase->incsubt = $incsub;
-                    $productPurchase->update();
+            if ($percentage != null) {
+                if ($retention != null) {
+                    $retention->retention = $request->retention;
+                    $retention->percentage_id = $percentage;
+                    $retention->update();
+                } else {
+                    $retention = new Retention();
+                    $retention->retention = $request->retention;
+                    $retention->type = 'purchase';
+                    $retention->percentage_id = $percentage;
+                    $purchase->retentions()->save($retention);
                 }
-                //selecciona el producto de la sucursal que sea el mismo del array
-                $branch_products = Branch_product::where('product_id', '=', $productPurchase->product_id)
-                ->where('branch_id', 1)
-                ->first();
-                $branch_products->stock +=  $quantity[$cont];
-                $branch_products->update();
+            }
 
+            if ($indicator->pos == 'on') {
+                //actualizar la caja
+                if ($date1 == $date2) {
+                    $cashRegister = CashRegister::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
+                    $cashRegister->purchase += $purchase->total_pay;
+                    $cashRegister->update();
+                }
+            }
+
+            //inicio proceso si hay pagos
+            if($totalpay > 0){
+
+                //Metodo para crear un nuevo pago y su realcion polimorfica dependiendo del tipo de documento
+                $pay = new pay();
+                $pay->user_id = $user->id;
+                $pay->branch_id = $user->branch_id;
+                $pay->pay = $totalpay;
+                $pay->balance = $purchase->balance;
+                $pay->type = 'purchase';
+                $purchase->pays()->save($pay);
+
+                for ($i=0; $i < count($payment); $i++) {
+                    # code...
+
+                    //variable si el pago fue de un pago anticipado
+                    $payAdvance = $request->advance[$i];
+                    //inicio proceso si hay pago po abono anticipado
+                    if ($payAdvance > 0) {
+                        //llamado al pago anticipado
+                        $advance = Advance::findOrFail( $request->advance_id);
+                        //si el pago es utilizado en su totalidad agregar el destino aplicado
+                        if ($advance->pay > $advance->balance) {
+                            $advance->destination = $advance->destination . '<->' . $purchase->document;
+                        } else {
+                            $advance->destination = $purchase->document;
+                        }
+                        //variable si hay saldo en el pago anticipado
+                        $payAdvance_total = $advance->balance - $payAdvance;
+                        //cambiar el status del pago anticipado
+                        if ($payAdvance_total == 0) {
+                            $advance->status      = 'aplicado';
+                        } else {
+                            $advance->status      = 'parcial';
+                        }
+                        //actualizar el saldo del pago anticipado
+                        $advance->balance = $payAdvance_total;
+                        $advance->update();
+                    } else {
+
+                         //Metodo para registrar la relacion entre pago y metodo de pago
+                        $pay_paymentMethod = new PayPaymentMethod();
+                        $pay_paymentMethod->pay_id = $pay->id;
+                        $pay_paymentMethod->payment_method_id = $paymentMethod[$i];
+                        $pay_paymentMethod->bank_id = $bank[$i];
+                        $pay_paymentMethod->card_id = $card[$i];
+                        if (isset($advance_id[$i])){
+                            $pay_paymentMethod->advance_id = $advance_id[$i];
+                        }
+                        $pay_paymentMethod->pay = $payment[$i];
+                        $pay_paymentMethod->transaction = $transaction[$i];
+                        $pay_paymentMethod->save();
+
+                        $mp = $paymentMethod[$i];
+
+                        if ($indicator->pos == 'on') {
+                            //metodo para actualizar la caja
+                            $cashRegister = CashRegister::where('user_id', '=', $purchase->user_id)->where('status', '=', 'open')->first();
+                            if($mp == 10){
+                                $cashRegister->out_purchase_cash += $pay;
+                                $cashRegister->cash_out_total += $pay;
+                            }
+                            $cashRegister->out_purchase += $pay;
+                            $cashRegister->update();
+                        }
+                    }
+                }
+
+            }
+
+            $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
+            foreach ($productPurchases as $key => $productPurchase) {
                 //selecciona el producto que viene del array
-                $products = Product::findOrFail($product_id[$cont]);
 
-                //$id = $products->id;
-                //$utility = $products->category->utility;
-                //$priceProduct = $products->price;
-                //$priceSale = $priceProduct + ($priceProduct * $utility / 100);
-                //Cambia el valor de venta del producto
-                //$products->sale_price = $priceSale;
-                $products->stock += $quantity[$cont];
-                $products->update();
+                //$product = Product::findOrFail($id);
+                if ($indicator->inventory == 'on') {
+                    $products = Product::where('id', $productPurchase->product_id)->first();
+                    $products->stock -= $productPurchase->quantity;
+                    $products->update();
 
+                    //selecciona el producto de la sucursal que sea el mismo del array
+                    $branchProducts = BranchProduct::where('product_id', '=', $productPurchase->product_id)
+                    ->where('branch_id', '=', $branch)
+                    ->first();
+
+                    $branchProducts->stock -= $productPurchase->quantity;
+                    $branchProducts->update();
+                }
 
                 //Actualiza la tabla del Kardex
-                $kardex = Kardex::where('operation', 'compra')->where('number', $purchase->id)->first();
-                $kardex->quantity += $quantity[$cont];
-                $kardex->stock += $quantity[$cont];
-                $kardex->update();
+                $kardex = Kardex::where('voucher_type_id', $purchase->voucher_type_id)->where('document', $purchase->document)->first();
+                $kardex->quantity -= $productPurchase->quantity;
+                $kardex->stock -= $productPurchase->quantity;
+                $kardex->save();
+
+                $productPurchase->quantity = 0;
+                $productPurchase->price = 0;
+                $productPurchase->tax_rate = 0;
+                $productPurchase->subtotal = 0;
+                $productPurchase->tax_subtotal = 0;
+                $productPurchase->update();
+
             }
 
-            $cont++;
-        }
-        session(['purchase' => $purchase->id]);
+            //Toma el Request del array
+            //Ingresa los productos que vienen en el array
+            for ($i=0; $i < count($product_id); $i++) {
+                # code...
+                $productPurchase = ProductPurchase::where('purchase_id', $purchase->id)
+                ->where('product_id', $product_id[$i])->first();
+                $subtotal = $quantity[$i] * $price[$i];
+                $tax_subtotal   = $subtotal * $tax_rate[$i]/100;
+                //Inicia proceso actualizacio product purchase si no existe
+                if (is_null($productPurchase)) {
+                    $productPurchase = new ProductPurchase();
+                    $productPurchase->purchase_id = $purchase->id;
+                    $productPurchase->product_id = $product_id[$i];
+                    $productPurchase->quantity = $quantity[$i];
+                    $productPurchase->price = $price[$i];
+                    $productPurchase->tax_rate = $tax_rate[$i];
+                    $productPurchase->subtotal = $subtotal;
+                    $productPurchase->tax_subtotal = $tax_subtotal;
+                    $productPurchase->save();
+                    //selecciona el producto que viene del array
 
-        toast('Compra Editada satisfactoriamente.','success');
-        return redirect('purchase');
+                    $products = Product::where('id', $productPurchase->product_id)->first();
+                    //selecciona el producto de la sucursal que sea el mismo del array
+                    $branchProducts = BranchProduct::where('product_id', '=', $productPurchase->product_id)
+                        ->where('branch_id', '=', $branch)
+                        ->first();
+                    if ($indicator->inventory == 'on') {
+                        if ($indicator->product_price == 'automatico') {
+
+                            $utility = $products->category->utility;
+                            $priceProduct = $products->price;
+                            $priceSale = $priceProduct + ($priceProduct * $utility / 100);
+                            //Cambia el valor de venta del producto
+                            //$product = Product::findOrFail($id);
+                            $products->sale_price = $priceSale;
+                            $products->update();
+                        }
+                        //selecciona el producto de la sucursal que sea el mismo del array
+
+
+                        if (isset($branchProducts)) {
+                            $branchProducts->stock += $quantity[$i];
+                            $branchProducts->update();
+                        } else {
+                            //metodo para crear el producto en la sucursal y asignar stock
+                            $branchProduct = new BranchProduct();
+                            $branchProduct->branch_id = $branch;
+                            $branchProduct->product_id = $productPurchase->product_id;
+                            $branchProduct->stock = $productPurchase->quantity;
+                            $branchProduct->save();
+                        }
+                    } else {
+
+
+                        if ($branchProducts == null) {
+                            //metodo para crear el producto en la sucursal y asignar stock
+                            $branchProduct = new BranchProduct();
+                            $branchProduct->branch_id = $branch;
+                            $branchProduct->product_id = $productPurchase->product_id;
+                            $branchProduct->stock = $productPurchase->quantity;
+                            $branchProduct->save();
+                        }
+                    }
+                    //Actualiza la tabla del Kardex
+                    $kardex = new Kardex();
+                    $kardex->product_id = $product_id[$i];
+                    $kardex->branch_id = $branch;
+                    if ($purchase->documentType == 11) {
+                        $kardex->voucher_type_id = 12;
+                    } else {
+                        $kardex->voucher_type_id = 7;
+                    }
+                    $kardex->document = $purchase->document;
+                    $kardex->quantity = $quantity[$i];
+                    $kardex->stock = $products->stock;
+                    $kardex->save();
+                } else {
+                    if ($quantity[$i] > 0) {
+
+                        $subtotal = $quantity[$i] * $price[$i];
+                        $tax_subtotal = $subtotal * $tax_rate[$i]/100;
+
+                        $productPurchase->quantity = $quantity[$i];
+                        $productPurchase->price = $price[$i];
+                        $productPurchase->tax_rate = $tax_rate[$i];
+                        $productPurchase->subtotal = $subtotal;
+                        $productPurchase->tax_subtotal = $tax_subtotal;
+                        $productPurchase->update();
+                    }
+
+                    $products = Product::findOrFail($product_id[$i]);
+                    //selecciona el producto de la sucursal que sea el mismo del array
+                    $branchProducts = BranchProduct::where('product_id', '=', $productPurchase->product_id)
+                    ->where('branch_id', '=', $branch)
+                    ->first();
+                    if ($indicator->inventory == 'on') {
+                        $branchProducts->stock +=  $quantity[$i];
+                        $branchProducts->update();
+                        //selecciona el producto que viene del array
+
+                        if ($indicator->product_price == 'automatic') {
+                            $utility = $products->category->utility;
+                            $priceProduct = $products->price;
+                            $priceSale = $priceProduct + ($priceProduct * $utility / 100);
+                            //Cambia el valor de venta del producto
+                            $products->sale_price = $priceSale;
+                            $products->stock += $quantity[$i];
+                            $products->update();
+                        } else {
+                            $products->stock += $quantity[$i];
+                            $products->update();
+                        }
+                    }
+                    //Actualiza la tabla del Kardex
+                    $kardex = Kardex::where('voucher_type_id', $purchase->voucher_type_id)->where('document', $purchase->document)->first();
+                    $kardex->quantity += $quantity[$i];
+                    $kardex->stock += $quantity[$i];
+                    $kardex->update();
+                }
+            }
+        if ($payOld > $total_pay) {
+            Alert::success('Compra','Editada Satisfactoriamente. Con creacion de anticipo de Proveedor');
+            return redirect('purchase');
+
+        } else {
+            return redirect("purchase")->with('success', 'Compra Editada Satisfactoriamente');
+        }*/
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\purchase  $purchase
+     * @param  \App\Models\Purchase  $purchase
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Purchase $purchase)
     {
-        $purchase = Purchase::findOrFail($id);
-        $purchase->estado = 'credit_note';
-        $purchase->save();
-        return redirect('purchase');
+        //
     }
 
-
-
-     public function show_pay_purchase($id)
-     {
+    public function creditNote($id)
+    {
 
         $purchase = Purchase::findOrFail($id);
-        \session()->put('purchase', $purchase->id, 60 * 24 * 365);
-        \session()->put('total', $purchase->total, 60 * 24 *365);
-        \session()->put('total_inc', $purchase->total_inc, 60 * 24 *365);
-        \session()->put('total_pay', $purchase->total_Pay, 60 * 24 *365);
+        $products = Product::where('status', 'active')->where('type_product', 'service')->get();
+        $discrepancies = Discrepancy::where('id', '>', 6)->where('description', '!=', 'Otros')->get();
+        $resolutions = Resolution::where('document_type_id', 26)->where('status', 'active')->where('company_id', current_user()->company_id)->get();
+        $taxes = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->join('percentages as per', 'ct.percentage_id', 'per.id')
+        ->select('ct.id', 'ct.name', 'ct.tax_type_id', 'tax.tax_value', 'per.percentage', 'per.base')
+        ->where('tax.type', 'purchase')
+        ->where('tt.type_tax', 'retention')
+        ->where('tax.taxable_id', $id)
+        ->get();
+        $purchase = Purchase::findOrFail($id);
+        if ($purchase->type_product == 'product') {
+            $productPurchases = ProductPurchase::from('product_purchases as pp')
+            ->join('products as pro', 'pp.product_id', 'pro.id')
+            ->join('categories as cat', 'pro.category_id', 'cat.id')
+            ->join('company_taxes as ct', 'cat.company_tax_id', 'ct.id')
+            ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+            ->select('pp.id', 'pro.id as idP', 'pro.name', 'pro.stock', 'pp.quantity', 'pp.price', 'pp.tax_rate', 'pp.subtotal', 'tt.id as idtt', 'tt.name as namett')
+            ->where('purchase_id', $id)
+            ->get();
+        } else {
+            $productPurchases = PurchaseRawmaterial::from('purchase_rawmaterials as pp')
+            ->join('raw_materials as pro', 'pp.raw_material_id', 'pro.id')
+            ->join('categories as cat', 'pro.category_id', 'cat.id')
+            ->join('company_taxes as ct', 'cat.company_tax_id', 'ct.id')
+            ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+            ->select('pp.id', 'pro.id as idP', 'pro.name', 'pro.stock', 'pp.quantity', 'pp.price', 'pp.tax_rate', 'pp.subtotal', 'tt.id as idtt', 'tt.name as namett')
+            ->where('purchase_id', $id)
+            ->get();
+        }
 
-        return redirect('pay_purchase/create');
-     }
+        if ($purchase->status == 'complete' || $purchase->status == 'adjustment_note') {
+            return redirect("purchase")->with('warning', 'Esta Compra ya no se puede hacer notas');
+        }
+        return view('admin.ncpurchase.create', compact(
+            'purchase',
+            'products',
+            'productPurchases',
+            'discrepancies',
+            'resolutions',
+            'taxes'
+        ));
+    }
+
+    public function debitNote($id)
+    {
+        $purchase = Purchase::where('id', $id)->first();
+        $indicator = Indicator::findOrFail(1);
+        //$productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->get();
+        if ($indicator->inventory == 'on') {
+            $products = Product::where('status', 'active')->where('stock', '>', 0)->get();
+        } else {
+            $products = Product::where('status', 'active')->get();
+        }
+        if ($purchase->document_type_id == 11) {
+            $discrepancies = Discrepancy::where('id', 2)->get();
+        } else {
+            $discrepancies = Discrepancy::where('id', '<', 5)->where('description', '!=', 'Otros')->get();
+        }
+        $resolutions = Resolution::where('document_type_id', 13)->where('status', 'active')->where('company_id', Auth::user()->company_id)->get();
+        $taxes = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->join('percentages as per', 'ct.percentage_id', 'per.id')
+        ->select('ct.id', 'ct.name', 'ct.tax_type_id', 'tax.tax_value', 'per.percentage', 'per.base')
+        ->where('tax.type', 'purchase')
+        ->where('tt.type_tax', 'retention')
+        ->where('tax.taxable_id', $id)
+        ->get();
+        if ($purchase->type_product == 'product') {
+            $productPurchases = ProductPurchase::from('product_purchases as pp')
+            ->join('products as pro', 'pp.product_id', 'pro.id')
+            ->join('categories as cat', 'pro.category_id', 'cat.id')
+            ->join('company_taxes as ct', 'cat.company_tax_id', 'ct.id')
+            ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+            ->select('pp.id', 'pro.id as idP', 'pro.name', 'pro.stock', 'pp.quantity', 'pp.price', 'pp.tax_rate', 'pp.subtotal', 'tt.id as idtt', 'tt.name as namett')
+            ->where('purchase_id', $id)
+            ->get();
+        } else {
+            $productPurchases = PurchaseRawmaterial::from('purchase_rawmaterials as pp')
+            ->join('raw_materials as pro', 'pp.raw_material_id', 'pro.id')
+            ->join('categories as cat', 'pro.category_id', 'cat.id')
+            ->join('company_taxes as ct', 'cat.company_tax_id', 'ct.id')
+            ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+            ->select('pp.id', 'pro.id as idP', 'pro.name', 'pro.stock', 'pp.quantity', 'pp.price', 'pp.tax_rate', 'pp.subtotal', 'tt.id as idtt', 'tt.name as namett')
+            ->where('purchase_id', $id)
+            ->get();
+        }
+         if ($purchase->status == 'complete' || $purchase->status == 'adjustment_note') {
+            return redirect("purchase")->with('warning', 'Esta Compra ya no se puede hacer notas');
+        }
+        return view('admin.ndpurchase.create', compact(
+            'purchase',
+            'products',
+            'productPurchases',
+            'discrepancies',
+            'resolutions',
+            'taxes'
+        ));
+    }
+
+    //Metodo para registrar pago o abono de factura de compra
+    public function purchase_pay($id)
+    {
+        $document = Purchase::findOrFail($id);
+        $banks = Bank::get();
+        $paymentMethods = PaymentMethod::get();
+        $cards = Card::get();
+        $advances = Advance::where('status', '!=', 'applied')->where('advanceable_id', $document->third->id)->get();
+        $tipeDocument = 'Compra';
+
+        return view('admin.pay.create', compact(
+            'document',
+            'banks',
+            'paymentMethods',
+            'cards',
+            'advances',
+            'tipeDocument'
+        ));
+    }
 
     public function purchasePdf(Request $request, $id)
     {
         $purchase = Purchase::findOrFail($id);
-        $product_purchases = Product_purchase::where('purchase_id', $id)->where('quantity', '>', 0)->get();
-        $company = Company::findOrFail(1);
-        $days = $purchase->created_at->diffInDays($purchase->fecven);
-        $purchasepdf = "COMP-". $purchase->purchase;
-        $logo = './imagenes/logos'.$company->logo;
-        $view = \view('admin.purchase.pdf', compact('purchase', 'product_purchases', 'company', 'logo'));
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML($view);
-        //$pdf->setPaper ( 'A7' , 'landscape' );
-
-        return $pdf->stream('vista-pdf', "$purchasepdf.pdf");
-        //return $pdf->download("$purchasepdf.pdf");
-    }
-
-    public function pdfPurchase(Request $request)
-    {
-        $purchases = session('purchase');
-        $purchase = Purchase::findOrFail($purchases);
-        session()->forget('purchase');
-        $product_purchases = Product_purchase::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
-        $company = Company::findOrFail(1);
-
-        $purchasepdf = "COMP-". $purchase->purchase;
-        $logo = './imagenes/logos'.$company->logo;
-        $view = \view('admin.purchase.pdf', compact('purchase', 'product_purchases', 'company', 'logo'));
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML($view);
-        //$pdf->setPaper ( 'A7' , 'landscape' );
-
-        return $pdf->stream("$purchasepdf.pdf");
-        //return $pdf->stream('vista-pdf', "$purchasepdf.pdf");
-        //return $pdf->download("$purchasepdf.pdf");
-    }
-
-    public function purchasePost($id)
-    {
-        $purchase = Purchase::where('id', $id)->first();
-        $product_purchases = Product_purchase::where('purchase_id', $id)->where('quantity', '>', 0)->get();
-        $company = Company::where('id', 1)->first();
-        $purchasepdf = "FACT-". $purchase->document;
-        $logo = './imagenes/logos'.$company->logo;
-        $view = \view('admin.purchase.post', compact('purchase', 'product_purchases', 'company', 'logo'))->render();
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML($view);
-        $pdf->setPaper (array(0,0,226.76,497.64), 'portrait');
-
-        return $pdf->stream('vista-pdf', "$purchasepdf.pdf");
-        //return $pdf->download("$purchasepdf.pdf");
-    }
-
-    public function postPurchase()
-    {
-        $purchases = session('purchase');
-        $purchase = Purchase::findOrFail($purchases);
-        session()->forget('purchase');
-        $product_purchases = Product_purchase::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
-        $company = Company::where('id', 1)->first();
-
-        $purchasepdf = "FACT-". $purchase->document;
-        $logo = './imagenes/logos'.$company->logo;
-        $view = \view('admin.purchase.post', compact('purchase', 'product_purchases', 'company', 'logo'))->render();
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML($view);
-        $pdf->setPaper (array(0,0,226.76,497.64), 'portrait');
-        $pdf->render();
-        return $pdf->stream("$purchasepdf.pdf");
-        //return $pdf->download("$purchasepdf.pdf");
-    }
-
-    public function getMunicipalities(Request $request, $id)
-    {
-        if($request)
-        {
-            $municipalities = Municipality::where('department_id', '=', $id)->get();
-
-            return response()->json($municipalities);
+        if ($purchase->type_product == 'product') {
+            $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
+        } else {
+            $productPurchases = PurchaseRawmaterial::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
         }
-    }
-
-    public function pdf_paypurchase(Request $request, $id)
-    {
-        $purchase = Purchase::where('id', $id)->first();
-        $company = Company::where('id', 1)->first();
-        $user = auth::user();
-        $product_purchases = Product_purchase::from('product_purchases as pp')
-        ->join('purchases as pur', 'pp.purchase_id', 'pur.id')
-        ->join('products as pro', 'pp.product_id', 'pro.id')
-        ->select('pp.quantity', 'pp.price', 'pro.name')
-        ->where('pp.pay_invoice_id', $id)
-        ->where('quantity', '>', 0)
-        ->get();
-        $purchasepdf = "FACT-". $purchase->id;
+        $company = Company::findOrFail(1);
+        $indicator = Indicator::findOrFail(1);
+        $debitNotes = Ndpurchase::where('purchase_id', $id)->first();
+        $creditNotes = Ncpurchase::where('purchase_id', $id)->first();
+        $days = $purchase->created_at->diffInDays($purchase->due_date);
+        $purchasepdf = "COMP-". $purchase->document;
         $logo = './imagenes/logos'.$company->logo;
-        $view = \view('admin.pay_purchase.pdf', compact('company', 'logo', 'paypurchase', 'user'))->render();
+        $retentions = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->select('tax.tax_value', 'ct.name')
+        ->where('tax.type', 'purchase')
+        ->where('tax.taxable_id', $purchase->id)
+        ->where('tt.type_tax', 'retention')->get();
+        $retentionsum = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->select('tax.tax_value', 'ct.name')
+        ->where('tax.type', 'purchase')
+        ->where('tax.taxable_id', $purchase->id)
+        ->where('tt.type_tax', 'retention')->sum('tax_value');
+
+        //$retention = 0;
+        $debitNote = 0;
+        $creditNote = 0;
+        $retentionnd = 0;
+        $retentionnc = 0;
+        if ($debitNotes != null) {
+            $debitNote = $debitNotes->total_pay;
+            $retnd = Tax::from('taxes as tax')
+            ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+            ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+            ->select('tax.tax_value', 'ct.name')
+            ->where('tax.type', 'ndpurchase')
+            ->where('tax.taxable_id', $debitNotes->id)
+            ->where('tt.type_tax', 'retention')
+            ->sum('tax_value');
+            //$retnd = Retention::where('type', 'ndpurchase')->where('retentionable_id', $debitNotes->id)->first();
+            if ($retnd) {
+                $retentionnd = $retnd;
+            } else {
+                $retentionnd = 0;
+            }
+        }
+        if ($creditNotes != null) {
+            $creditNote = $creditNotes->total_pay;
+            //$retnc = Retention::where('type', 'ncpurchase')->where('retentionable_id', $creditNotes->id)->first();
+            $retnc = Tax::from('taxes as tax')
+            ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+            ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+            ->select('tax.tax_value', 'ct.name')
+            ->where('tax.type', 'ncpurchase')
+            ->where('tax.taxable_id', $creditNotes->id)
+            ->where('tt.type_tax', 'retention')
+            ->sum('tax_value');
+
+            if ($retnc) {
+                $retentionnc = $retnc;
+            } else {
+                $retentionnc = 0;
+            }
+        }
+        $view = \view('admin.purchase.pdf', compact(
+            'purchase',
+            'days',
+            'productPurchases',
+            'company',
+            'indicator',
+            'logo',
+            'debitNotes',
+            'creditNotes',
+            'retentions',
+            'retentionsum',
+            'debitNote',
+            'creditNote',
+            'retentionnd',
+            'retentionnc'
+        ));
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         //$pdf->setPaper ( 'A7' , 'landscape' );
 
         return $pdf->stream('vista-pdf', "$purchasepdf.pdf");
-        //return $pdf->download("$invoicepdf.pdf");
+        //return $pdf->download("$purchasepdf.pdf");*/
     }
+
+   public function pdfPurchase(Request $request)
+   {
+        $purchases = session('purchase');
+        $purchase = Purchase::findOrFail($purchases);
+        session()->forget('purchase');
+        if ($purchase->type_product == 'product') {
+            $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
+        } else {
+            $productPurchases = PurchaseRawmaterial::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
+        }
+        $company = Company::findOrFail(1);
+        $indicator = Indicator::findOrFail(1);
+        $debitNotes = Ndpurchase::where('purchase_id', $purchase->id)->first();
+        $creditNotes = Ncpurchase::where('purchase_id', $purchase->id)->first();
+        $days = $purchase->created_at->diffInDays($purchase->due_date);
+        $purchasepdf = "COMP-". $purchase->document;
+        $logo = './imagenes/logos'.$company->logo;
+        $retentions = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->select('tax.tax_value', 'ct.name')
+        ->where('tax.type', 'purchase')
+        ->where('tax.taxable_id', $purchase->id)
+        ->where('tt.type_tax', 'retention')->get();
+        $retentionsum = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->select('tax.tax_value', 'ct.name')
+        ->where('tax.type', 'purchase')
+        ->where('tax.taxable_id', $purchase->id)
+        ->where('tt.type_tax', 'retention')->sum('tax_value');
+
+        $debitNote = 0;
+        $creditNote = 0;
+        $retentionnd = 0;
+        $retentionnc = 0;
+        if ($debitNotes != null) {
+            $debitNote = $debitNotes->total_pay;
+            $retnd = Tax::where('type', 'ndpurchase')->where('retentionable_id', $debitNotes->id)->first();
+            $retentionnd = $retnd->retention;
+        }
+        if ($creditNotes != null) {
+            $creditNote = $creditNotes->total_pay;
+            $retnc = Tax::where('type', 'ncpurchase')->where('retentionable_id', $creditNotes->id)->first();
+            $retentionnc = $retnc->retention;
+        }
+        $view = \view('admin.purchase.pdf', compact(
+            'purchase',
+            'days',
+            'productPurchases',
+            'company',
+            'indicator',
+            'logo',
+            'debitNotes',
+            'creditNotes',
+            'retentions',
+            'retentionsum',
+            'debitNote',
+            'creditNote',
+            'retentionnd',
+            'retentionnc'
+        ));
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML($view);
+        //$pdf->setPaper ( 'A7' , 'landscape' );
+
+        return $pdf->stream('vista-pdf', "$purchasepdf.pdf");
+        //return $pdf->download("$purchasepdf.pdf");*/
+   }
+
+   public function purchasePos($id)
+   {
+        $purchase = Purchase::findOrFail($id);
+        if ($purchase->type_product == 'product') {
+            $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
+        } else {
+            $productPurchases = PurchaseRawmaterial::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
+        }
+        $company = Company::findOrFail(1);
+        $indicator = Indicator::findOrFail(1);
+        $debitNotes = Ndpurchase::where('purchase_id', $id)->first();
+        $creditNotes = Ncpurchase::where('purchase_id', $id)->first();
+        $days = $purchase->created_at->diffInDays($purchase->due_date);
+        $purchasepdf = "COMP-". $purchase->document;
+        $logo = './imagenes/logos'.$company->logo;
+        $retentions = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->select('tax.tax_value', 'ct.name')
+        ->where('tax.type', 'purchase')
+        ->where('tax.taxable_id', $purchase->id)
+        ->where('tt.type_tax', 'retention')->get();
+        $retentionsum = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->select('tax.tax_value', 'ct.name')
+        ->where('tax.type', 'purchase')
+        ->where('tax.taxable_id', $purchase->id)
+        ->where('tt.type_tax', 'retention')->sum('tax_value');
+
+        $debitNote = 0;
+        $creditNote = 0;
+        $retentionnd = 0;
+        $retentionnc = 0;
+        if ($debitNotes != null) {
+            $debitNote = $debitNotes->total_pay;
+            $retnd = Tax::where('type', 'ndpurchase')->where('retentionable_id', $debitNotes->id)->first();
+            $retentionnd = $retnd->retention;
+        }
+        if ($creditNotes != null) {
+            $creditNote = $creditNotes->total_pay;
+            $retnc = Tax::where('type', 'ncpurchase')->where('retentionable_id', $creditNotes->id)->first();
+            $retentionnc = $retnc->retention;
+        }
+        $view = \view('admin.purchase.pos', compact(
+            'purchase',
+            'days',
+            'productPurchases',
+            'company',
+            'indicator',
+            'logo',
+            'debitNotes',
+            'creditNotes',
+            'retentions',
+            'retentionsum',
+            'debitNote',
+            'creditNote',
+            'retentionnd',
+            'retentionnc'
+        ))->render();
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML($view);
+        $pdf->setPaper (array(0,0,226.76,497.64), 'portrait');
+
+        return $pdf->stream('vista-pdf', "$purchasepdf.pdf");
+        //return $pdf->download("$purchasepdf.pdf");
+   }
+
+   public function posPurchase(Request $request)
+   {
+        $purchases = session('purchase');
+        $purchase = Purchase::findOrFail($purchases);
+        session()->forget('purchase');
+        if ($purchase->type_product == 'product') {
+            $productPurchases = ProductPurchase::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
+        } else {
+            $productPurchases = PurchaseRawmaterial::where('purchase_id', $purchase->id)->where('quantity', '>', 0)->get();
+        }
+        $company = Company::findOrFail(1);
+        $indicator = Indicator::findOrFail(1);
+        $debitNotes = Ndpurchase::where('purchase_id', $purchase->id)->first();
+        $creditNotes = Ncpurchase::where('purchase_id', $purchase->id)->first();
+        $days = $purchase->created_at->diffInDays($purchase->due_date);
+        $purchasepdf = "COMP-". $purchase->document;
+        $logo = './imagenes/logos'.$company->logo;
+        $retentions = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->select('tax.tax_value', 'ct.name')
+        ->where('tax.type', 'purchase')
+        ->where('tax.taxable_id', $purchase->id)
+        ->where('tt.type_tax', 'retention')->get();
+        $retentionsum = Tax::from('taxes as tax')
+        ->join('company_taxes as ct', 'tax.company_tax_id', 'ct.id')
+        ->join('tax_types as tt', 'ct.tax_type_id', 'tt.id')
+        ->select('tax.tax_value', 'ct.name')
+        ->where('tax.type', 'purchase')
+        ->where('tax.taxable_id', $purchase->id)
+        ->where('tt.type_tax', 'retention')->sum('tax_value');
+
+        $debitNote = 0;
+        $creditNote = 0;
+        $retentionnd = 0;
+        $retentionnc = 0;
+        if ($debitNotes != null) {
+            $debitNote = $debitNotes->total_pay;
+            $retnd = Tax::where('type', 'ndpurchase')->where('retentionable_id', $debitNotes->id)->first();
+            $retentionnd = $retnd->retention;
+        }
+        if ($creditNotes != null) {
+            $creditNote = $creditNotes->total_pay;
+            $retnc = Tax::where('type', 'ncpurchase')->where('retentionable_id', $creditNotes->id)->first();
+            $retentionnc = $retnc->retention;
+        }
+        $view = \view('admin.purchase.pos', compact(
+            'purchase',
+            'days',
+            'productPurchases',
+            'company',
+            'indicator',
+            'logo',
+            'debitNotes',
+            'creditNotes',
+            'retentions',
+            'retentionsum',
+            'debitNote',
+            'creditNote',
+            'retentionnd',
+            'retentionnc'
+        ))->render();
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML($view);
+        $pdf->setPaper (array(0,0,226.76,497.64), 'portrait');
+
+        return $pdf->stream('vista-pdf', "$purchasepdf.pdf");
+        //return $pdf->download("$purchasepdf.pdf");
+   }
+
+   //Metodo para obtener el municipio de acuerdo al departamento
+   public function getMunicipalities(Request $request, $id)
+   {
+       if($request)
+       {
+           $municipalities = Municipality::where('department_id', '=', $id)->get();
+
+           return response()->json($municipalities);
+       }
+   }
 }

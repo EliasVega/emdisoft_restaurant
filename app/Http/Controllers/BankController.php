@@ -5,24 +5,36 @@ namespace App\Http\Controllers;
 use App\Models\Bank;
 use App\Http\Requests\StoreBankRequest;
 use App\Http\Requests\UpdateBankRequest;
+use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
+use Yajra\DataTables\DataTables;
 
 class BankController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('permission:bank.index|bank.create|bank.show|bank.edit|bank.destroy', ['only'=>['index']]);
+        $this->middleware('permission:bank.create', ['only'=>['create','store']]);
+        $this->middleware('permission:bank.show', ['only'=>['show']]);
+        $this->middleware('permission:bank.edit', ['only'=>['edit', 'update']]);
+        $this->middleware('permission:bank.destroy', ['only'=>['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (request()->ajax())
-        {
+        if ($request->ajax()) {
             $banks = Bank::get();
-            return DataTables()::of($banks)
-            ->addColumn('edit', 'admin/bank/actions')
-            ->rawColumns(['edit'])
-            ->toJson();
+
+            return DataTables::of($banks)
+                ->addColumn('edit', 'admin/bank/actions')
+                ->rawColumns(['edit'])
+                ->make(true);
         }
+
         return view('admin.bank.index');
     }
 
@@ -44,9 +56,10 @@ class BankController extends Controller
      */
     public function store(StoreBankRequest $request)
     {
-        $bank = new Bank();
+        $bank = new Bank;
         $bank->name = $request->name;
         $bank->save();
+
         return redirect('bank');
     }
 
@@ -56,9 +69,9 @@ class BankController extends Controller
      * @param  \App\Models\Bank  $bank
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Bank $bank)
     {
-        //
+        return view("admin.bank.show", compact('bank'));
     }
 
     /**
@@ -67,9 +80,8 @@ class BankController extends Controller
      * @param  \App\Models\Bank  $bank
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Bank $bank)
     {
-        $bank = Bank::findOrFail($id);
         return view("admin.bank.edit", compact('bank'));
     }
 
@@ -80,11 +92,11 @@ class BankController extends Controller
      * @param  \App\Models\Bank  $bank
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateBankRequest $request, $id)
+    public function update(UpdateBankRequest $request, Bank $bank)
     {
-        $bank = Bank::findOrFail($id);
         $bank->name = $request->name;
-        $bank->update();
+        $bank->save();
+        Alert::success('Banco','Editado Satisfactoriamente.');
         return redirect('bank');
     }
 
@@ -96,6 +108,8 @@ class BankController extends Controller
      */
     public function destroy(Bank $bank)
     {
-        //
+        $bank->delete();
+        toast('Banco eliminado con éxito.','success');
+        return redirect("bank");
     }
 }

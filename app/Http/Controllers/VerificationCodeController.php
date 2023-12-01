@@ -2,35 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Verification_code;
-use App\Http\Requests\StoreVerification_codeRequest;
-use App\Http\Requests\UpdateVerification_codeRequest;
+use App\Models\VerificationCode;
+use App\Http\Requests\StoreVerificationCodeRequest;
+use App\Http\Requests\UpdateVerificationCodeRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
+use Yajra\DataTables\DataTables;
 
 class VerificationCodeController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('permission:verificationCode.index|verificationCode.create|verificationCode.show|verificationCode.edit|verificationCode.destroy', ['only'=>['index']]);
+        $this->middleware('permission:verificationCode.create', ['only'=>['create','store']]);
+        $this->middleware('permission:verificationCode.show', ['only'=>['show']]);
+        $this->middleware('permission:verificationCode.edit', ['only'=>['edit', 'update']]);
+        $this->middleware('permission:verificationCode.destroy', ['only'=>['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (request()->ajax()) {
-            $verification_codes = Verification_code::from('verification_codes as vc')
-            ->join('users as use', 'vc.user_id', 'use.id')
-            ->select('vc.id', 'use.name', 'use.status', 'vc.code')
-            ->where('use.status', '=', 'ACTIVO')
-            ->get();
 
-            return datatables()
-            ->of($verification_codes)
-            ->addColumn('btn', 'admin/verification_code/actions')
-            ->addColumn('accesos', 'admin/verification_code/eliminar')
-            ->rawcolumns(['btn', 'accesos'])
-            ->toJson();
+        if ($request->ajax()) {
+            $verificationCodes = VerificationCode::whereRelation('user', 'status', 'active')->get();
+
+            return DataTables::of($verificationCodes)
+            ->addIndexColumn()
+
+            ->addColumn('user', function (VerificationCode $verificationCode) {
+                return $verificationCode->user->name;
+            })
+            ->addColumn('btn', 'admin/verificationCode/actions')
+            ->rawcolumns(['btn'])
+            ->make(true);
         }
-        return view('admin.verification_code.index');
+
+        return view('admin.verificationCode.index');
     }
 
     /**
@@ -41,81 +53,87 @@ class VerificationCodeController extends Controller
     public function create()
     {
         $users = User::where('id', '!=', 1)->get();
-        return view('admin.verification_code.create', compact('users'));
+        return view('admin.verificationCode.create', compact('users'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreVerification_codeRequest  $request
+     * @param  \App\Http\Requests\StoreVerificationCodeRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreVerification_codeRequest $request)
+    public function store(StoreVerificationCodeRequest $request)
     {
-        $verification_codes = Verification_code::get();
+        $verificationCodes = VerificationCode::get();
         $id = $request->user_id;
         $cont = 0;
-        foreach ($verification_codes as $key) {
+        foreach ($verificationCodes as $key) {
             if($key->user_id == $id)
             $cont ++;
         }
         if ($cont > 0) {
-            return redirect('verification_code')->with('warning', 'Este Usuario Ya tiene Asignado un Codigo');
+            return redirect('verificationCode')->with('warning', 'Este Usuario Ya tiene Asignado un Codigo');
         } else {
-            $verification_code = new verification_code();
-            $verification_code->user_id = $request->user_id;
-            $verification_code->code = $request->code;
-            $verification_code->save();
+            $verificationCode = new verificationCode();
+            $verificationCode->user_id = $request->user_id;
+            $verificationCode->code = $request->code;
+            $verificationCode->save();
         }
-        return redirect('verification_code')->with('success', 'Autorizacion creada Satisfactoriamente');
+        Alert::success('Codigo','Autorizacion creada Satisfactoriamente.');
+        return redirect('verificationCode');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Verification_code  $verification_code
+     * @param  \App\Models\VerificationCode  $verificationCode
      * @return \Illuminate\Http\Response
      */
-    public function show(Verification_code $verification_code)
+    public function show(VerificationCode $verificationCode)
     {
-        //
+        return view('admin.verificationCode.show', compact('verificationCode'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Verification_code  $verification_code
+     * @param  \App\Models\VerificationCode  $verificationCode
      * @return \Illuminate\Http\Response
      */
-    public function edit(Verification_code $verification_code)
+    public function edit(VerificationCode $verificationCode)
     {
-        $user = User::where('id', '=', $verification_code->user_id)->first();
-        return view('admin.verification_code.edit', compact('verification_code', 'user'));
+        $user = User::where('id', '=', $verificationCode->user_id)->first();
+        $users = User::where('status', 'active')->get();
+        return view('admin.verificationCode.edit', compact('verificationCode', 'user', 'users'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateVerification_codeRequest  $request
-     * @param  \App\Models\Verification_code  $verification_code
+     * @param  \App\Http\Requests\UpdateVerificationCodeRequest  $request
+     * @param  \App\Models\VerificationCode  $verificationCode
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateVerification_codeRequest $request, Verification_code $verification_code)
+    public function update(UpdateVerificationCodeRequest $request, VerificationCode $verificationCode)
     {
-        $verification_code->code = $request->code;
-        $verification_code->update();
-        return redirect('verification_code');
+        $verificationCode->user_id = $request->user_id;
+        $verificationCode->code = $request->code;
+        $verificationCode->update();
+
+        Alert::success('Autorizacion','Editada con exito.');
+        return redirect('verificationCode');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Verification_code  $verification_code
+     * @param  \App\Models\VerificationCode  $verificationCode
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Verification_code $verification_code)
+    public function destroy(VerificationCode $verificationCode)
     {
-        $verification_code->delete();
-        return redirect('verification_code');
+        $verificationCode->delete();
+        toast('Autorizacion Eliminado con Exito.','success');
+        return redirect('verificationCode');
     }
 }

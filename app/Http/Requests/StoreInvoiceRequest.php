@@ -8,10 +8,8 @@ class StoreInvoiceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -19,20 +17,32 @@ class StoreInvoiceRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'total'             => 'required|numeric',
-            'total_inc'          => 'numeric',
-            'total_pay'          => 'numeric',
-            'pay'               => 'nullable|numeric',
-            'balance'           => '',
-            'branch_id'         => 'integer',
-            'customer_id'       => 'required|integer',
-            'payment_form_id'   => 'required|integer',
-            'payment_method_id' => 'required|integer',
+            'document' => 'string|max:20',
+            'generation_date' => 'date',
+            'due_date' => 'date',
+            'total' => 'required|numeric',
+            'total_tax' => 'required|numeric',
+            'total_pay' => 'required|numeric',
+            'pay' => '',
+            'balance' => 'numeric',
+            'retention' => 'numeric',
+            'grand_total' => 'numeric',
+            'status' => 'in:invoice,debit_note,credit_note,complete',
+            'note' => 'nullable|string|max:255',
+
+            'user_id' => 'integer',
+            'branch_id' => 'integer',
+            'customer_id' => 'integer',
+            'payment_form_id' => 'required|integer',
+            'payment_method_id' => 'required',
+            'resolution_id' => '',
+            'voucher_type_id' => 'integer',
+            'document_type_id' => 'integer'
         ];
     }
 }

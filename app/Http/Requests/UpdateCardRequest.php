@@ -19,12 +19,12 @@ class UpdateCardRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
         return [
-            'name' => 'required|max:20'
+            'name' => 'required|string|max:50'
         ];
     }
 }

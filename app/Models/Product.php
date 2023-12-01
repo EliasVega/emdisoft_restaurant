@@ -2,67 +2,81 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Product extends Model
 {
+    use HasFactory;
+
+    public $table = 'products';
+
+    protected $primaryKey = 'id';
+
+    public $timestamps = true;
 
     protected $fillable = [
         'code',
         'name',
         'price',
+        'sale_price',
         'stock',
+        'type_product',
         'status',
+        'image',
+        'imageName',
         'category_id',
         'unit_measure_id'
     ];
+
+    protected $guarded = [
+        'id'
+    ];
+
+    public function branchs()
+    {
+        return $this->belongsToMany(Branch::class);
+    }
 
     public function category(){
         return $this->belongsTo(Category::class);
     }
 
-    public function branch(){
-        return $this->belongsTo(Branch::class);
+    public function measureUnit(){
+        return $this->belongsTo(MeasureUnit::class);
     }
 
-    public function purchases(){
-        return $this->hasMany(Purchase::class);
+    public function branchProduct(){
+        return $this->belongsTo(BranchProduct::class);
     }
 
-    public function unit_measure(){
-        return $this->hasOne(Unit_measure::class);
+    public function productBranch(){
+        return $this->belongsTo(ProductBranch::class);
     }
-    /*
-    public function Productoventas(){
-        return $this->hasMany(ProductoVenta::class);
-    }*/
 
-    public function invoices()
+    public function kardexes(): MorphMany
     {
-        return $this->belongsToMany(Invoice::class);
+        return $this->morphMany(Kardex::class, 'kardexable');
     }
 
-    public function ndinvoices()
-    {
-        return $this->belongsToMany(Ndinvoice::class);
+    public function ncpurchaseProduct(){
+        return $this->belongsTo(NcpurchaseProduct::class);
     }
 
-    public function kardex(){
-        return $this->hasOne(Kardex::class);
+    public function ndpurchaseProduct(){
+        return $this->belongsTo(NdpurchaseProduct::class);
     }
 
-    public function productPurchases(){
-        return $this->belongsToMany(Product_purchase::class);
+    public function ncinvoiceProduct(){
+        return $this->belongsTo(NcinvoiceProduct::class);
     }
 
-    public function orderProducts(){
-        return $this->belongsToMany(Order_product::class);
-    }
-    public function branchProducts(){
-        return $this->hasMany(Branch_product::class);
+    public function ndinvoiceProduct(){
+        return $this->belongsTo(NdinvoiceProduct::class);
     }
 
-    public function menuProducts(){
-        return $this->belongsToMany(MenuProduct::class);
+    public function commandRawmaterials(){
+        return $this->hasMany(CommandRawmaterial::class);
     }
 }

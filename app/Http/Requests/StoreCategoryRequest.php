@@ -19,16 +19,16 @@ class StoreCategoryRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
         return [
-            'name'        => 'required|max:45',
-            'description' => 'required|max:255',
-            'inc'         => 'required',
-            'utility'     => 'required',
-            'status'      => ''
+            'name' => 'required|string|unique:categories|max:45',
+            'description' => 'required|string|max:255',
+            'utility_rate' => 'required|numeric|between:0,99.99|regex:/^(([0-9]*)(\.([0-9]{0,2}+))?)$/',
+            'status' => 'in:active,inactive',
+            'company_tax_id' => 'required|numeric'
         ];
     }
 }

@@ -5,51 +5,78 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use App\Http\Requests\StoreExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
+use App\Models\Advance;
 use App\Models\Bank;
 use App\Models\Branch;
+use App\Models\BranchProduct;
 use App\Models\Card;
+use App\Models\CashRegister;
 use App\Models\Company;
-use App\Models\Document;
-use App\Models\Expense_service;
-use App\Models\Pay_expense;
-use App\Models\Pay_expense_payment_method;
-use App\Models\Payment_form;
-use App\Models\Payment_method;
-use App\Models\Sale_box;
-use App\Models\Service;
-use App\Models\Supplier;
+use App\Models\Department;
+use App\Models\ExpenseProduct;
+use App\Models\IdentificationType;
+use App\Models\Indicator;
+use App\Models\Kardex;
+use App\Models\Liability;
+use App\Models\Municipality;
+use App\Models\Organization;
+use App\Models\Pay;
+use App\Models\PaymentForm;
+use App\Models\PaymentMethod;
+use App\Models\Product;
+use App\Models\Provider;
+use App\Models\Regime;
+use App\Models\VoucherType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\DataTables;
+use App\Traits\InventoryPurchases;
+use App\Traits\KardexCreate;
+use App\Traits\reverse;
 
 class ExpenseController extends Controller
 {
+    use InventoryPurchases, KardexCreate, reverse;
+    function __construct()
+    {
+        $this->middleware('permission:expense.index|expense.create|expense.show|expense.edit', ['only'=>['index']]);
+        $this->middleware('permission:expense.create', ['only'=>['create','store']]);
+        $this->middleware('permission:expense.show', ['only'=>['show']]);
+        $this->middleware('permission:expense.edit', ['only'=>['edit','update']]);
+    }
     /**
      * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $expense = session('expense');
-        $user = Auth::user();
-        if (request()->ajax()) {
-            if ($user->role_id == 1 || $user->role_id == 2) {
+        $indicator = Indicator::findOrFail(1);
+        if ($request->ajax()) {
+            $users = Auth::user();
+            $user = $users->Roles[0]->name;
+            if ($user == 'superAdmin' ||$user == 'admin') {
+                //Muestra todas las compras de la empresa
                 $expenses = Expense::get();
             } else {
-                $expenses = Expense::where('branch_id', $user->branch_id)->where('user_id', $user->id)->get();
+                //Muestra todas las compras de la empresa por usuario
+                $expenses = Expense::where('user_id', $users->id)->get();
             }
-            //Muestra todas las compras de la empresa
-            //$expenses = Expense::get();
-
             return DataTables::of($expenses)
             ->addIndexColumn()
-            ->addColumn('supplier', function (Expense $expense) {
-                return $expense->supplier->name;
+
+            ->addColumn('provider', function (Expense $expense) {
+                return $expense->third->name;
             })
             ->addColumn('branch', function (Expense $expense) {
                 return $expense->branch->name;
+            })
+            ->addColumn('role', function (Expense $expense) {
+                return $expense->user->roles[0]->name;
             })
             ->editColumn('created_at', function(Expense $expense){
                 return $expense->created_at->format('yy-m-d: h:m');
@@ -58,125 +85,153 @@ class ExpenseController extends Controller
             ->rawColumns(['btn'])
             ->make(true);
         }
-        return view('admin.expense.index', compact('expense'));
+        return view('admin.expense.index', compact('expense', 'indicator'));
     }
 
     /**
      * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        $documents = Document::get();
-        $suppliers = Supplier::get();
-        $payment_forms = Payment_form::get();
-        $payment_methods = Payment_method::get();
+        $indicator = Indicator::findOrFail(1);
+        $cashRegister = CashRegister::select('id')
+        ->where('user_id', '=', Auth::user()->id)
+        ->where('status', '=', 'open')
+        ->first();
+        if ($indicator->pos == 'on') {
+            if(is_null($cashRegister)){
+                return redirect("branch")->with('warning', 'Debes tener una caja Abierta para realizar Compras');
+            }
+        }
+        $departments = Department::get();
+        $municipalities = Municipality::get();
+        $identificationTypes = IdentificationType::get();
+        $liabilities = Liability::get();
+        $organizations = Organization::get();
+        $providers = Provider::get();
+        $regimes = Regime::get();
+        $paymentForms = PaymentForm::get();
+        $paymentMethods = PaymentMethod::get();
         $banks = Bank::get();
         $cards = Card::get();
         $branchs = Branch::get();
-        $services = Service::get();
+        $advances = Advance::get();
+        $products = Product::where('status', 'active')->where('type_product', 'service')->get();
 
-        return view('admin.expense.create', compact(
-            'documents',
-            'suppliers',
-            'payment_forms',
-            'payment_methods',
+        return view('admin.expense.create',
+        compact(
+            'departments',
+            'municipalities',
+            'identificationTypes',
+            'liabilities',
+            'organizations',
+            'providers',
+            'regimes',
+            'paymentForms',
+            'paymentMethods',
             'banks',
             'cards',
             'branchs',
-            'services'
+            'advances',
+            'products',
         ));
     }
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreExpenseRequest  $request
+     * @return \Illuminate\Http\Response
      */
+
     public function store(StoreExpenseRequest $request)
     {
+        //dd($request->all());
+        $company = Company::findOrFail(current_user()->company_id);
+        $indicator = Indicator::findOrFail(1);
+        $cashRegister = CashRegister::where('user_id', '=', current_user()->id)->where('status', '=', 'open')->first();
+        $voucherTypes = VoucherType::findOrFail(20);
+        $typeDocument = 'expense';
+        //$voucherType = 20;
+
+        //Variables del request
+        $product_id = $request->id;
+        $quantity = $request->quantity;
+        $price = $request->price;
+        //$tax_rate = $request->tax_rate;
+        $branch = current_user()->branch_id;//variable de la sucursal de destino
+        //$total_pay = $request->total_pay;
+        $totalpay = $request->totalpay;
+        $total = $request->total;
+
         //Crea un registro de compras
-
-        $service_id = $request->service_id;
-        $quantity   = $request->quantity;
-        $price      = $request->price;
-        $inc        = $request->inc;
-        $pay        = $request->pay;
-        $branch     = $request->session()->get('branch');
-
         $expense = new Expense();
-        $expense->user_id     = Auth::user()->id;
-        $expense->branch_id   = Auth::user()->branch_id;
-        $expense->supplier_id = $request->supplier_id;
+        $expense->user_id = current_user()->id;
+        $expense->branch_id = $branch;
+        $expense->provider_id = $request->provider_id;
         $expense->payment_form_id = $request->payment_form_id;
-        $expense->payment_method_id = $request->payment_method_id;
-        $expense->total       = $request->total;
-        $expense->total_inc    = $request->total_inc;
-        $expense->total_pay    = $request->total_pay;
-        $expense->pay           = $request->pay;
-        $expense->pay         = $pay;
-        $expense->balance     = $request->total_pay - $pay;
-        $expense->note    = $request->note;
+        $expense->payment_method_id = $request->payment_method_id[0];
+        $expense->document = $voucherTypes->code . '-' . $voucherTypes->consecutive;
+        $expense->voucher_type_id = $voucherTypes->id;
+        $expense->generation_date = $request->generation_date;
+        $expense->total = $total;
+        $expense->total_tax = 0;
+        $expense->total_pay = $total;
+        if ($totalpay > 0) {
+            $expense->pay = $totalpay;
+        } else {
+            $expense->pay = 0;
+        }
+        $expense->balance = $total - $totalpay;
+        $expense->grand_total = $total;
         $expense->save();
 
-        $sale_box = Sale_box::where('user_id', '=', $expense->user_id)->where('status', '=', 'open')->first();
-        $sale_box->expense += $expense->total_pay;
-        $sale_box->out_total += $expense->pay;
-        $sale_box->update();
+        $voucherTypes->consecutive += 1;
+        $voucherTypes->update();
 
-        if($pay > 0){
-
-            //si no hay pago anticipado se crea un pago a compra
-            $pay_expense                   = new Pay_expense();
-            $pay_expense->pay              = $pay;
-            $pay_expense->balance_expense = $expense->balance;
-            $pay_expense->user_id          = $expense->user_id;
-            $pay_expense->branch_id        = $expense->branch_id;
-            $pay_expense->expense_id      = $expense->id;
-            $pay_expense->save();
-            //metodo que registra el pago a compra y el methodo de pago
-            $pay_expense_Payment_method                     = new Pay_expense_payment_method();
-            $pay_expense_Payment_method->pay_expense_id    = $pay_expense->id;
-            $pay_expense_Payment_method->payment_method_id  = $request->payment_method_id;
-            $pay_expense_Payment_method->bank_id            = $request->bank_id;
-            $pay_expense_Payment_method->card_id            = $request->card_id;
-            $pay_expense_Payment_method->payment            = $pay;
-            $pay_expense_Payment_method->transaction        = $request->transaction;
-            $pay_expense_Payment_method->save();
-
-            $mp = $request->payment_method_id;
-
-            $sale_box = Sale_box::where('user_id', '=', $expense->user_id)->where('status', '=', 'open')->first();
-            if($mp == 10){
-                $sale_box->out_expense_cash += $pay;
-                $sale_box->departure += $pay;
-            }
-            $sale_box->out_expense += $pay;
-            $sale_box->update();
-
+        if ($indicator->pos == 'on') {
+            //actualizar la caja
+            $cashRegister->expense += $expense->total;
+            //$cashRegister->out_total += $totalpay;
+            $cashRegister->update();
         }
-
         //Toma el Request del array
-
-        $cont = 0;
         //Ingresa los productos que vienen en el array
-        while($cont < count($service_id)){
-            $subtotal = $quantity[$cont] * $price[$cont];
-            $incsub = $subtotal * $inc[$cont]/100;
-            $servid = $service_id[$cont];
-
-            $expense_service = new Expense_service();
-            $expense_service->expense_id = $expense->id;
-            $expense_service->service_id  = $service_id[$cont];
-            $expense_service->quantity    = $quantity[$cont];
-            $expense_service->price       = $price[$cont];
-            $expense_service->inc         = $inc[$cont];
-            $expense_service->subtotal    = $subtotal;
-            $expense_service->incsubt     = $incsub;
-            $expense_service->save();
+        $document = $expense;
+        for ($i=0; $i < count($product_id); $i++) {
+            $id = $product_id[$i];
+            //Metodo para registrar la relacion entre producto y compra
+            $expenseProduct = new ExpenseProduct();
+            $expenseProduct->expense_id = $expense->id;
+            $expenseProduct->product_id = $id;
+            $expenseProduct->quantity = $quantity[$i];
+            $expenseProduct->price = $price[$i];
+            $expenseProduct->tax_rate = 0;
+            $expenseProduct->subtotal = $quantity[$i] * $price[$i];
+            $expenseProduct->tax_subtotal =0;
+            $expenseProduct->save();
             //selecciona el producto que viene del array
-            $service = Service::where('id', $expense_service->service_id)->first();
+            $product = Product::findOrFail($id);
 
+            //selecciona el producto de la sucursal que sea el mismo del array
+            $branchProducts = BranchProduct::where('product_id', '=', $id)
+            ->where('branch_id', '=', $branch)
+            ->first();
 
-            $cont++;
+            $quantityLocal = $quantity[$i];
+            $priceLocal = $price[$i];
+            $voucherType = 20;
+            $this->inventoryPurchases($product, $branchProducts, $quantityLocal, $priceLocal, $branch);//trait para actualizar inventario
+            $this->kardexCreate($product, $branch, $voucherType, $document, $quantityLocal, $typeDocument);//trait crear Kardex
         }
+        //variables necesarias
+
+        if ($totalpay > 0) {
+            Pays($request, $document, $typeDocument);
+        }
+
         session(['expense' => $expense->id]);
 
         toast('Gasto Registrado satisfactoriamente.','success');
@@ -185,206 +240,181 @@ class ExpenseController extends Controller
 
     /**
      * Display the specified resource.
+     *
+     * @param  \App\Models\Expense  $expense
+     * @return \Illuminate\Http\Response
      */
     public function show(Expense $expense)
     {
-        $expenseServices = Expense_service::where('expense_id', $expense->id)->get();
+        $voucher = VoucherType::findOrFail(20);
 
-        return view('admin.expense.show', compact('expense', 'expenseServices'));
+        $expenseProducts = ExpenseProduct::where('expense_id', $expense->id)->where('quantity', '>', 0)->get();
+        return view('admin.expense.show', compact(
+            'expense',
+            'expenseProducts'
+        ));
     }
-
-
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Expense  $expense
+     * @return \Illuminate\Http\Response
      */
     public function edit(Expense $expense)
     {
-        $suppliers = Supplier::get();
-        $payment_forms = Payment_form::get();
-        $payment_methods = Payment_method::get();
+        $providers = Provider::get();
+        $paymentForms = PaymentForm::get();
+        $paymentMethods = PaymentMethod::get();
         $banks = Bank::get();
         $cards = Card::get();
-        $branches = Branch::get();
-        $services = Service::where('status', 'activo')->get();
-        $expenseServices = Expense_service::from('expense_services as es')
-        ->join('services as ser', 'es.service_id', 'ser.id')
-        ->join('expenses as exp', 'es.expense_id', 'exp.id')
-        ->select('ser.id', 'ser.name', 'es.quantity', 'es.price', 'es.inc', 'es.subtotal', 'exp.balance')
-        ->where('exp.id', $expense->id)
+        $branchs = Branch::get();
+        $advances = Advance::where('status', '!=', 'aplicado')->get();
+        $products = Product::where('status', 'active')->where('type_product', 'service')->get();
+        $expenseProducts = ExpenseProduct::from('expense_products as pp')
+        ->join('products as pro', 'pp.product_id', 'pro.id')
+        ->select('pp.id', 'pro.id as idP', 'pro.name', 'pro.stock', 'pp.quantity', 'pp.price', 'pp.tax_rate', 'pp.subtotal')
+        ->where('expense_id', $expense->id)
         ->get();
-
-        $payExpenses = Pay_expense::where('expense_id', $expense->id)->sum('pay');
-
+        $payExpenses = Pay::where('type', 'expense')->where('payable_id', $expense->id)->sum('pay');
         return view('admin.expense.edit',
         compact(
             'expense',
-            'suppliers',
-            'payment_forms',
-            'payment_methods',
+            'providers',
+            'paymentForms',
+            'paymentMethods',
             'banks',
             'cards',
-            'branches',
-            'services',
-            'expenseServices',
+            'branchs',
+            'advances',
+            'products',
+            'expenseProducts',
             'payExpenses'
         ));
     }
 
     /**
      * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\UpdateExpenseRequest  $request
+     * @param  \App\Models\Expense  $expense
+     * @return \Illuminate\Http\Response
      */
     public function update(UpdateExpenseRequest $request, Expense $expense)
     {
-        //llamado a variables
-        $service_id = $request->service_id;
-        $quantity   = $request->quantity;
-        $price      = $request->price;
-        $inc        = $request->inc;
-        $pay        = $request->pay;
-        $total_pay = $request->total_pay;
         //llamado de todos los pagos y pago nuevo para la diferencia
-        $payOld = Pay_expense::where('expense_id', $expense->id)->sum('pay');
-        $payNew = $pay;
-        $payTotal = $payNew + $payOld;
+        $payOld = Pay::where('type', 'expense')->where('payable_id', $expense->id)->sum('pay');
+        $indicator = Indicator::findOrFail(1);
         $date1 = Carbon::now()->toDateString();
         $date2 = Expense::find($expense->id)->created_at->toDateString();
+        $cashRegister = CashRegister::where('user_id', '=', current_user()->id)->where('status', '=', 'open')->first();
+        $typeDocument = 'expense';
 
-        if ($date1 == $date2) {
-            //actualizar la caja
-            $sale_box = Sale_box::where('user_id', '=', $expense->user_id)->where('status', '=', 'open')->first();
-            $sale_box->expense -= $expense->total_pay;
-            $sale_box->update();
+        //Variables del request expense
+        $product_id = $request->product_id;
+        $quantity   = $request->quantity;
+        $price      = $request->price;
+        $total = $request->total;
+        $reverse = $request->reverse;
+
+
+        //gran total de la compra
+        $totalold = $expense->total;
+        $advancePay = $expense->pay - $total;
+        $document = $expense;
+        $documentOrigin = $expense;
+
+        if ($advancePay > 0) {
+            $this->reverse($reverse, $advancePay, $cashRegister, $indicator, $documentOrigin, $typeDocument, $document, $date1, $date2);
+
+            $expense->balance = 0;
+            $expense->pay = $total;
+            $expense->update();
         }
 
         //Actualizando un registro de compras
-        $expense->user_id     = Auth::user()->id;
-        $expense->branch_id   = Auth::user()->branch_id;
-        $expense->supplier_id = $request->supplier_id;
-        $expense->payment_form_id = $request->payment_form_id;
-        $expense->payment_method_id = $request->payment_method_id;
-        $expense->total       = $request->total;
-        $expense->total_inc    = $request->total_inc;
-        $expense->total_pay    = $request->total_pay;
 
-        if ($payOld > 0 && $pay == 0) {
-            $expense->pay = $payOld;
-        } elseif ($payOld > 0 && $pay > 0) {
-            $expense->pay = $pay + $payOld;
-        } elseif ($payOld == 0 && $pay > 0) {
-            $expense->pay = $pay;
-        } else {
-            $expense->pay = $pay;
-        }
-
-        if ($payOld > $total_pay) {
-            $expense->balance = 0;
-        } else {
-            $expense->balance = $total_pay - $payTotal;
-        }
+        $expense->provider_id = $request->provider_id;
+        $expense->total = $request->total;
+        $expense->total_tax = 0;
+        $expense->total_pay = $total;
         $expense->update();
 
-        if ($date1 == $date2) {
+        if ($indicator->pos == 'on') {
             //actualizar la caja
-            $sale_box = Sale_box::where('user_id', '=', $expense->user_id)->where('status', 'open')->first();
-            $sale_box->expense += $expense->total_pay;
-            $sale_box->out_total += $expense->pay;
-            $sale_box->update();
-        }
-        //inicio proceso si hay pagos
-        if($payTotal > 0){
-
-            //si no hay pago anticipado se crea un pago a compra
-            $pay_expense                   = new Pay_expense();
-            $pay_expense->pay              = $pay;
-            $pay_expense->balance_expense = $expense->balance;
-            $pay_expense->user_id          = $expense->user_id;
-            $pay_expense->branch_id        = $expense->branch_id;
-            $pay_expense->expense_id      = $expense->id;
-            $pay_expense->save();
-            //metodo que registra el pago a compra y el methodo de pago
-            $pay_expense_Payment_method                     = new Pay_expense_payment_method();
-            $pay_expense_Payment_method->pay_expense_id    = $pay_expense->id;
-            $pay_expense_Payment_method->payment_method_id  = $request->payment_method_id;
-            $pay_expense_Payment_method->bank_id            = $request->bank_id;
-            $pay_expense_Payment_method->card_id            = $request->card_id;
-            $pay_expense_Payment_method->payment            = $pay;
-            $pay_expense_Payment_method->transaction        = $request->transaction;
-            $pay_expense_Payment_method->save();
-
-            $mp = $request->payment_method_id;
-            //metodo para actualizar la caja
-            $sale_box = Sale_box::where('user_id', '=', $expense->user_id)->where('status', '=', 'open')->first();
-            if($mp == 10){
-                $sale_box->out_expense_cash += $pay;
-                $sale_box->departure += $pay;
+            if ($date1 == $date2) {
+                $cashRegister->expense -= $totalold;
+                $cashRegister->expense += $total;
+                $cashRegister->update();
             }
-            $sale_box->out_expense += $pay;
-            $sale_box->update();
         }
 
-        $expenseServices = Expense_service::where('expense_id', $expense->id)->get();
-        foreach ($expenseServices as $key => $expenseService) {
+        $expenseProducts = ExpenseProduct::where('expense_id', $expense->id)->get();
+        foreach ($expenseProducts as $key => $expenseProduct) {
+            //selecciona el producto que viene del array
+            $quantityActual = $expenseProduct->qiantity;
 
-            $expenseService->quantity    = 0;
-            $expenseService->price       = 0;
-            $expenseService->inc         = 0;
-            $expenseService->subtotal    = 0;
-            $expenseService->incsubt     = 0;
-            $expenseService->update();
+            //$product = Product::findOrFail($id);
+            if ($indicator->inventory == 'on') {
+                $products = Product::where('id', $expenseProduct->product_id)->first();
+                $products->stock -= $quantityActual;
+                $products->update();
+
+                //selecciona el producto de la sucursal que sea el mismo del array
+                $branchProducts = BranchProduct::where('product_id', '=', $expenseProduct->product_id)
+                ->where('branch_id',  current_user()->branch_id)
+                ->first();
+
+                $branchProducts->stock -= $quantityActual;
+                $branchProducts->update();
+            }
+
+            //Actualiza la tabla del Kardex
+            $kardex = Kardex::where('voucher_type_id', $expense->voucher_type_id)->where('document', $expense->document)->first();
+            $kardex->quantity -= $quantityActual;
+            $kardex->stock -= $quantityActual;
+            $kardex->save();
+
+            $expenseProduct->quantity = 0;
+            $expenseProduct->price = 0;
+            $expenseProduct->tax_rate = 0;
+            $expenseProduct->subtotal = 0;
+            $expenseProduct->tax_subtotal = 0;
+            $expenseProduct->update();
 
         }
 
         //Toma el Request del array
-
-        $cont = 0;
         //Ingresa los productos que vienen en el array
-        while($cont < count($service_id)){
+        for ($i=0; $i < count($product_id); $i++) {
 
-            $expenseService = Expense_service::where('expense_id', $expense->id)
-            ->where('service_id', $service_id[$cont])->first();
-            //Inicia proceso actualizacio product expense si no existe
-            if (is_null($expenseService)) {
-                $subtotal = $quantity[$cont] * $price[$cont];
-                $incsub = $subtotal * $inc[$cont]/100;
-                $expense_service = new Expense_service();
-                $expense_service->expense_id = $expense->id;
-                $expense_service->service_id  = $service_id[$cont];
-                $expense_service->quantity    = $quantity[$cont];
-                $expense_service->price       = $price[$cont];
-                $expense_service->inc         = $inc[$cont];
-                $expense_service->subtotal    = $subtotal;
-                $expense_service->incsubt     = $incsub;
-                $expense_service->save();
+            $expenseProduct = ExpenseProduct::where('expense_id', $expense->id)
+            ->where('product_id', $product_id[$i])->first();
+
+            $subtotal = $quantity[$i] * $price[$i];
+            if (is_null($expenseProduct)) {
+                $expenseProduct = new ExpenseProduct();
+                $expenseProduct->expense_id = $expense->id;
+                $expenseProduct->product_id = $product_id[$i];
+                $expenseProduct->quantity = $quantity[$i];
+                $expenseProduct->price = $price[$i];
+                $expenseProduct->tax_rate = 0;
+                $expenseProduct->subtotal = $subtotal;
+                $expenseProduct->tax_subtotal = 0;
+                $expenseProduct->save();
             } else {
-                if ($quantity[$cont] > 0) {
-
-                    $subtotal = $quantity[$cont] * $price[$cont];
-                    $incsub = $subtotal * $inc[$cont]/100;
-
-                    if ($expenseService->quantity > 0) {
-                        $expenseService->quantity    += $quantity[$cont];
-                        $expenseService->price       = $price[$cont];
-                        $expenseService->inc         = $inc[$cont];
-                        $expenseService->subtotal    += $subtotal;
-                        $expenseService->incsubt     += $incsub;
-                        $expenseService->update();
-                    } else {
-                        $expenseService->quantity    = $quantity[$cont];
-                        $expenseService->price       = $price[$cont];
-                        $expenseService->inc         = $inc[$cont];
-                        $expenseService->subtotal    = $subtotal;
-                        $expenseService->incsubt     = $incsub;
-                        $expenseService->update();
-                    }
+                if ($quantity[$i] > 0) {
+                    $expenseProduct->quantity = $quantity[$i];
+                    $expenseProduct->price = $price[$i];
+                    $expenseProduct->tax_rate = 0;
+                    $expenseProduct->subtotal = $subtotal;
+                    $expenseProduct->tax_subtotal = 0;
+                    $expenseProduct->update();
                 }
             }
-
-            $cont++;
         }
-        session(['expense' => $expense->id]);
-        if ($payOld > $total_pay) {
-            Alert::success('Compra','Editada Satisfactoriamente. Con creacion de anticipo de Proveedor');
+        if ($advancePay > 0) {
+            Alert::success('Gasto','Editado Satisfactoriamente. Con creacion de anticipo de Proveedor oingreso de efectivo a caja');
             return redirect('expense');
 
         } else {
@@ -394,116 +424,133 @@ class ExpenseController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Expense  $expense
+     * @return \Illuminate\Http\Response
      */
     public function destroy(Expense $expense)
     {
         //
     }
 
-    public function pdf_payexpense(Request $request, $id)
+    public function expensePay($id)
     {
-        $expense = Expense::where('id', $id)->first();
-        $company = Company::where('id', 1)->first();
-        $user = auth::user();
-        $expense_services = Expense_service::where('pay_expense_id', $id)->get();
-        $expensepdf = "FACT-". $expense->id;
-        $logo = './imagenes/logos'.$company->logo;
-        $view = \view('admin.pay_expense.pdf', compact('expense', 'company', 'logo', 'user'))->render();
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML($view);
-        //$pdf->setPaper ( 'A7' , 'landscape' );
-
-        return $pdf->stream('vista-pdf', "$expensepdf.pdf");
-        //return $pdf->download("$invoicepdf.pdf");
-    }
-
-    public function show_pay_expense(Request $request, $id)
-     {
+        $document = Expense::findOrFail($id);
         $banks = Bank::get();
-        $payment_methods = Payment_method::get();
+        $paymentMethods = PaymentMethod::get();
         $cards = Card::get();
-        $expense = Expense::where('id', '=', $request->session()->get('expense'))->first();
+        $advances = Advance::where('status', '!=', 'applied')->where('advanceable_id', $document->third->id)->get();
+        $tipeDocument = 'Gasto';
 
-        $expense = Expense::findOrFail($id);
-        \session()->put('expense', $expense->id, 60 * 24 * 365);
-        \session()->put('due_date', $expense->due_date, 60 * 24 *365);
-        \session()->put('total', $expense->total, 60 * 24 *365);
-        \session()->put('total_inc', $expense->total_inc, 60 * 24 *365);
-        \session()->put('total_pay', $expense->total_Pay, 60 * 24 *365);
-        \session()->put('status', $expense->status, 60 * 24 *365);
-
-        return view('admin.pay_expense.create', compact('expense', 'banks', 'payment_methods', 'cards'));
-     }
+        return view('admin.pay.create', compact(
+            'document',
+            'banks',
+            'paymentMethods',
+            'cards',
+            'advances',
+            'tipeDocument'
+        ));
+    }
 
     public function expensePdf(Request $request, $id)
-    {
+   {
         $expense = Expense::findOrFail($id);
-        $expense_service = Expense_service::where('expense_id', $id)->get();
+        $expenseProducts = ExpenseProduct::where('expense_id', $expense->id)->where('quantity', '>', 0)->get();
         $company = Company::findOrFail(1);
+        $indicator = Indicator::findOrFail(1);
+        $expensepdf = "COMP-". $expense->document;
         $logo = './imagenes/logos'.$company->logo;
 
-        $expensepdf = "COMP-". $expense->expense;
-        $view = \view('admin.expense.pdf', compact('expense', 'expense_service', 'company', 'logo'));
+        $view = \view('admin.expense.pdf', compact(
+            'expense',
+            'expenseProducts',
+            'company',
+            'logo'
+        ));
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         //$pdf->setPaper ( 'A7' , 'landscape' );
 
         return $pdf->stream('vista-pdf', "$expensepdf.pdf");
-        //return $pdf->download("$expensepdf.pdf");
-    }
+   }
 
-    public function pdfExpense()
-    {
+   public function pdfExpense(Request $request)
+   {
         $expenses = session('expense');
         $expense = Expense::findOrFail($expenses);
         session()->forget('expense');
-        $expense_service = Expense_service::where('expense_id', $expense->id)->get();
+        $expenseProducts = ExpenseProduct::where('expense_id', $expense->id)->where('quantity', '>', 0)->get();
         $company = Company::findOrFail(1);
+        $expensepdf = "COMP-". $expense->document;
         $logo = './imagenes/logos'.$company->logo;
-
-        $expensepdf = "COMP-". $expense->expense;
-        $view = \view('admin.expense.pdf', compact('expense', 'expense_service', 'company', 'logo'));
+        $view = \view('admin.expense.pdf', compact(
+            'expense',
+            'expenseProducts',
+            'company',
+            'indicator',
+            'logo'
+        ));
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         //$pdf->setPaper ( 'A7' , 'landscape' );
 
         return $pdf->stream('vista-pdf', "$expensepdf.pdf");
-        //return $pdf->download("$expensepdf.pdf");
-    }
+   }
 
-    public function expensePost(Request $request, $id)
-    {
+   public function expensePos($id)
+   {
         $expense = Expense::where('id', $id)->first();
-        $expense_services = Expense_service::where('expense_id', $id)->get();
-        $company = Company::findOrFail(1);
-        $days = $expense->created_at->diffInDays($expense->fecven);
+        $expenseProducts = ExpenseProduct::where('expense_id', $id)->where('quantity', '>', 0)->get();
+        $company = Company::where('id', 1)->first();
+        $indicator = Indicator::findOrFail(1);
         $expensepdf = "FACT-". $expense->document;
         $logo = './imagenes/logos'.$company->logo;
-        $view = \view('admin.expense.post', compact('expense', 'expense_services', 'company', 'logo'))->render();
+        $view = \view('admin.expense.pos', compact(
+            'expense',
+            'expenseProducts',
+            'company',
+            'indicator',
+            'logo'
+        ))->render();
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         $pdf->setPaper (array(0,0,226.76,497.64), 'portrait');
 
         return $pdf->stream('vista-pdf', "$expensepdf.pdf");
-        //return $pdf->download("$expensepdf.pdf");
-    }
+   }
 
-    public function postExpense()
-    {
+   public function posExpense(Request $request)
+   {
         $expenses = session('expense');
         $expense = Expense::findOrFail($expenses);
         session()->forget('expense');
-        $expense_services = Expense_service::where('expense_id', $expense->id)->get();
-        $company = Company::findOrFail(1);
-        $logo = './imagenes/logos'.$company->logo;
-
+        $expenseProducts = ExpenseProduct::where('expense_id', $expense->id)->where('quantity', '>', 0)->get();
+        $company = Company::where('id', 1)->first();
+        $indicator = Indicator::findOrFail(1);
         $expensepdf = "FACT-". $expense->document;
-        $view = \view('admin.expense.post', compact('expense', 'expense_services', 'company', 'logo'))->render();
+        $logo = './imagenes/logos'.$company->logo;
+        $view = \view('admin.expense.pos', compact(
+            'expense',
+            'expenseProducts',
+            'company',
+            'indicator',
+            'logo'
+            ))->render();
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         $pdf->setPaper (array(0,0,226.76,497.64), 'portrait');
 
         return $pdf->stream('vista-pdf', "$expensepdf.pdf");
-        //return $pdf->download("$expensepdf.pdf");
-    }
+   }
+
+   //Metodo para obtener el municipio de acuerdo al departamento
+   public function getMunicipalities(Request $request, $id)
+   {
+       if($request)
+       {
+           $municipalities = Municipality::where('department_id', '=', $id)->get();
+
+           return response()->json($municipalities);
+       }
+   }
 }

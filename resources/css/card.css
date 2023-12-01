@@ -9,13 +9,13 @@
 }
 
 .bg-c-blue {
-    background: linear-gradient(45deg, #9cc0e9, #4099ff);
+    background: linear-gradient(45deg, #9bbbe0, #4099ff);
 }
 
 .bg-c-green {
     background: linear-gradient(45deg, #a3c5be, #2ed8b6);
 }
-.bg-c-blue2 {
+.bg-c-darkBlue {
     background: linear-gradient(45deg, #9d9be2, #4c74f5);
 }
 

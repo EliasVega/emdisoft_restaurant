@@ -9,6 +9,11 @@ body {
     font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+.clearfix{
+    clear:both;
+    float:none;
+}
+
 .content {
     width: 100%;
     background: #fff;
@@ -26,7 +31,7 @@ body {
 
 #logo img {
     display: block;
-    width: 120px;
+    width: 220px;
     height: 80px;
     margin-top: 5px;
 }
@@ -37,133 +42,108 @@ body {
     margin: auto;
 }
 
-.empresa {
+.company {
     float: left;
     width: 100%;
     margin: 0px auto;
 }
 
-.empresa p {
+.company p {
     display: block;
     width: 100%;
     margin:auto;
 }
 
-#nombre {
+#companyName {
     display: block;
     font-weight: 600;
     font-size: 1.2em;
     margin: auto;
 }
 
-#datos {
+#companyData {
     display: block;
     font-weight: 400;
     font-size: 0.7em;
 }
 
-#factura {
+#document {
     width: 100%;
     text-align: left;
     font-size: 0.6em;
 }
-#tcliente {
-    width: 100%;
-    background: #fcfcfc;
-}
 
-#titulo {
+#title {
     color: #000000;
     margin: auto;
     font-size: 0.75em;
 }
 
-#cliente {
+#third {
     float: left;
     width: 100%;
     text-align: left;
     font-size: 0.6em;
 }
 
-#titc {
+#thirdHeader {
     float: left;
     width: 40%;
 }
-#titd {
-    float: right;
-    width: 60%;
-}
 
-#tc {
+#rowHeader {
     width: 100%;
     border-bottom: 1px solid #f0f0f0;
     border-left: 3px solid #f0f0f0;
 }
 
-#td {
+#thirdData {
+    float: right;
+    width: 60%;
+}
+
+#rowData {
     width: 100%;
     border-bottom: 0.5px solid #f0f0f0;
 }
 
-.tabla {
+.table {
     width: 100%;
 }
-.tabla thead{
+
+.table thead{
     background: #fefbfb;
     border-top: 1px solid #c0c0c0;
     border-bottom: 1px solid #c0c0c0;
 }
-.tabla thead tr {
+.table thead tr {
     text-align: left;
     font-size: 0.7em;
     text-align: center;
 }
 
-.tabla tbody{
+.table tbody{
     border-bottom: 2px solid #c0c0c0;
 }
 
 
-.tabla tbody tr td {
+.table tbody tr td {
     text-align: left;
     font-size: 0.6em;
 }
-.tabla tbody tr .tdder {
+.table tbody tr .tdRight {
     text-align: right;
     padding-right: 3px;
 }
 
-.tabla tfoot tr {
+.table tfoot tr {
     font-size: 0.6em;
 }
 
-.footder {
+.footRight {
     text-align: right;
     padding: 3px;
 }
-/*
-.footder {
-    text-align: right;
-    padding: 3px;
-}
-
-#total {
-    font-size: 0.75em;
-}
-
-.tabla tfoot tr th {
-    background: #feffff;
-    border: 0.7px solid #eff1f1;
-
-}
-.tabla tfoot tr td {
-    background: #f9f9f9;
-    border: 0.7px solid #c0c0c0;
-}
-table tfoot tr th p{
-    margin: 0px;
-}
-*/
 
 footer {
     position: fixed;
@@ -179,9 +159,6 @@ footer {
     line-height: 35px;
 }
 
-.clearfix{
-    clear:both;
-    float:none;
-}
+
 
 

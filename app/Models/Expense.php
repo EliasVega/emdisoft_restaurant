@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Expense extends Model
 {
+    use HasFactory;
+
     public $table = 'expenses';
 
     protected $primaryKey = 'id';
@@ -15,15 +17,20 @@ class Expense extends Model
 
     protected $fillable = [
         'document',
+        'generation_date',
         'total',
-        'total_inc',
+        'total_tax',
         'total_pay',
+        'pay',
+        'balance',
+        'grand_total',
         'note',
         'user_id',
         'branch_id',
-        'supplier_id',
+        'provider_id',
         'payment_form_id',
-        'payment_method_id'
+        'payment_method_id',
+        'voucher_type_id',
     ];
 
     protected $guarded = [
@@ -31,34 +38,36 @@ class Expense extends Model
     ];
 
     public function user(){
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(User::class);
     }
 
-    public function supplier(){
-        return $this->belongsTo(Supplier::class);
+    public function third(){
+        return $this->belongsTo(Provider::class, 'provider_id');
     }
 
     public function branch(){
         return $this->belongsTo(Branch::class);
     }
 
-    public function services(){
-        return $this->hasMany(Service::class);
+    public function productExpenses(){
+        return $this->hasMany(ProductPurchase::class);
     }
 
-    public function expenseServices(){
-        return $this->hasMany(Expense_service::class);
+    public function voucherTipe()
+    {
+        return $this->belongsTo(Voucher_type::class);
     }
 
     public function paymentForm(){
-        return $this->belongsTo(Payment_form::class);
+        return $this->belongsTo(PaymentForm::class);
     }
 
     public function paymentMethod(){
-        return $this->belongsTo(Payment_method::class);
+        return $this->belongsTo(PaymentMethod::class);
     }
-
-    public function payExpenses(){
-        return $this->hasMany(Pay_expense::class);
+    //Relacion polimorfica con el pago
+    public function pays()
+    {
+        return $this->morphMany(pay::class, 'payable');
     }
 }

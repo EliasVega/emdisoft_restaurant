@@ -4,7 +4,7 @@
         });*/
     jQuery(document).ready(function($){
         $(document).ready(function() {
-            $('#service_id').select2({
+            $('#product_id').select2({
                 theme: "classic",
                 width: "100%",
             });
@@ -14,18 +14,27 @@
     var cont = 0;
     var total = 0;
     var subtotal = [];
-    var total_inc = 0;
+    var total_tax = 0;
     var total_pay = 0;
-    //form purchase
-    $("#editInc").hide();
+    //form expense
+    $("#idPro").hide();
+    $("#editIva").hide();
+    $("#editVprice").hide();
     $("#save").hide();
 
+    $("#advance").hide();
+    //$("#addDocument").hide();
 
-    $("#service_id").change(serviceValue);
+    $("#product_id").change(productValue);
 
-    function serviceValue(){
-        dataService = document.getElementById('service_id').value.split('_');
-        $("#inc").val(dataService[1]);
+    function productValue(){
+        dataProduct = document.getElementById('product_id').value.split('_');
+        $("#stock").val(dataProduct[1]);
+        $("#vprice").val(dataProduct[2]);
+        $("#tax_rate").val(dataProduct[3]);
+        $("#price").val(dataProduct[2]);
+        $("#editIva").show();
+        $("#editVprice").show();
     }
     $(document).ready(function(){
         $("#add").click(function(){
@@ -33,26 +42,29 @@
         });
     });
     function add(){
-        dataService = document.getElementById('service_id').value.split('_');
-        service_id= dataService[0];
-        service= $("#service_id option:selected").text();
+
+        dataProduct = document.getElementById('product_id').value.split('_');
+        product_id= dataProduct[0];
+        product= $("#product_id option:selected").text();
         quantity= $("#quantity").val();
         price= $("#price").val();
-        inc= $("#inc").val();
-        if(service_id !="" && quantity!="" && quantity>0  && price!="" && price > 0){
+        stock= $("#stock").val();
+        tax_rate= $("#tax_rate").val();
+        if(product_id !="" && quantity!="" && quantity>0  && price!=""){
             subtotal[cont]= parseFloat(quantity) * parseFloat(price);
             total= total+subtotal[cont];
-            ivita= subtotal[cont]*inc/100;
-            total_inc=total_inc+ivita;
+            ivita= subtotal[cont]*tax_rate/100;
+            total_tax=total_tax+ivita;
 
-            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+service_id+'">'+service_id+'</td><td><input type="hidden" name="service_id[]" value="'+service_id+'">'+service+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="inc[]"  value="'+inc+'">'+inc+'</td><td>$'+subtotal[cont]+' </td></tr>';
+            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+product_id+'">'+product_id+'</td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="tax_rate[]"  value="'+tax_rate+'">'+tax_rate+'</td><td>$'+subtotal[cont]+' </td></tr>';
 
             cont++;
 
             totals();
             assess();
+            seePay();
             $('#details').append(row);
-            $('#service_id option:selected').remove();
+            $('#product_id option:selected').remove();
             clean();
 
 
@@ -61,44 +73,68 @@
             Swal.fire({
             type: 'error',
             //title: 'Oops...',
-            text: 'Revise los campos son nulos o negativos',
+            text: 'Rellene todos los campos del detalle para esta compra',
             })
         }
     }
 
     function clean(){
-        $("#service_id").val("");
+        $("#product_id").val("");
         $("#quantity").val("");
-        $("#price").val("");
-        $("#inc").val("");
+        $("#sale_price").val("");
     }
+
     function totals(){
-        var total_pay = total + total_inc;
+        var total_pay = total + total_tax;
 
         $("#total_html").html("$ " + total.toFixed(2));
         $("#total").val(total.toFixed(2));
 
-        $("#total_inc_html").html("$ " + total_inc.toFixed(2));
-        $("#total_inc").val(total_inc.toFixed(2));
+        $("#total_tax_html").html("$ " + total_tax.toFixed(2));
+        $("#total_tax").val(total_tax.toFixed(2));
 
         $("#total_pay_html").html("$ " + total_pay.toFixed(2));
         $("#total_pay").val(total_pay.toFixed(2));
 
         $("#balance").val(total_pay.toFixed(2));
+        pendient1 = $("#pay_expense").val();
+        pend = parseFloat(total_pay)-parseFloat(pendient1);
+        $("#pendient").val(pend);
+    }
+
+    function totaledit(){
+        /*
+        var rte = parseFloat($("#percentage").val());
+        var vrte = total * rte / 100;*/
+        var total_pay = total + total_tax;
+
+        $("#total_html").html("$ " + total.toFixed(2));
+        $("#total").val(total.toFixed(2));
+
+        $("#total_tax_html").html("$ " + total_tax.toFixed(2));
+        $("#total_tax").val(total_tax.toFixed(2));
+
+        $("#total_pay_html").html("$ " + total_pay.toFixed(2));
+        $("#total_pay").val(total_pay.toFixed(2));
+
+        $("#balance").val(total_pay.toFixed(2));
+        pendient1 = $("#pay_expense").val();
+        pend = parseFloat(total_pay)-parseFloat(pendient1);
+        $("#pendient").val(pend);
     }
 
     function deleterow(index){
 
         total = total-subtotal[index];
-        total_inc= total*inc/100;
-        total_pay = total + total_inc;
+        total_tax= total*tax_rate/100;
+        total_pay = total + total_tax;
 
         $("#total_html").html("$ " + total.toFixed(2));
         $("#total").val(total.toFixed(2));
 
-        total_pay=total+total_inc;
-        $("#total_inc_html").html("$ " + total_inc.toFixed(2));
-        $("#total_inc").val(total_inc.toFixed(2));
+        total_pay=total+total_tax;
+        $("#total_tax_html").html("$ " + total_tax.toFixed(2));
+        $("#total_tax").val(total_tax.toFixed(2));
 
         $("#total_pay_html").html("$ " + total_pay.toFixed(2));
         $("#total_pay").val(total_pay.toFixed(2));
@@ -110,6 +146,7 @@
     function assess(){
 
         if(total>0){
+
             $("#save").show();
         } else{
             $("#save").hide();
@@ -120,6 +157,7 @@
     });
 
     function editrow(index) {
+
         $("#contMod").hide();
         $("#subtotalMod").hide();
         $("#idMod").hide();
@@ -132,16 +170,16 @@
             // Buscar datos en la fila y asignar a campos del formulario:
             // Primera columna (0) tiene ID, segunda (1) tiene nombre, tercera (2) capacidad
             $("#contModal").val(index);
-            $("#service_idModal").val(row.find("td:eq(2)").text());
-            $("#serviceModal").val(row.find("td:eq(3)").text());
+            $("#idModal").val(row.find("td:eq(2)").text());
+            $("#product_idModal").val(row.find("td:eq(2)").text());
+            $("#productModal").val(row.find("td:eq(3)").text());
             $("#quantityModal").val(row.find("td:eq(4)").text());
             $("#priceModal").val(row.find("td:eq(5)").text());
-            $("#incModal").val(row.find("td:eq(6)").text());
+            $("#taxModal").val(row.find("td:eq(6)").text());
             $("#subtotalModal").val(row.find("td:eq(7)").text());
 
             // Mostrar modal
             $('#editModal').modal('show');
-
         }
     }
 
@@ -155,21 +193,21 @@
         // Primera columna (0) tiene ID, segunda (1) tiene nombre, tercera (2) capacidad
         contedit = $("#contModal").val();
         //id = $("#idModal").val();
-        service_id = $("#service_idModal").val();
-        service = $("#serviceModal").val();
+        product_id = $("#product_idModal").val();
+        product = $("#productModal").val();
         quantity = $("#quantityModal").val();
         price = $("#priceModal").val();
-        inc = $("#incModal").val();
+        tax_rate = $("#taxModal").val();
 
         $('#priceModal').prop("readonly", true)
 
-        if(service_id !="" && quantity!="" && quantity>0 && price!="" && price>0){
+        if(product_id !="" && quantity!="" && quantity>0 && price!="" && price>0){
             subtotal[cont]= parseFloat(quantity) * parseFloat(price);
             total= total+subtotal[cont];
-            ivita= subtotal[cont]*inc/100;
-            total_inc=total_inc+ivita;
+            ivita= subtotal[cont]*tax_rate/100;
+            total_tax=total_tax+ivita;
 
-            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+service_id+'">'+service_id+'</td><td><input type="hidden" name="service_id[]" value="'+service_id+'">'+service+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="inc[]"  value="'+inc+'">'+inc+'</td><td>$'+subtotal[cont]+' </td></tr>';
+            var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+product_id+'">'+product_id+'</td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="tax_rate[]"  value="'+tax_rate+'">'+tax_rate+'</td><td>$'+subtotal[cont]+' </td></tr>';
 
             cont++;
             deleterow(contedit);
@@ -177,9 +215,10 @@
             assess();
             $('#details').append(row);
             $('#editModal').modal('hide');
-            //$('#service_id option:selected').remove();
+            //$('#product_id option:selected').remove();
+            seePay();
         }else{
-            // alert("Rellene todos los campos del detalle de la compra, revise los datos del serviceo");
+            // alert("Rellene todos los campos del detalle de la compra, revise los datos del producto");
             Swal.fire({
                 type: 'error',
                 //title: 'Oops...',
@@ -189,45 +228,45 @@
     }
 
     //function editing(){
-        expense = {!! json_encode($expenseServices) !!};
+        expense = {!! json_encode($expenseProducts) !!};
         expense.forEach((value, i) => {
             if (value['quantity'] > 0) {
 
-                service_id= value['id'];
-                service= value['name'];
+                id = value['id'];
+                product_id= value['idP'];
+                product= value['name'];
                 quantity= value['quantity'];
                 price= value['price'];
-                inc= value['inc'];
-                balance = value['balance'];
-
-                if(service_id !="" && quantity!="" && quantity>0  && price!="" && price>0){
+                stock= value['stock'];
+                tax_rate= value['tax_rate'];
+                if(product_id !="" && quantity!="" && quantity>0  && price!="" && price>0){
                     subtotal[cont]= parseFloat(quantity) * parseFloat(price);
                     total= total+subtotal[cont];
-                    ivita= subtotal[cont]*inc/100;
-                    total_inc=total_inc+ivita;
+                    ivita= subtotal[cont]*tax_rate/100;
+                    total_tax=total_tax+ivita;
 
-                    var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+service_id+'">'+service_id+'</td><td><input type="hidden" name="service_id[]" value="'+service_id+'">'+service+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="inc[]"  value="'+inc+'">'+inc+'</td><td>$'+subtotal[cont]+' </td></tr>';
+                    var row= '<tr class="selected" id="row'+cont+'"><td><button type="button" class="btn btn-danger btn-sm btndelete" onclick="deleterow('+cont+');"><i class="fas fa-trash"></i></button></td><td><button type="button" class="btn btn-warning btn-sm btnedit" onclick="editrow('+cont+');"><i class="far fa-edit"></i></button></td><td><input type="hidden" name="id[]"  value="'+product_id+'">'+product_id+'</td><td><input type="hidden" name="product_id[]" value="'+product_id+'">'+product+'</td>   <td><input type="hidden" name="quantity[]" value="'+quantity+'">'+quantity+'</td> <td><input type="hidden" name="price[]"  value="'+price+'">'+price+'</td> <td><input type="hidden" name="tax_rate[]"  value="'+tax_rate+'">'+tax_rate+'</td><td>$'+subtotal[cont]+' </td></tr>';
                     cont++;
 
-                    totals();
+                    totaledit();
                     assess();
                     $('#details').append(row);
 
-                    $('#service_id option:selected').remove();
+                    $('#product_id option:selected').remove();
                     clean();
                 }else{
                     //alert("Rellene todos los campos del detalle para esta compra");
                     Swal.fire({
                     type: 'error',
                     //title: 'Oops...',
-                    text: 'Rellene todos los campos del detalle para esta Venta',
+                    text: 'Rellene todos los campos del detalle para esta compra',
                     })
                 }
             }
         });
     //}
     function detailclear(){
-        expense = {!! json_encode($expenseServices) !!};
+        expense = {!! json_encode($expenseProducts) !!};
         expense.forEach((value, i) => {
             if (value['quantity'] > 0) {
                 deleterow(i);

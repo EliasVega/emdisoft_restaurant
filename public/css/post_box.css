@@ -2,110 +2,78 @@
     margin-left: 0.5cm;
     margin-right: 0.5cm;
 }
-
 body {
-        text-align: center;
-        display: flex;
-        margin: 0px auto;
-        font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
-        font-weight: normal;
-        line-height: 1.5;
-        color: #151b1e;
-        min-width: 100%;
-        padding: 0%;
-        }
+    text-align: center;
+    margin: 0px;
+    padding: opx;
+    font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+}
 
-        .clearfix {
-            clear: both;
-            float: none;
-        }
+.clearfix {
+    clear: both;
+    float: none;
+}
 
-        .unicos {
-            width: 100%;
-            display: flex;
-            align-items: center;
-        }
+#logo {
+    margin: auto;
+}
 
-        .unicos p {
-            font-size: 10px;
-        }
+#logo img {
+    display: block;
+    width: 220px;
+    height: 80px;
+    margin-top: 5px;
+}
 
-        .cliente {
-            margin-top: 0px;
-            width: 100%;
-            font-size: 0.6em;
-            text-align: left;
-        }
+.content_postbox {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
 
-        thead {
-            width: 100%;
-            margin: 0%;
-            padding: 0%;
-        }
+.content_postbox p {
+    font-size: 10px;
+}
 
-        table thead tr th {
-            text-align: left;
-        }
+header {
+    width: 100%;
+    border-top: 2px solid #c6cccf;
+    border-bottom: 2px solid #c6cccf;
+}
 
-        .id {
-            width: 20px;
-        }
+.user_postbox {
+    margin-top: 0px;
+    width: 100%;
+    font-size: 0.6em;
+    text-align: left;
+}
 
-        .name {
-            width: 90px;
-        }
+table {
+    width: 100%;
+}
 
-        .quantity {
-            width: 35px;
-        }
+table thead {
+    width: 100%;
+    margin: 0%;
+    padding: 0%;
+    border-bottom: 1px solid #7a7d7e;
+}
 
-        .price {
-            width: 50px;
-        }
-        .subtotal {
-            width: 40px;
-        }
+table tbody {
+    width: 100%;
+    margin: 0%;
+    padding: 0%;
+    border-bottom: 1px solid #7a7d7e;
+}
 
-        .document {
-            width: 40px;
-        }
+table thead tr th{
+    font-size: 0.6rem;
+}
 
-        .third {
-            width: 150px;
-        }
+table tbody tr td {
+    font-size: 0.6rem;
+}
 
-        .totals {
-            width: 70px;
-        }
-
-        .totalreportname {
-            width: 180px;
-        }
-
-        .fact {
-            width: 100%;
-            border-bottom: 1px solid #7a7d7e;
-        }
-
-        .facturador {
-            font-size: 0.6em;
-            margin: 0px auto;
-            text-align: center;
-        }
-        header {
-            border-top: 2px solid #c6cccf;
-            border-bottom: 2px solid #c6cccf;
-        }
-
-        tbody {
-            width: 100%;
-            margin: 0%;
-            padding: 0%;
-        }
-
-        th{
-            font-size: 0.7rem;
-        }
-        td {
-            font-size: 0.6rem;
-        }
+table tbody tr td .tdright {
+    font-size: 0.6rem;
+}

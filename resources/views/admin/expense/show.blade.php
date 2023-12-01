@@ -1,13 +1,25 @@
 @extends("layouts.admin")
 @section('titulo')
-{{ config('app.name', 'Ecounts') }}
+{{ config('app.name', 'EmdisoftPro') }}
 @endsection
 @section('content')
 <main class="main">
     <div class="row">
+        <div class="box-header with-border">
+            <h5 class="box-title">Detalle de la compra
+                @can('expense.index')
+                    <a href="{{ route('expense.index') }}" class="btn btn-lightBlueGrad btn-sm ml-3"><i class="fas fa-undo-alt mr-2"></i>Regresar</a>
+                @endcan
+                @can('branch.index')
+                    <a href="{{ route('branch.index') }}" class="btn btn-blueGrad btn-sm ml-3"><i class="fas fa-undo-alt mr-2"></i>Inicio</a>
+                @endcan
+            </h5>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
             <div class="form-group">
-                <label class="form-control-label" for="id">COMPRA #</label>
+                <label class="form-control-label" for="id">Gasto #</label>
                 <h6>{{ $expense->id }}</h6>
             </div>
         </div>
@@ -33,7 +45,7 @@
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
             <div class="form-group">
                 <label class="form-control-label" for="nombre">PROVEEDOR</label>
-                <h6>{{ $expense->supplier->name }}</h6>
+                <h6>{{ $expense->third->name }}</h6>
             </div>
         </div>
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
@@ -48,56 +60,53 @@
                 <h6>{{ date('d-m-Y', strtotime($expense->created_at)) }}</h6>
             </div>
         </div>
+        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+            <div class="form-group">
+                <label class="form-control-label" for="company">RESPONSABLE</label>
+                <h6>{{ $expense->user->name }}</h6>
+            </div>
+        </div>
     </div><br>
     <div class="box-body row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="form-group">
-                    <h4>Detalle del Gasto
-                        <a href="{{ route('expense.index') }}" class="btn btn-bluR btn-sm ml-3"><i class="fas fa-undo-alt mr-2"></i>Regresar</a>
-                    </h4>
-                </div>
-            </div>
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered table-condensed table-hover">
-                        <thead>
-                            <tr class="bg-info">
-                                <th>Producto</th>
-                                <th>Cantidad</th>
-                                <th>Precio ($)</th>
-                                <th>Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tfoot>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-condensed table-hover">
+                    <thead>
+                        <tr class="bg-info">
+                            <th>Producto</th>
+                            <th>Precio ($)</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" class="rightfoot">TOTAL:</th>
+                            <td class="rightfoot"><strong>${{number_format($expense->total,2)}}</strong></td>
+                         </tr>
+                         @if ($expense->pay > 0)
+                             <tr>
+                                 <th  colspan="3" class="rightfoot">ABONOS</th>
+                                 <td  class="rightfoot"><strong>${{number_format($expense->pay,2)}}</strong></td>
+                             </tr>
+                         @endif
+                         <tr>
+                             <th  colspan="3" class="rightfoot">SALDO A PAGAR:</th>
+                             <td class="rightfoot"><strong id="total">$ {{number_format($expense->total -  $expense->pay,2)}}</strong></td>
+                         </tr>
 
+                    </tfoot>
+                    <tbody>
+                        @foreach($expenseProducts as $expenseProduct)
                             <tr>
-                                <th  colspan="3"><p align="right">TOTAL:</p></th>
-                                <th><p align="right">${{ number_format($expense->total, 2) }}</p></th>
+                                <td>{{ $expenseProduct->product->name }}</td>
+                                <td class="rightfoot">{{ $expenseProduct->quantity }}</td>
+                                <td class="rightfoot">${{ $expenseProduct->price }}</td>
+                                <td class="rightfoot">{{ $expenseProduct->subtotal }}</td>
                             </tr>
-
-                            <tr>
-                                <th colspan="3"><p align="right">TOTAL INC:</p></th>
-                                <th><p align="right">${{ number_format($expense->total_inc, 2) }}</p></th>
-                            </tr>
-                            <tr>
-                                <th  colspan="3"><p align="right">TOTAL PAGAR:</p></th>
-                                <th><p align="right">${{ number_format($expense->total_pay, 2) }}</p></th>
-                            </tr>
-
-                        </tfoot>
-                        <tbody>
-                            @foreach($expenseServices as $espenseService)
-                                <tr>
-                                    <td>{{ $espenseService->service->name }}</td>
-                                    <td class="tdder">{{ $espenseService->quantity }}</td>
-                                    <td class="tdder">${{ number_format($espenseService->price, 2) }}</td>
-                                    <td class="tdder">${{ number_format($espenseService->subtotal, 2) }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

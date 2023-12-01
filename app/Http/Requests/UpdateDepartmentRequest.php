@@ -19,14 +19,14 @@ class UpdateDepartmentRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
         return [
-            'name'     => 'required|max:45',
-            'dane_code'     => 'required|max:2',
-            'iso_code' => 'required|max:3'
+            'name' => 'required|string|max:45',
+            'dane_code' => 'required|string|max:2',
+            'iso_code' => 'required|string|max:3'
         ];
     }
 }

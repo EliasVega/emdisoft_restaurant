@@ -19,21 +19,22 @@ class UpdateProductRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
         return [
-
-            'code'            => 'required|string|unique:products,code,'.$this->product->id,'|max:20',
-            'name'            => 'required|max:100',
-            'price'           => 'required',
+            'code'            => 'required|string|max:20',
+            'name'            => 'required|string|max:100',
+            'price'           => 'required|numeric',
             'sale_price'      => '',
             'stock'           => '',
+            'type_product'    => 'required|in:product,service,consumer',
             'status'          => 'in:active,inactive',
-            'image'           => '',
-            'category_id'     => 'required',
-            'unit_measure_id' => 'required'
+            'image'           => 'image|mimes:jpeg,png|max:1000',
+            'imageName'       => '',
+            'category_id'     => 'required|integer',
+            'measure_unit_id' => 'required|integer'
         ];
     }
 }

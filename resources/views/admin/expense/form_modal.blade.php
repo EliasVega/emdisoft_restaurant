@@ -6,22 +6,22 @@
             <input type="text" name="idModal" id="idModal"class="form-control" placeholder="id " readonly>
         </div>
     </div>
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="serviceIdModal">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="productIdModal">
         <div class="form-group">
-            <label for="service_idModal">id</label>
-            <input type="number" name="service_idModal" id="service_idModal"class="form-control" placeholder="service_id " readonly>
+            <label for="product_idModal">Producto id</label>
+            <input type="number" name="product_idModal" id="product_idModal"class="form-control" placeholder="product_id " readonly>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="form-group">
-            <label for="serviceModal">Servicio</label>
-            <input type="text" name="serviceModal" id="serviceModal" class="form-control" placeholder="Servicio" readonly>
+            <label for="productModal">Producto</label>
+            <input type="text" name="productModal" id="productModal" class="form-control" placeholder="Producto" readonly>
         </div>
     </div>
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="incmod">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="taxmod">
         <div class="form-group">
-            <label for="incModal">inc</label>
-            <input type="text" name="incModal" id="incModal" class="form-control" placeholder="inc" readonly>
+            <label for="taxModal">tax</label>
+            <input type="text" name="taxModal" id="taxModal" class="form-control" placeholder="tax" readonly>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

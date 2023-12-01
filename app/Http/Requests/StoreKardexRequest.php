@@ -19,18 +19,17 @@ class StoreKardexRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
         return [
-            'product_id' => 'required',
-            'branch_id'  => 'required',
-            'operation'  => 'required',
-            'number'     => 'required',
-            'quantity'   => 'required',
-            'stock'      => 'required',
-            'observation' => 'nullable|string|max:255'
+            'branch_id'  => 'required|integer',
+            'voucher_type_id' => 'required|integer',
+            'document' => 'required|string|max:20',
+            'quantity' => 'required|numeric',
+            'stock' => 'required|numeric',
+            'status' => 'in:purchase,expense,invoice,ncpurchase,ndpurchase,ncinvoice,ndinvoice',
         ];
     }
 }
