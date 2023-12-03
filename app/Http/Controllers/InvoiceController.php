@@ -728,10 +728,15 @@ class InvoiceController extends Controller
     {
         $invoice = Invoice::findOrFail($id);
         $invoiceProducts = InvoiceProduct::where('invoice_id', $invoice->id)->where('quantity', '>', 0)->get();
-        $restaurantOrder = RestaurantOrder::where('invoice_id', $id)->first();
-        $homeOrder = HomeOrder::where('restaurant_order_id', $restaurantOrder->id)->first();
         $company = Company::findOrFail(1);
         $indicator = Indicator::findOrFail(1);
+        if ($indicator->restaurant == 'on') {
+            $restaurantOrder = RestaurantOrder::where('invoice_id', $invoice->id)->first();
+            $homeOrder = HomeOrder::where('restaurant_order_id', $restaurantOrder->id)->first();
+        } else {
+            $restaurantOrder = null;
+            $homeOrder = null;
+        }
         $debitNotes = Ndinvoice::where('invoice_id', $id)->first();
         $creditNotes = Ncinvoice::where('invoice_id', $id)->first();
         $days = $invoice->created_at->diffInDays($invoice->due_date);
@@ -796,11 +801,16 @@ class InvoiceController extends Controller
         $invoices = session('invoice');
         $invoice = Invoice::findOrFail($invoices);
         session()->forget('invoice');
-        $restaurantOrder = RestaurantOrder::where('invoice_id', $invoice->id)->first();
-        $homeOrder = HomeOrder::where('restaurant_order_id', $restaurantOrder->id)->first();
         $invoiceProducts = InvoiceProduct::where('invoice_id', $invoice->id)->where('quantity', '>', 0)->get();
         $company = Company::findOrFail(1);
         $indicator = Indicator::findOrFail(1);
+        if ($indicator->restaurant == 'on') {
+            $restaurantOrder = RestaurantOrder::where('invoice_id', $invoice->id)->first();
+            $homeOrder = HomeOrder::where('restaurant_order_id', $restaurantOrder->id)->first();
+        } else {
+            $restaurantOrder = null;
+            $homeOrder = null;
+        }
         $debitNotes = Ndinvoice::where('invoice_id', $invoice->id)->first();
         $creditNotes = Ncinvoice::where('invoice_id', $invoice->id)->first();
         $days = $invoice->created_at->diffInDays($invoice->due_date);
