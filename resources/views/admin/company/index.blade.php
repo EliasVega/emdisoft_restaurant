@@ -6,9 +6,12 @@
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <h5>Cargos
-            @can('company.create')
-                <a href="company/create" class="btn btn-greenGrad btn-sm"><i class="fa fa-plus"></i>Agregar Compañia</a>
+            @can('superAdmin')
+                @can('company.create')
+                    <a href="company/create" class="btn btn-greenGrad btn-sm"><i class="fa fa-plus"></i>Agregar Compañia</a>
+                @endcan
             @endcan
+
         </h5>
     </div>
 </div>

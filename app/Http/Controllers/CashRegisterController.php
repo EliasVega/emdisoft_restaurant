@@ -179,7 +179,7 @@ class CashRegisterController extends Controller
         $cashRegister = CashRegister::findOrFail($cashRegister->user_id);
         $from = $cashRegister->created_at;
         $to = $cashRegister->updated_at;
-
+        dd('aquii');
         if ($user == 'superAdmin' || $user == 'admin') {
             $invoiceProducts = [];
             $cont = 0;
