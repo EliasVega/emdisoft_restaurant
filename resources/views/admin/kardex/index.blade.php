@@ -8,7 +8,18 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="card">
                     <div class="card-header">
+
                         <div class="row input-daterange input-group" id="datepicker">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
+                                @can('product.index')
+                                    <a href="{{ route('branch.index') }}" class="btn btn-lightBlueGrad ml-3"><i
+                                            class="fas fa-undo-alt mr-3"></i>Regresar </a>
+                                @endcan
+                                @can('branch.index')
+                                    <a href="{{ route('branch.index') }}" class="btn btn-blueGrad"><i
+                                            class="fas fa-undo-alt mr-2"></i>Inicio</a>
+                                @endcan
+                            </div>
                             <div class="col-12 col-md-2">
                                 <input type="date" name="start_date" id="start_date" class="form-control"
                                     max="{{ date('Y-m-d') }}">
@@ -24,16 +35,6 @@
                             <div class="col-12 col-md-2">
                                 <a id="show_all_button" class="btn btn-secondary btn-block">Todos los registros <i
                                         class="fa-solid fa-list ml-md-1"></i></a>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                @can('product.index')
-                                    <a href="{{ route('branch.index') }}" class="btn btn-lightBlueGrad ml-3"><i
-                                            class="fas fa-undo-alt mr-3"></i>Regresar </a>
-                                @endcan
-                                @can('branch.index')
-                                    <a href="{{ route('branch.index') }}" class="btn btn-blueGrad"><i
-                                            class="fas fa-undo-alt mr-2"></i>Inicio</a>
-                                @endcan
                             </div>
                         </div>
                     </div>

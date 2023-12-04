@@ -25,37 +25,39 @@
             <input type="number" name="restaurant_order_id" id="restaurant_order_id" value="{{ $restaurantOrder->id }}" class="form-control" readonly>
         </div>
     </div>
-    @if ($homeOrder->type == 'home')
-        <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mt-3" id="addDomiciliary">
-            <div class="form-group">
-                <label class="form-control-label" for="domiciliary">Domiciliario</label>
-                <input type="text" id="domiciliary" name="domiciliary" value=""
-                    class="form-control" placeholder="Domiciliario">
+    @if ($homeOrder != null)
+        @if ($homeOrder->type == 'home')
+            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mt-3" id="addDomiciliary">
+                <div class="form-group">
+                    <label class="form-control-label" for="domiciliary">Domiciliario</label>
+                    <input type="text" id="domiciliary" name="domiciliary" value=""
+                        class="form-control" placeholder="Domiciliario">
+                </div>
             </div>
-        </div>
-        <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mt-3" id="addHomeOrder">
-            <div class="form-group">
-                <label class="form-control-label" for="domiciliary">V/Domicilio</label>
-                <input type="text" id="domicile_value" name="domicile_value" value=""
-                    class="form-control" placeholder="Valor Domicilio">
+            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mt-3" id="addHomeOrder">
+                <div class="form-group">
+                    <label class="form-control-label" for="domiciliary">V/Domicilio</label>
+                    <input type="text" id="domicile_value" name="domicile_value" value=""
+                        class="form-control" placeholder="Valor Domicilio">
+                </div>
             </div>
-        </div>
-    @endif
-    @if ($homeOrder->type == 'rappi')
-        <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mt-3" id="addDomiciliary">
-            <div class="form-group">
-                <label class="form-control-label" for="domiciliary">Domiciliario</label>
-                <input type="text" id="domiciliary" name="domiciliary" value="rappi"
-                    class="form-control" placeholder="Domiciliario" readonly>
+        @endif
+        @if ($homeOrder->type == 'rappi')
+            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mt-3" id="addDomiciliary">
+                <div class="form-group">
+                    <label class="form-control-label" for="domiciliary">Domiciliario</label>
+                    <input type="text" id="domiciliary" name="domiciliary" value="rappi"
+                        class="form-control" placeholder="Domiciliario" readonly>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mt-3" id="addHomeOrder">
-            <div class="form-group">
-                <label class="form-control-label" for="domiciliary">V/Domicilio</label>
-                <input type="number" id="domicile_value" name="domicile_value" value="0"
-                    class="form-control" placeholder="Valor Domicilio" readonly>
+            <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12 mt-3" id="addHomeOrder">
+                <div class="form-group">
+                    <label class="form-control-label" for="domiciliary">V/Domicilio</label>
+                    <input type="number" id="domicile_value" name="domicile_value" value="0"
+                        class="form-control" placeholder="Valor Domicilio" readonly>
+                </div>
             </div>
-        </div>
+        @endif
     @endif
     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12" id="addGeneration_date">
         <div class="form-group">

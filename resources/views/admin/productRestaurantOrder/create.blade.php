@@ -28,10 +28,10 @@
             {!!Form::open(array('url'=>'productRestaurantOrder', 'method'=>'POST', 'autocomplete'=>'off'))!!}
             {!!Form::token()!!}
             <div class="row m-1">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="col-lg-7 col-md-12 col-sm-12 col-xs-12">
                     @include('admin/productRestaurantOrder.form_restaurantOrder')
                 </div>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 colorpay">
+                <div class="col-lg-5 col-md-12 col-sm-12 col-xs-12 colorpay">
                     @include('admin/productRestaurantOrder.form_pay')
                 </div>
 

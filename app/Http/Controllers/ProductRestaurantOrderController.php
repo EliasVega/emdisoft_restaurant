@@ -35,6 +35,8 @@ use App\Traits\KardexCreate;
 use App\Traits\InventoryInvoices;
 use App\Traits\Taxes;
 
+use function PHPUnit\Framework\isNull;
+
 class ProductRestaurantOrderController extends Controller
 {
     use KardexCreate, InventoryInvoices, Taxes;
@@ -60,6 +62,12 @@ class ProductRestaurantOrderController extends Controller
 
         $restaurantOrder = RestaurantOrder::where('id', $request->session()->get('restaurantOrder'))->first();
         $homeOrder = HomeOrder::where('restaurant_order_id', $restaurantOrder->id)->first();
+        /*
+        if ($homeOrder) {
+            $homeOrder = $homeOrder;
+        } else {
+            $homeOrder = null;
+        }*/
         $typeService = $restaurantOrder->restaurant_table_id;
         $indicator = Indicator::findOrFail(1);
         $customers = Customer::get();
