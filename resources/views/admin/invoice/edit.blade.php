@@ -42,6 +42,6 @@
     @include('admin/invoice.editmodal')
 @endsection
 @section('scripts')
-    @include('admin/Invoice.script_edit')
-    @include('admin/Invoice.script_pay_edit')
+    @include('admin/invoice.script_edit')
+    @include('admin/invoice.script_pay_edit')
 @endsection
