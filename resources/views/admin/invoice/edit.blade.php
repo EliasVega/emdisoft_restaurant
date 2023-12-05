@@ -39,7 +39,7 @@
         </div>
     </div>
     {!!Form::close()!!}
-    @include('admin/Invoice.editmodal')
+    @include('admin/invoice.editmodal')
 @endsection
 @section('scripts')
     @include('admin/Invoice.script_edit')
