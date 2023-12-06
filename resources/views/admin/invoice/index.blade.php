@@ -51,7 +51,7 @@
                         <tr class="trdatacolor">
                             <th>Id</th>
                             <th>Proveedor</th>
-                            <th>#Fac_Compra</th>
+                            <th>#Factura</th>
                             <th>Valor</th>
                             <th>Abonos</th>
                             <th>Retenciones</th>
